@@ -23,6 +23,18 @@ function formatShortDate(dateString: string) {
   });
 }
 
+function stripMarkdown(value: string) {
+  return value
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`[^`]*`/g, "")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/!\[.*?\]\(.*?\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[*_~>]/g, "")
+    .replace(/\n+/g, " ")
+    .trim();
+}
+
 export default function LatestBlogsClient({ posts }: LatestBlogsClientProps) {
   return (
     <section id="blog" className="py-24 bg-gray-900 relative overflow-hidden">
@@ -48,7 +60,7 @@ export default function LatestBlogsClient({ posts }: LatestBlogsClientProps) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {posts.map((post, index) => {
-            const preview = post.content?.substring(0, 130) ?? "";
+            const preview = stripMarkdown(post.content ?? "").substring(0, 130);
             const readingTime = estimateReadingTime(post.content ?? "");
             const href = `/blogs/${post.slug ?? post.id}`;
 

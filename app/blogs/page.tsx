@@ -65,16 +65,38 @@ function normalizeTags(tags: unknown): Tag[] {
   return tags
     .map((tag) => {
       if (typeof tag === "string") {
-        return safeParseTag(tag) ?? { id: tag.trim(), name: tag.trim() };
+        const trimmed = tag.trim();
+        const parsed = safeParseTag(trimmed);
+        if (parsed) {
+          return {
+            ...parsed,
+            id: String(parsed.id).trim(),
+            name: parsed.name.trim(),
+          };
+        }
+        return { id: trimmed, name: trimmed };
       }
 
       if (tag && typeof tag === "object" && "id" in tag && "name" in tag) {
-        return { ...(tag as Tag), name: (tag as Tag).name.trim() } as Tag;
+        const t = tag as Tag;
+        return { ...t, id: String(t.id).trim(), name: t.name.trim() };
       }
 
       return null;
     })
     .filter((tag): tag is Tag => Boolean(tag));
+}
+
+function stripMarkdown(value: string) {
+  return value
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`[^`]*`/g, "")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/!\[.*?\]\(.*?\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[*_~>]/g, "")
+    .replace(/\n+/g, " ")
+    .trim();
 }
 
 async function fetchTags() {
@@ -179,11 +201,12 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
   const limit = parsePositiveInt(resolvedSearchParams?.limit, 5, 1, 50);
   const search = resolvedSearchParams?.search ?? "";
   const sortBy = resolvedSearchParams?.sort === "oldest" ? "oldest" : "newest";
-  const selectedTags = (Array.isArray(resolvedSearchParams?.tag)
-    ? resolvedSearchParams?.tag
-    : resolvedSearchParams?.tag
-      ? [resolvedSearchParams.tag]
-      : []
+  const selectedTags = (
+    Array.isArray(resolvedSearchParams?.tag)
+      ? resolvedSearchParams?.tag
+      : resolvedSearchParams?.tag
+        ? [resolvedSearchParams.tag]
+        : []
   ).map((tag) => tag.trim());
 
   const normalizedSearch = search.toLowerCase().trim();
@@ -339,14 +362,8 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
             : "grid-cols-1"
             }`}
         >
-          {paginatedPosts.map((post) => {
-            const previewContent = (post.content ?? "")
-              .replace(/```[\s\S]*?```/g, "")   // remove fenced code blocks
-              .replace(/`[^`]*`/g, "")          // remove inline code
-              .replace(/^#{1,6}\s+/gm, "")      // remove heading markers
-              .replace(/[*_~>]/g, "")           // remove markdown symbols
-              .trim()
-              .substring(0, 150);
+          {paginatedPosts.map((post, index) => {
+            const previewContent = stripMarkdown(post.content ?? "").substring(0, 150);
             const readingTime = estimateReadingTime(post.content ?? "");
 
             return (
@@ -367,8 +384,8 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                           ? "25vw"
                           : "(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                       }
+                      loading={index === 0 ? "eager" : "lazy"}
                       unoptimized
-                      loading={paginatedPosts.indexOf(post) === 0 ? "eager" : "lazy"}
                       className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                     />
                   </div>

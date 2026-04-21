@@ -1,68 +1,63 @@
 import type { MetadataRoute } from "next";
 import { getSupabaseServerClient } from "../lib/supabase/server";
 
-const SITE_URL =
+const BASE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
   "https://www.abhishekgaire.com.np";
-
-async function getDynamicBlogUrls(): Promise<MetadataRoute.Sitemap> {
-  const supabase = getSupabaseServerClient();
-  const { data, error } = await supabase
-    .from("Blogs")
-    .select("id, slug, updated_at")
-    .eq("publish", true);
-
-  if (error) {
-    return [];
-  }
-
-  const now = new Date();
-
-  return (data ?? []).map((post) => ({
-    url: `${SITE_URL}/blogs/${post.slug ?? post.id}`,
-    lastModified: post.updated_at ? new Date(post.updated_at) : now,
-    changeFrequency: "weekly",
-    priority: 0.7,
-  }));
-}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: `${SITE_URL}/`,
+      url: BASE_URL,
       lastModified: now,
-      changeFrequency: "weekly",
+      changeFrequency: "monthly",
       priority: 1,
     },
     {
-      url: `${SITE_URL}/projects`,
+      url: `${BASE_URL}/about`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/projects`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/blogs`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
-      url: `${SITE_URL}/blogs`,
+      url: `${BASE_URL}/contact`,
       lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${SITE_URL}/about`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${SITE_URL}/contact`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
+      changeFrequency: "yearly",
+      priority: 0.5,
     },
   ];
 
-  const dynamicRoutes = await getDynamicBlogUrls();
+  let blogRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const supabase = getSupabaseServerClient();
+    const { data: posts } = await supabase
+      .from("Blogs")
+      .select("slug, id, updated_at, created_at")
+      .eq("publish", true);
 
-  return [...staticRoutes, ...dynamicRoutes];
+    blogRoutes = (posts ?? []).map((post) => ({
+      url: `${BASE_URL}/blogs/${post.slug ?? post.id}`,
+      lastModified: new Date(post.updated_at ?? post.created_at),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    }));
+  } catch {
+    console.error("[sitemap] Failed to fetch blog posts");
+  }
+
+  return [...staticRoutes, ...blogRoutes];
 }
