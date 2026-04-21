@@ -233,7 +233,7 @@ export default async function BlogDetailPage({
   const readingTime = estimateReadingTime(safeContent);
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
-    "https://example.com";
+    "https://www.abhishekgaire.com.np";
   const nonce = (await headers()).get("x-nonce") ?? "";
   const canonicalPath = `${siteUrl}/blogs/${post.slug ?? post.id}`;
   const author = post.author ?? "Abhishek Gaire";

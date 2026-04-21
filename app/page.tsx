@@ -33,7 +33,7 @@ export const revalidate = 300;
 export default async function HomePage() {
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
-    "https://example.com";
+    "https://www.abhishekgaire.com.np";
   const nonce = (await headers()).get("x-nonce") ?? "";
 
   const profileJsonLd = {

@@ -67,7 +67,7 @@ const fraunces = localFont({
   display: "swap",
 });
 
-const siteUrl = "https://example.com";
+const siteUrl = "https://www.abhishekgaire.com.np";
 const siteName = "Abhishek Gaire Portfolio";
 const defaultTitle = "Abhishek Gaire | Full Stack Developer";
 const defaultDescription =

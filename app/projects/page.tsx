@@ -29,8 +29,6 @@ export const metadata: Metadata = {
 
 export const revalidate = 300;
 
-
-
 async function fetchProjects() {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -45,14 +43,12 @@ async function fetchProjects() {
   return (data ?? []) as Project[];
 }
 
-
-
 export default async function ProjectsPage() {
   const projects = await fetchProjects();
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
-    "https://example.com";
+    "https://www.abhishekgaire.com.np";
   const nonce = (await headers()).get("x-nonce") ?? "";
   const breadcrumbJsonLd = {
     "@context": "https://schema.org",

@@ -3,7 +3,7 @@ import { getSupabaseServerClient } from "../lib/supabase/server";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ||
-  "https://example.com";
+  "https://www.abhishekgaire.com.np";
 
 async function getDynamicBlogUrls(): Promise<MetadataRoute.Sitemap> {
   const supabase = getSupabaseServerClient();
