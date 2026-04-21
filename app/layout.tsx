@@ -111,8 +111,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   icons: {
-    icon: [{ url: "https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images//favicon.ico" }],
-    shortcut: ["https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images//favicon.ico"],
+    icon: [{ url: "/favicon.ico" }],
     apple: [{ url: "/apple-touch-icon.png" }],
   },
 };
@@ -143,6 +142,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
+      nonce={nonce}
       data-scroll-behavior="smooth"
       className={`${mulish.variable} ${ibmPlexMono.variable} ${fraunces.variable} h-full antialiased`}
     >
