@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeContent } from "../../../lib/sanitize";
 import { z } from "zod";
 import { getSupabaseServerAuthClient } from "../../../lib/supabase/server-auth";
 
@@ -35,9 +35,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const sanitizedContent = DOMPurify.sanitize(parsed.data.content, {
-      USE_PROFILES: { html: true },
-    });
+    const sanitizedContent = sanitizeContent(parsed.data.content);
     const data = { ...parsed.data, content: sanitizedContent };
 
     const { error } = await supabase.from("Blogs").insert([data]);

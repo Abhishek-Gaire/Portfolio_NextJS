@@ -324,7 +324,7 @@ export default async function BlogDetailPage({
             {prev ? (
               <Link
                 href={`/blogs/${prev.slug ?? prev.id}`}
-                className="flex items-center text-gray-600 hover:text-gray-900"
+                className="flex items-center text-gray-600 hover:text-blue-100"
               >
                 <ChevronLeft className="w-5 h-5 mr-2" />
                 <div>
@@ -338,7 +338,7 @@ export default async function BlogDetailPage({
             {next ? (
               <Link
                 href={`/blogs/${next.slug ?? next.id}`}
-                className="flex items-center text-right text-gray-600 hover:text-gray-900"
+                className="flex items-center text-right text-gray-600 hover:text-blue-500"
               >
                 <div>
                   <div className="text-sm text-gray-500">Next</div>

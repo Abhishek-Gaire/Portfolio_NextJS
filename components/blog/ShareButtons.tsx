@@ -71,7 +71,7 @@ export default function ShareButtons({
       <button
         type="button"
         onClick={handleCopy}
-        className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+        className="p-2 text-gray-600 hover:text-blue-700 transition-colors"
         aria-label="Copy link"
       >
         <LinkIcon className="h-5 w-5" />

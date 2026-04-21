@@ -143,6 +143,7 @@ export default async function RootLayout({
     <html
       lang="en"
       nonce={nonce}
+      suppressHydrationWarning
       data-scroll-behavior="smooth"
       className={`${mulish.variable} ${ibmPlexMono.variable} ${fraunces.variable} h-full antialiased`}
     >

@@ -1,4 +1,4 @@
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeContent } from "../../lib/sanitize";
 import parse, { domToReact, type DOMNode, type HTMLReactParserOptions } from "html-react-parser";
 import type React from "react";
 
@@ -7,7 +7,7 @@ interface BlogContentProps {
 }
 
 export default function BlogHomeContent({ content }: BlogContentProps) {
-  const sanitized = DOMPurify.sanitize(content, { USE_PROFILES: { html: true } });
+  const sanitized = sanitizeContent(content);
   const options: HTMLReactParserOptions = {
     replace: (domNode) => {
       if (

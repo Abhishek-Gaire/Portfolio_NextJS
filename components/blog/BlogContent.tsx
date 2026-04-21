@@ -1,4 +1,4 @@
-import DOMPurify from "isomorphic-dompurify";
+import { sanitizeContent } from "../../lib/sanitize";
 import parse from "html-react-parser";
 
 interface BlogContentProps {
@@ -6,7 +6,7 @@ interface BlogContentProps {
 }
 
 export default function BlogContent({ content }: BlogContentProps) {
-  const sanitized = DOMPurify.sanitize(content, { USE_PROFILES: { html: true } });
+  const sanitized = sanitizeContent(content);
 
   return (
     <div className="prose prose-lg max-w-none mb-12">

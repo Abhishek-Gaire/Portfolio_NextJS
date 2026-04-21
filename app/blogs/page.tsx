@@ -360,6 +360,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                           : "(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                       }
                       unoptimized
+                      loading="eager"
                       className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
                     />
                   </div>
