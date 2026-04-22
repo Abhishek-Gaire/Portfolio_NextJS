@@ -93,6 +93,7 @@ export default function FeaturedProjectsClient({
                           href={project.live_url}
                           target="_blank"
                           rel="noopener noreferrer"
+                          aria-label="Live Demo"
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                           className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full transition-colors duration-200"
@@ -105,6 +106,7 @@ export default function FeaturedProjectsClient({
                           href={project.github_url}
                           target="_blank"
                           rel="noopener noreferrer"
+                          aria-label="Source Code"
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                           className="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full transition-colors duration-200"

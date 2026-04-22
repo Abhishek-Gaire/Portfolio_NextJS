@@ -22,7 +22,7 @@ export default function Header() {
       <nav className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between text-xl">
           <Link href="/" className="group flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               <span className="text-white font-bold text-lg">AG</span>
             </div>
           </Link>
@@ -50,7 +50,7 @@ export default function Header() {
               href="https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/cv/Abhishek_Gaire_Resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 text-green-400 rounded-lg hover:bg-gradient-to-r hover:from-green-600/30 hover:to-emerald-600/30 hover:border-green-500/50 transition-all duration-300 text-sm font-medium group"
+              className="inline-flex items-center px-4 py-2 bg-linear-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 text-green-400 rounded-lg hover:bg-linear-to-r hover:from-green-600/30 hover:to-emerald-600/30 hover:border-green-500/50 transition-all duration-300 text-sm font-medium group"
             >
               <Download className="w-4 h-4 mr-1 group-hover:animate-bounce" />
               <span>CV</span>
@@ -59,6 +59,7 @@ export default function Header() {
               href="https://github.com/Abhishek-Gaire"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="GitHub Profile"
               className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-300 hover:scale-110"
             >
               <Github size={20} />
@@ -67,6 +68,7 @@ export default function Header() {
               href="https://www.linkedin.com/in/abhisek-gaire-359294219/"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="LinkedIn Profile"
               className="p-2 text-gray-400 hover:text-blue-400 hover:bg-gray-800/50 rounded-lg transition-all duration-300 hover:scale-110"
             >
               <Linkedin size={20} />
@@ -75,6 +77,7 @@ export default function Header() {
               href="https://x.com/GaireAbhishek44"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Twitter Profile"
               className="p-2 text-gray-400 hover:text-blue-400 hover:bg-gray-800/50 rounded-lg transition-all duration-300 hover:scale-110"
             >
               <Twitter size={20} />
@@ -82,6 +85,7 @@ export default function Header() {
           </div>
 
           <button
+            aria-label="Toggle mobile menu"
             className="lg:hidden p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-300"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
@@ -110,7 +114,7 @@ export default function Header() {
                 href="https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/cv/Abhishek_Gaire_CV.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 text-green-400 rounded-lg hover:bg-gradient-to-r hover:from-green-600/30 hover:to-emerald-600/30 hover:border-green-500/50 transition-all duration-300 font-medium"
+                className="inline-flex items-center justify-center px-4 py-3 bg-linear-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 text-green-400 rounded-lg hover:bg-linear-to-r hover:from-green-600/30 hover:to-emerald-600/30 hover:border-green-500/50 transition-all duration-300 font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -123,6 +127,7 @@ export default function Header() {
                 href="https://github.com/Abhishek-Gaire"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="GitHub Profile"
                 className="p-3 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-300"
               >
                 <Github size={20} />
@@ -131,6 +136,7 @@ export default function Header() {
                 href="https://www.linkedin.com/in/abhisek-gaire-359294219/"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="LinkedIn Profile"
                 className="p-3 text-gray-400 hover:text-blue-400 hover:bg-gray-800/50 rounded-lg transition-all duration-300"
               >
                 <Linkedin size={20} />
@@ -139,6 +145,7 @@ export default function Header() {
                 href="https://x.com/GaireAbhishek44"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Twitter Profile"
                 className="p-3 text-gray-400 hover:text-blue-400 hover:bg-gray-800/50 rounded-lg transition-all duration-300"
               >
                 <Twitter size={20} />

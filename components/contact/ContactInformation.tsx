@@ -74,6 +74,7 @@ export default function ContactInformation() {
               href="https://github.com/Abhishek-Gaire"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="GitHub Profile"
               className="p-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-gray-400 hover:text-white hover:bg-gray-700/50 hover:border-gray-600/50 transition-all duration-300 hover:scale-110"
             >
               <Github size={20} />
@@ -82,6 +83,7 @@ export default function ContactInformation() {
               href="https://www.linkedin.com/in/abhisek-gaire-359294219/"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="LinkedIn Profile"
               className="p-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-gray-400 hover:text-blue-400 hover:bg-gray-700/50 hover:border-gray-600/50 transition-all duration-300 hover:scale-110"
             >
               <Linkedin size={20} />
@@ -90,6 +92,7 @@ export default function ContactInformation() {
               href="https://x.com/GaireAbhishek44"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Twitter Profile"
               className="p-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-gray-400 hover:text-blue-400 hover:bg-gray-700/50 hover:border-gray-600/50 transition-all duration-300 hover:scale-110"
             >
               <Twitter size={20} />

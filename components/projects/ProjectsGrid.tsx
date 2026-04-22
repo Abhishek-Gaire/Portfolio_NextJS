@@ -131,6 +131,7 @@ export default function ProjectsGrid({ projects, view }: ProjectsGridProps) {
                 </div>
                 <button
                   type="button"
+                  aria-label="View project details"
                   onClick={() => setSelectedProject(project)}
                   className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-300"
                 >
@@ -163,6 +164,7 @@ export default function ProjectsGrid({ projects, view }: ProjectsGridProps) {
                   {selectedProject.title}
                 </h2>
                 <button
+                  aria-label="Close project details"
                   onClick={() => setSelectedProject(null)}
                   className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-300"
                 >
