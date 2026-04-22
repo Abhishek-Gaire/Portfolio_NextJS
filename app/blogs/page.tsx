@@ -89,6 +89,7 @@ function normalizeTags(tags: unknown): Tag[] {
 
 function stripMarkdown(value: string) {
   return value
+    .replace(/<[^>]*>/g, " ")
     .replace(/```[\s\S]*?```/g, "")
     .replace(/`[^`]*`/g, "")
     .replace(/^#{1,6}\s+/gm, "")
@@ -96,6 +97,7 @@ function stripMarkdown(value: string) {
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/[*_~>]/g, "")
     .replace(/\n+/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
@@ -363,7 +365,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
             }`}
         >
           {paginatedPosts.map((post, index) => {
-            const previewContent = stripMarkdown(post.content ?? "").substring(0, 150);
+            const previewContent = `${stripMarkdown(post.content ?? "").substring(0, 150).trim()}....`;
             const readingTime = estimateReadingTime(post.content ?? "");
 
             return (

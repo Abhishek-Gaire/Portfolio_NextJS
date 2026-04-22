@@ -7,9 +7,8 @@ import LatestBlogs from "../components/home/LatestBlogs";
 import Skills from "../components/home/Skills";
 
 export const metadata: Metadata = {
-  title: "Home",
-  description:
-    "Full Stack Developer portfolio for Abhishek Gaire featuring projects, blogs, and ways to connect.",
+  title: "Abhishek Gaire | Full Stack Developer",
+  description: "Full Stack Developer from Pokhara, Nepal. Explore projects, blogs...",
   alternates: {
     canonical: "/",
   },
