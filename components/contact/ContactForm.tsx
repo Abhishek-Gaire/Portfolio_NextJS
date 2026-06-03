@@ -55,7 +55,7 @@ export default function ContactForm() {
       toast.success("Form submitted successfully!");
       setFormData({ name: "", email: "", message: "" });
     } catch (error) {
-      toast.error("An unexpected error occurred. Please try again.");
+      toast.error(error instanceof Error ? error.message : "An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
