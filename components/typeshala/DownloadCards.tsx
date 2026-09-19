@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Download, ExternalLink, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import type { PlatformDownload } from '@/types/typeshala';
+import { useDetectedOS, orderPlatformsByOS, isRecommendedForOS } from './useDetectedOS';
 
 interface DownloadCardProps {
   platform: PlatformDownload;
@@ -12,9 +13,11 @@ interface DownloadCardProps {
     size: number;
   };
   isLoading?: boolean;
+  /** True when this card matches the visitor's OS. */
+  recommended?: boolean;
 }
 
-export function DownloadCard({ platform, asset, isLoading }: DownloadCardProps) {
+export function DownloadCard({ platform, asset, isLoading, recommended }: DownloadCardProps) {
   const [copied, setCopied] = useState(false);
 
   const handleDownload = (url: string) => {
@@ -32,14 +35,23 @@ export function DownloadCard({ platform, asset, isLoading }: DownloadCardProps) 
   // release asset — the card behaves as if a download exists.
   const downloadUrl = asset?.browser_download_url || platform.manualUrl || undefined;
   const hasDownload = !!downloadUrl && !isFdroid;
+  // Only badge cards the visitor can actually download.
+  const showRecommended = !!recommended && hasDownload;
 
   return (
-    <div className={`group relative bg-gray-800/50 border rounded-2xl p-6 transition-all hover:border-blue-500/50 hover:bg-gray-800 ${!hasDownload && !isFdroid ? 'opacity-50' : ''}`}>
+    <div className={`group relative bg-gray-800/50 border rounded-2xl p-6 transition-all hover:border-blue-500/50 hover:bg-gray-800 ${!hasDownload && !isFdroid ? 'opacity-50' : ''} ${showRecommended ? 'border-blue-500/60 bg-gray-800' : ''}`}>
       <div className="flex items-start space-x-4">
         <div className="text-4xl shrink-0">{platform.icon}</div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold text-white">{platform.label}</h3>
+            <h3 className="text-xl font-semibold text-white">
+              {platform.label}
+              {showRecommended && (
+                <span className="ml-2 inline-flex items-center rounded-full border border-blue-500/40 bg-blue-500/15 px-2 py-0.5 align-middle text-xs font-medium text-blue-300">
+                  Recommended
+                </span>
+              )}
+            </h3>
             {hasDownload && (
               <a
                 href={downloadUrl}
@@ -140,9 +152,12 @@ interface DownloadGridProps {
 }
 
 export function DownloadGrid({ platforms, assets, isLoading }: DownloadGridProps) {
+  const os = useDetectedOS();
+  const ordered = orderPlatformsByOS(platforms, os);
+
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {platforms.map(platform => {
+      {ordered.map(platform => {
         const matched = assets[platform.platform];
         return (
           <DownloadCard
@@ -150,6 +165,7 @@ export function DownloadGrid({ platforms, assets, isLoading }: DownloadGridProps
             platform={platform}
             asset={matched?.asset}
             isLoading={isLoading}
+            recommended={isRecommendedForOS(platform, os)}
           />
         );
       })}

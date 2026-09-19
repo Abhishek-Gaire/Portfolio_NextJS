@@ -3,6 +3,7 @@
 import { Monitor, Smartphone, Box } from 'lucide-react';
 import { GitLabIcon, Github } from '@/components/icons';
 import { DownloadGrid } from '@/components/typeshala/DownloadCards';
+import { useDetectedOS } from '@/components/typeshala/useDetectedOS';
 import { ReleaseNotes, PreviousRelease } from '@/components/typeshala/ReleaseNotes';
 import { TypeshalaTopNav, TypeshalaFooter } from '@/components/typeshala/TypeshalaChrome';
 import { PLATFORM_DOWNLOADS } from '@/types/typeshala';
@@ -17,6 +18,37 @@ export default function TypeshalaPageClient({ data }: { data: TypeshalaPageData 
 
   const mobilePlatforms = PLATFORM_DOWNLOADS.filter(p =>
     ['android', 'fdroid'].includes(p.platform)
+  );
+
+  const detectedOS = useDetectedOS();
+  // Mobile visitors see the Mobile section first — their download at top.
+  const mobileFirst = detectedOS === 'android' || detectedOS === 'ios';
+  const platformAssets = latestRelease?.platformAssets ?? {};
+
+  const desktopSection = (
+    <div className="mb-12">
+      <h3 className="text-lg font-semibold text-gray-300 mb-6 flex items-center space-x-2">
+        <Monitor className="w-5 h-5 text-blue-400" />
+        <span>Desktop</span>
+      </h3>
+      <DownloadGrid
+        platforms={desktopPlatforms}
+        assets={platformAssets}
+      />
+    </div>
+  );
+
+  const mobileSection = (
+    <div className="mb-12">
+      <h3 className="text-lg font-semibold text-gray-300 mb-6 flex items-center space-x-2">
+        <Smartphone className="w-5 h-5 text-green-400" />
+        <span>Mobile</span>
+      </h3>
+      <DownloadGrid
+        platforms={mobilePlatforms}
+        assets={platformAssets}
+      />
+    </div>
   );
 
   return (
@@ -89,27 +121,17 @@ export default function TypeshalaPageClient({ data }: { data: TypeshalaPageData 
                 </a>
               </div>
 
-              <div className="mb-12">
-                <h3 className="text-lg font-semibold text-gray-300 mb-6 flex items-center space-x-2">
-                  <Monitor className="w-5 h-5 text-blue-400" />
-                  <span>Desktop</span>
-                </h3>
-                <DownloadGrid
-                  platforms={desktopPlatforms}
-                  assets={latestRelease.platformAssets}
-                />
-              </div>
-
-              <div className="mb-12">
-                <h3 className="text-lg font-semibold text-gray-300 mb-6 flex items-center space-x-2">
-                  <Smartphone className="w-5 h-5 text-green-400" />
-                  <span>Mobile</span>
-                </h3>
-                <DownloadGrid
-                  platforms={mobilePlatforms}
-                  assets={latestRelease.platformAssets}
-                />
-              </div>
+              {mobileFirst ? (
+                <>
+                  {mobileSection}
+                  {desktopSection}
+                </>
+              ) : (
+                <>
+                  {desktopSection}
+                  {mobileSection}
+                </>
+              )}
 
               <ReleaseNotes
                 version={latestRelease.version}
