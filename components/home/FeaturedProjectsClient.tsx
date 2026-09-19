@@ -5,10 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   ExternalLink,
-  Github,
   Calendar,
   Tag,
 } from "lucide-react";
+import { Github } from "@/components/icons";
 import type { Project } from "../../types/project";
 
 type FeaturedProjectsClientProps = {

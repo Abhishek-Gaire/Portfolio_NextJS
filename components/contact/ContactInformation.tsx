@@ -1,12 +1,14 @@
 import {
   Mail,
   MapPin,
-  Github,
-  Linkedin,
-  Twitter,
   Download,
   FileText,
 } from "lucide-react";
+import {
+  Github,
+  Linkedin,
+  Twitter,
+} from "@/components/icons";
 
 export default function ContactInformation() {
   return (

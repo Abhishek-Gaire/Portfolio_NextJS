@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import AppShell from "../components/AppShell";
+import { isTypeshalaHost } from "../lib/site-urls";
 
 const mulish = localFont({
   src: [
@@ -122,6 +123,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const nonce = (await headers()).get("x-nonce") ?? "";
+  const host = (await headers()).get("host") ?? "";
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -154,7 +156,7 @@ export default async function RootLayout({
           suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-        <AppShell>{children}</AppShell>
+        <AppShell isTypeshalaHost={isTypeshalaHost(host)}>{children}</AppShell>
       </body>
     </html>
   );

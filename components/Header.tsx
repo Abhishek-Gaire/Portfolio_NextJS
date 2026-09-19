@@ -1,6 +1,7 @@
 "use client";
 
-import { Menu, X, Github, Linkedin, Twitter, Download } from "lucide-react";
+import { Menu, X, Download } from "lucide-react";
+import { Github, Linkedin, Twitter } from "@/components/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";

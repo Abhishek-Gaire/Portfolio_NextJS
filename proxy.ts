@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { PORTFOLIO_URL, isTypeshalaHost } from "./lib/site-urls";
 
 function getEnvValue(key: string): string {
   const value = process.env[key];
@@ -77,6 +78,38 @@ export async function proxy(request: NextRequest) {
 
   response.headers.set("Content-Security-Policy", csp);
   response.headers.set("x-nonce", nonceValue);
+
+  // Split-domain hosting: typeshala.abhishekgaire.com.np serves the
+  // Typeshala page at its root; everything else lives on the portfolio
+  // domain. Localhost / preview deployments are unaffected.
+  const host = request.headers.get("host") ?? "";
+  if (isTypeshalaHost(host)) {
+    if (pathname === "/") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/typeshala";
+      const rewrite = NextResponse.rewrite(url, {
+        request: {
+          headers: requestHeaders,
+        },
+      });
+      rewrite.headers.set("Content-Security-Policy", csp);
+      rewrite.headers.set("x-nonce", nonceValue);
+      return rewrite;
+    }
+    const isPageRoute =
+      !pathname.startsWith("/typeshala") &&
+      !pathname.startsWith("/api/") &&
+      !pathname.startsWith("/_next/") &&
+      !pathname.startsWith("/opengraph-image") &&
+      !pathname.includes(".");
+    if (isPageRoute) {
+      const dest = new URL(
+        `${request.nextUrl.pathname}${request.nextUrl.search}`,
+        PORTFOLIO_URL,
+      );
+      return NextResponse.redirect(dest);
+    }
+  }
 
   const requiresAuthCheck =
     pathname.startsWith("/admin") || pathname === "/login";

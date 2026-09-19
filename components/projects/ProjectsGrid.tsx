@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, Github, Share2, X } from "lucide-react";
+import { ExternalLink, Share2, X } from "lucide-react";
+import { Github } from "@/components/icons";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { Project } from "../../types/project";

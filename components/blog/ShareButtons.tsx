@@ -1,6 +1,7 @@
 "use client";
 
-import { Facebook, Link as LinkIcon, Linkedin, Twitter } from "lucide-react";
+import { Link as LinkIcon } from "lucide-react";
+import { Facebook, Linkedin, Twitter } from "@/components/icons";
 import { useMemo } from "react";
 import { toast } from "react-toastify";
 
