@@ -8,7 +8,7 @@ export type DetectedOS = 'macos' | 'windows' | 'linux' | 'android' | 'ios';
 // Which platform cards belong to each OS, in display order.
 const PRIORITY: Record<DetectedOS, string[]> = {
   macos: ['macos-arm64', 'macos-x64'],
-  windows: ['windows'],
+  windows: ['windows-exe', 'windows-msi'],
   linux: ['linux-appimage', 'linux-deb', 'linux-rpm'],
   android: ['android', 'fdroid'],
   // No iOS build exists — nothing to prioritize.

@@ -13,7 +13,7 @@ export default function TypeshalaPageClient({ data }: { data: TypeshalaPageData 
   const { latestRelease, previousReleases, repoUrl, githubRepoUrl, issuesUrl, releasesUnavailable, releasesRateLimited } = data;
 
   const desktopPlatforms = PLATFORM_DOWNLOADS.filter(p =>
-    ['macos-arm64', 'macos-x64', 'windows', 'linux-appimage', 'linux-deb', 'linux-rpm'].includes(p.platform)
+    ['macos-arm64', 'macos-x64', 'windows-exe', 'windows-msi', 'linux-appimage', 'linux-deb', 'linux-rpm'].includes(p.platform)
   );
 
   const mobilePlatforms = PLATFORM_DOWNLOADS.filter(p =>

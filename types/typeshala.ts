@@ -17,7 +17,7 @@ export interface GitHubRelease {
 }
 
 export interface PlatformDownload {
-  platform: 'macos-arm64' | 'macos-x64' | 'windows' | 'linux-appimage' | 'linux-deb' | 'linux-rpm' | 'android' | 'fdroid';
+  platform: 'macos-arm64' | 'macos-x64' | 'windows-exe' | 'windows-msi' | 'linux-appimage' | 'linux-deb' | 'linux-rpm' | 'android' | 'fdroid';
   label: string;
   description: string;
   icon: string;
@@ -41,6 +41,7 @@ export const PLATFORM_DOWNLOADS: PlatformDownload[] = [
     description: 'M1/M2/M3 chips — .dmg installer',
     icon: '🍎',
     assetPatterns: ['aarch64-apple-darwin', 'arm64.dmg', 'aarch64.dmg'],
+    installInstructions: 'xattr -cr /Applications/Typeshala.app',
   },
   {
     platform: 'macos-x64',
@@ -48,13 +49,22 @@ export const PLATFORM_DOWNLOADS: PlatformDownload[] = [
     description: 'Intel chips — .dmg installer',
     icon: '🍎',
     assetPatterns: ['x86_64-apple-darwin', 'x64.dmg'],
+    installInstructions: 'xattr -cr /Applications/Typeshala.app',
   },
   {
-    platform: 'windows',
-    label: 'Windows',
+    platform: 'windows-exe',
+    label: 'Windows (.exe)',
+    description: 'Windows 10/11 — recommended .exe installer',
+    icon: '🪟',
+    assetPatterns: ['.exe'],
+    installInstructions: 'Run the .exe installer and follow the setup wizard.',
+  },
+  {
+    platform: 'windows-msi',
+    label: 'Windows (.msi)',
     description: 'Windows 10/11 — .msi installer',
     icon: '🪟',
-    assetPatterns: ['x86_64-pc-windows-msvc', '.msi', '.exe'],
+    assetPatterns: ['.msi'],
     installInstructions: 'Run the .msi installer and follow the setup wizard.',
   },
   {

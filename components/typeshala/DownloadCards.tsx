@@ -1,24 +1,32 @@
 'use client';
 
 import { useState } from 'react';
-import { Download, ExternalLink, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Download, ExternalLink, CheckCircle, AlertCircle, Loader2, Copy } from 'lucide-react';
 import type { PlatformDownload } from '@/types/typeshala';
 import { useDetectedOS, orderPlatformsByOS, isRecommendedForOS } from './useDetectedOS';
 
+interface DownloadAsset {
+  name: string;
+  browser_download_url: string;
+  size: number;
+}
+
 interface DownloadCardProps {
   platform: PlatformDownload;
-  asset?: {
-    name: string;
-    browser_download_url: string;
-    size: number;
-  };
+  asset?: DownloadAsset;
   isLoading?: boolean;
   /** True when this card matches the visitor's OS. */
   recommended?: boolean;
 }
 
+function getAssetLabel(assetName: string, platform: PlatformDownload) {
+  if (platform.downloadLabel) return platform.downloadLabel;
+  return assetName.match(/\.[^.]+$/)?.[0] || platform.assetPatterns[0]?.replace('.', '') || 'Installer';
+}
+
 export function DownloadCard({ platform, asset, isLoading, recommended }: DownloadCardProps) {
   const [copied, setCopied] = useState(false);
+  const [instructionCopied, setInstructionCopied] = useState(false);
 
   const handleDownload = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
@@ -30,13 +38,20 @@ export function DownloadCard({ platform, asset, isLoading, recommended }: Downlo
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleCopyInstructions = () => {
+    if (!platform.installInstructions) return;
+    navigator.clipboard.writeText(platform.installInstructions);
+    setInstructionCopied(true);
+    setTimeout(() => setInstructionCopied(false), 2000);
+  };
+
   const isFdroid = platform.platform === 'fdroid';
   // Manual URL (e.g. manually built Android APK) takes the place of a
   // release asset — the card behaves as if a download exists.
   const downloadUrl = asset?.browser_download_url || platform.manualUrl || undefined;
   const hasDownload = !!downloadUrl && !isFdroid;
   // Only badge cards the visitor can actually download.
-  const showRecommended = !!recommended && hasDownload;
+  const showRecommended = !!recommended && platform.platform !== 'windows-msi' && hasDownload;
 
   return (
     <div className={`group relative bg-gray-800/50 border rounded-2xl p-6 transition-all hover:border-blue-500/50 hover:bg-gray-800 ${!hasDownload && !isFdroid ? 'opacity-50' : ''} ${showRecommended ? 'border-blue-500/60 bg-gray-800' : ''}`}>
@@ -81,7 +96,7 @@ export function DownloadCard({ platform, asset, isLoading, recommended }: Downlo
                 ) : (
                   <>
                     <Download className="w-4 h-4" />
-                    <span>Download {platform.downloadLabel || platform.assetPatterns[0]?.replace('.', '') || 'Installer'}</span>
+                    <span>Download {getAssetLabel(asset?.name || '', platform)}</span>
                   </>
                 )}
               </button>
@@ -136,7 +151,18 @@ export function DownloadCard({ platform, asset, isLoading, recommended }: Downlo
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </summary>
-              <p className="mt-2 text-sm text-gray-400 bg-gray-900/50 p-3 rounded-lg font-mono">{platform.installInstructions}</p>
+              <div className="mt-2 flex items-start gap-2">
+                <p className="flex-1 text-sm text-gray-400 bg-gray-900/50 p-3 rounded-lg font-mono break-all">{platform.installInstructions}</p>
+                <button
+                  type="button"
+                  onClick={handleCopyInstructions}
+                  aria-label="Copy install instructions"
+                  title="Copy install instructions"
+                  className="shrink-0 p-3 rounded-lg border border-gray-600 text-gray-400 hover:border-blue-500 hover:text-blue-400 transition-colors"
+                >
+                  {instructionCopied ? <CheckCircle className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                </button>
+              </div>
             </details>
           )}
         </div>
@@ -147,7 +173,7 @@ export function DownloadCard({ platform, asset, isLoading, recommended }: Downlo
 
 interface DownloadGridProps {
   platforms: PlatformDownload[];
-  assets: Record<string, { asset: { name: string; browser_download_url: string; size: number }; platform: PlatformDownload }>;
+  assets: Record<string, { asset: DownloadAsset; platform: PlatformDownload }>;
   isLoading?: boolean;
 }
 
