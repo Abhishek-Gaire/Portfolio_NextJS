@@ -14,46 +14,46 @@ const navigation = [
   { name: "Contact", href: "/contact" },
 ];
 
+const CV_URL =
+  "https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/cv/Abhishek_Gaire_Resume.pdf";
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <header className="fixed w-full bg-black/90 backdrop-blur-md z-50 shadow-2xl border-b border-gray-800/50">
-      <nav className="container mx-auto px-6 py-4">
-        <div className="flex items-center justify-between text-xl">
-          <Link href="/" className="group flex items-center space-x-2">
-            <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <span className="text-white font-bold text-lg">AG</span>
-            </div>
+    <header className="sticky top-0 z-50 border-b border-line bg-[rgba(10,10,12,0.72)] backdrop-blur-[14px] pt-[env(safe-area-inset-top,0px)]">
+      <nav className="w-full">
+        <div className="mx-auto flex w-full max-w-shell items-center justify-between gap-4 px-6 py-4">
+          <Link href="/" className="flex shrink-0 items-center" aria-label="Abhishek Gaire, home">
+            <span className="flex h-[38px] w-[38px] items-center justify-center rounded-control border border-accent-line bg-accent-soft font-mono text-[13px] font-semibold text-accent">
+              AG
+            </span>
           </Link>
 
-          <div className="hidden lg:flex items-center space-x-1">
+          <div className="hidden items-center gap-6 text-[14px] text-mid lg:flex">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`relative px-4 py-2 text-gray-300 hover:text-white transition-all duration-300 rounded-lg hover:bg-gray-800/50 ${pathname === item.href
-                  ? "text-blue-400 bg-blue-500/10"
-                  : ""
-                  }`}
+                className={`relative transition-colors duration-200 ease-out-expo hover:text-hi ${pathname === item.href ? "text-accent" : ""}`}
               >
                 {item.name}
                 {pathname === item.href && (
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-400 rounded-full"></div>
+                  <div className="absolute bottom-0 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-accent"></div>
                 )}
               </Link>
             ))}
           </div>
 
-          <div className="hidden lg:flex items-center space-x-3">
+          <div className="hidden items-center gap-3 lg:flex">
             <a
-              href="https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/cv/Abhishek_Gaire_Resume.pdf"
+              href={CV_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-linear-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 text-green-400 rounded-lg hover:bg-linear-to-r hover:from-green-600/30 hover:to-emerald-600/30 hover:border-green-500/50 transition-all duration-300 text-sm font-medium group"
+              className="inline-flex items-center gap-2 rounded-control border border-accent-line px-[18px] py-[9px] font-mono text-[12.5px] font-semibold text-accent transition-colors duration-200 ease-out-expo hover:bg-accent-soft"
             >
-              <Download className="w-4 h-4 mr-1 group-hover:animate-bounce" />
+              <Download className="h-[14px] w-[14px]" />
               <span>CV</span>
             </a>
             <a
@@ -61,95 +61,90 @@ export default function Header() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub Profile"
-              className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-300 hover:scale-110"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 ease-out-expo hover:border-line-hi hover:text-accent"
             >
-              <Github size={20} />
+              <Github size={18} />
             </a>
             <a
               href="https://www.linkedin.com/in/abhisek-gaire-359294219/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn Profile"
-              className="p-2 text-gray-400 hover:text-blue-400 hover:bg-gray-800/50 rounded-lg transition-all duration-300 hover:scale-110"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 ease-out-expo hover:border-line-hi hover:text-accent"
             >
-              <Linkedin size={20} />
+              <Linkedin size={18} />
             </a>
             <a
               href="https://x.com/GaireAbhishek44"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Twitter Profile"
-              className="p-2 text-gray-400 hover:text-blue-400 hover:bg-gray-800/50 rounded-lg transition-all duration-300 hover:scale-110"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 ease-out-expo hover:border-line-hi hover:text-accent"
             >
-              <Twitter size={20} />
+              <Twitter size={18} />
             </a>
           </div>
 
           <button
             aria-label="Toggle mobile menu"
-            className="lg:hidden p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-300"
+            className="inline-flex h-[38px] w-[38px] items-center justify-center rounded-[9px] border border-line text-hi transition-colors duration-200 ease-out-expo hover:border-line-hi lg:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
 
         {isMenuOpen && (
-          <div className="lg:hidden mt-6 p-6 bg-gray-900/95 backdrop-blur-md rounded-2xl border border-gray-700/50">
-            <div className="flex flex-col space-y-3">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-300 ${pathname === item.href
-                    ? "text-blue-400 bg-blue-500/10"
-                    : ""
-                    }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
-
-              <a
-                href="https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/cv/Abhishek_Gaire_CV.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-4 py-3 bg-linear-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 text-green-400 rounded-lg hover:bg-linear-to-r hover:from-green-600/30 hover:to-emerald-600/30 hover:border-green-500/50 transition-all duration-300 font-medium"
+          <div className="flex flex-col gap-0.5 border-t border-line bg-[rgba(10,10,12,0.92)] px-6 pb-4 pt-2 lg:hidden">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`border-b border-line py-3 text-[14.5px] transition-colors duration-200 ease-out-expo hover:text-hi ${pathname === item.href ? "text-accent" : ""}`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                <Download className="w-4 h-4 mr-2" />
-                Download CV
-              </a>
-            </div>
+                {item.name}
+              </Link>
+            ))}
 
-            <div className="flex justify-center space-x-4 mt-6 pt-6 border-t border-gray-700/50">
+            <a
+              href={CV_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-control border border-accent-line px-[18px] py-3 font-mono text-[12.5px] font-semibold text-accent transition-colors duration-200 ease-out-expo hover:bg-accent-soft"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <Download className="h-[14px] w-[14px]" />
+              Download CV
+            </a>
+
+            <div className="mt-3 flex items-center gap-3 pt-4">
               <a
                 href="https://github.com/Abhishek-Gaire"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub Profile"
-                className="p-3 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-300"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 ease-out-expo hover:border-line-hi hover:text-accent"
               >
-                <Github size={20} />
+                <Github size={18} />
               </a>
               <a
                 href="https://www.linkedin.com/in/abhisek-gaire-359294219/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn Profile"
-                className="p-3 text-gray-400 hover:text-blue-400 hover:bg-gray-800/50 rounded-lg transition-all duration-300"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 ease-out-expo hover:border-line-hi hover:text-accent"
               >
-                <Linkedin size={20} />
+                <Linkedin size={18} />
               </a>
               <a
                 href="https://x.com/GaireAbhishek44"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Twitter Profile"
-                className="p-3 text-gray-400 hover:text-blue-400 hover:bg-gray-800/50 rounded-lg transition-all duration-300"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 ease-out-expo hover:border-line-hi hover:text-accent"
               >
-                <Twitter size={20} />
+                <Twitter size={18} />
               </a>
             </div>
           </div>

@@ -2,143 +2,127 @@ import { Download, FileText } from "lucide-react";
 import { Github, Linkedin, Twitter } from "@/components/icons";
 import Link from "next/link";
 
+import { Button } from "@/components/primitives/Button";
+
+const quickLinks = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/projects", label: "Projects" },
+  { href: "/blogs", label: "Blog" },
+  { href: "/contact", label: "Contact" },
+];
+
+const services = [
+  "Web Development",
+  "API Development",
+  "Database Design",
+  "App Development",
+  "Performance Optimization",
+];
+
+const socials = [
+  {
+    href: "https://github.com/Abhishek-Gaire",
+    label: "GitHub Profile",
+    Icon: Github,
+  },
+  {
+    href: "https://www.linkedin.com/in/abhisek-gaire-359294219/",
+    label: "LinkedIn Profile",
+    Icon: Linkedin,
+  },
+  {
+    href: "https://x.com/GaireAbhishek44",
+    label: "Twitter Profile",
+    Icon: Twitter,
+  },
+];
+
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-16 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute opacity-20 top-0 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-2xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-2xl"></div>
-        <div className="absolute top-1/2 left-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-xl"></div>
-        <div className="absolute top-1/4 right-0 w-48 h-48 bg-indigo-500/15 rounded-full blur-xl"></div>
-      </div>
-
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          <div className="lg:col-span-2">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-xl">AG</span>
+    <footer className="border-t border-line pt-11 pb-8.5">
+      <div className="mx-auto max-w-shell px-6">
+        <div className="mb-8 grid grid-cols-[2fr_1fr_1fr] gap-8 max-[720px]:grid-cols-1">
+          <div>
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-control border border-accent-line bg-accent-soft font-mono text-[13px] font-semibold text-accent">
+                AG
               </div>
-              <h3 className="text-2xl font-bold">Abhishek Gaire</h3>
+              <strong className="text-[15px] font-semibold text-hi">
+                Abhishek Gaire
+              </strong>
             </div>
-            <p className="text-gray-400 text-lg leading-relaxed mb-6 max-w-md">
+
+            <p className="mt-3.5 mb-4.5 max-w-[36ch] text-[13.5px] leading-[1.6] text-mid">
               Full Stack Developer specializing in MERN stack development.
               Building scalable web applications with modern technologies.
             </p>
 
             <div className="mb-6">
-              <a
+              <Button
+                as="a"
+                variant="primary"
                 href="https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/cv/Abhishek_Gaire_Resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center px-6 py-3 bg-linear-to-r from-green-600/20 to-emerald-600/20 border border-green-500/30 text-green-400 rounded-xl hover:bg-linear-to-r hover:from-green-600/30 hover:to-emerald-600/30 hover:border-green-500/50 transition-all duration-300 font-medium group"
               >
-                <FileText className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+                <FileText className="h-4 w-4" />
                 <span>Download Professional CV</span>
-                <Download className="w-4 h-4 ml-2 group-hover:animate-bounce" />
-              </a>
+                <Download className="h-3.5 w-3.5" />
+              </Button>
             </div>
 
-            <div className="flex space-x-4">
-              <a
-                href="https://github.com/Abhishek-Gaire"
-                className="p-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-gray-400 hover:text-white hover:bg-gray-700/50 hover:border-gray-600/50 transition-all duration-300 hover:scale-110"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub Profile"
-              >
-                <Github size={20} />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/abhisek-gaire-359294219/"
-                className="p-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-gray-400 hover:text-blue-400 hover:bg-gray-700/50 hover:border-gray-600/50 transition-all duration-300 hover:scale-110"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn Profile"
-              >
-                <Linkedin size={20} />
-              </a>
-              <a
-                href="https://x.com/GaireAbhishek44"
-                className="p-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-gray-400 hover:text-blue-400 hover:bg-gray-700/50 hover:border-gray-600/50 transition-all duration-300 hover:scale-110"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Twitter Profile"
-              >
-                <Twitter size={20} />
-              </a>
+            <div className="flex gap-3.5">
+              {socials.map(({ href, label, Icon }) => (
+                <a
+                  key={href}
+                  href={href}
+                  className="flex items-center justify-center rounded-control border border-line bg-surface p-3 text-low transition-colors duration-200 hover:border-line-hi hover:bg-surface-2 hover:text-hi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                >
+                  <Icon size={20} />
+                </a>
+              ))}
             </div>
           </div>
 
           <div>
-            <h3 className="text-lg font-bold mb-6">Quick Links</h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  href="/"
-                  className="text-gray-400 hover:text-white hover:translate-x-1 transition-all duration-300 inline-block"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/about"
-                  className="text-gray-400 hover:text-white hover:translate-x-1 transition-all duration-300 inline-block"
-                >
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/projects"
-                  className="text-gray-400 hover:text-white hover:translate-x-1 transition-all duration-300 inline-block"
-                >
-                  Projects
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/blogs"
-                  className="text-gray-400 hover:text-white hover:translate-x-1 transition-all duration-300 inline-block"
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-gray-400 hover:text-white hover:translate-x-1 transition-all duration-300 inline-block"
-                >
-                  Contact
-                </Link>
-              </li>
+            <h3 className="mb-3.5 text-[13px] font-semibold text-low">Quick Links</h3>
+            <ul>
+              {quickLinks.map(({ href, label }) => (
+                <li key={href} className="mb-2.5">
+                  <Link
+                    href={href}
+                    className="inline-block text-[13.5px] text-mid transition-colors duration-200 hover:text-accent"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-bold mb-6">Services</h3>
-            <ul className="space-y-3">
-              <li className="text-gray-400">Web Development</li>
-              <li className="text-gray-400">API Development</li>
-              <li className="text-gray-400">Database Design</li>
-              <li className="text-gray-400">App Development</li>
-              <li className="text-gray-400">Performance Optimization</li>
+            <h3 className="mb-3.5 text-[13px] font-semibold text-low">Services</h3>
+            <ul>
+              {services.map((service) => (
+                <li key={service} className="mb-2.5 text-[13.5px] text-mid">
+                  {service}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-800/50 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 mb-4 md:mb-0">
-              &copy; 2025 Abhishek Gaire. All rights reserved.
-            </p>
-            <div className="flex items-center space-x-6 text-sm text-gray-400">
-              <span>Made with ❤️ in Nepal</span>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span>Available for hire</span>
-              </div>
+        <div className="flex flex-col items-center justify-between gap-2.5 border-t border-line pt-6 text-[12.5px] text-low md:flex-row">
+          <p>&copy; 2025 Abhishek Gaire. All rights reserved.</p>
+          <div className="flex items-center gap-6">
+            <span>Made with ❤️ in Nepal</span>
+            <div className="flex items-center gap-1.5">
+              <div className="h-2 w-2 rounded-full bg-accent animate-pulse-ring" />
+              <span>Available for hire</span>
             </div>
           </div>
         </div>

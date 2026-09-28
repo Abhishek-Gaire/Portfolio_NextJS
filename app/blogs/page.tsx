@@ -240,7 +240,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
   const paginatedPosts = filteredPosts.slice(pageStart, pageEnd);
 
   return (
-    <main className="min-h-screen bg-black pt-20">
+    <main className="min-h-screen bg-black">
       <script
         type="application/ld+json"
         nonce={nonce}

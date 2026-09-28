@@ -27,7 +27,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-20">
+    <main className="min-h-screen bg-gray-50">
       <section className="container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Login</h1>
         <p className="text-gray-600 mb-8">
