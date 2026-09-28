@@ -237,6 +237,18 @@ body {
  * styles.css:123-136. This is now the only orbit system on the site: both the
  * home page skills diagram and the Typeshala stack section use it.
  */
+/*
+ * Hairline grid fill, ported from the remix reference's styles.css. Backs the
+ * contact form panel. Uses --color-line in place of the reference's
+ * --color-border.
+ */
+@utility grid-pattern {
+  background-image:
+    linear-gradient(to right, var(--color-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
 @keyframes orbit-angle {
   0% {
     transform: rotate(calc(var(--angle) * 1deg)) translateY(calc(var(--radius) * -1px))

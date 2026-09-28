@@ -31,7 +31,7 @@ export default function Hero() {
   return (
     <section id="home" className="pt-16 pb-16">
       <div className="mx-auto max-w-shell px-6">
-        <div className="grid grid-cols-4 gap-4 [grid-auto-rows:minmax(90px,auto)] max-[900px]:grid-cols-2">
+        <div className="grid grid-cols-4 gap-4 [auto-rows:minmax(90px,auto)] max-[900px]:grid-cols-2">
           <BentoCard
             interactive
             className="fade-up col-span-3 row-span-2 rounded-hero p-0 max-[900px]:col-span-2 max-[900px]:row-auto"
@@ -39,7 +39,7 @@ export default function Hero() {
           >
             <div className="grid h-full grid-cols-[1.05fr_0.95fr] max-[900px]:grid-cols-1">
               <div className="flex flex-col justify-center px-7 py-8">
-                <span className="inline-flex w-fit items-center gap-1.75 rounded-full border border-accent-line bg-accent-soft py-1.5 pl-2 pr-2.5 font-mono text-micro text-accent">
+                <span className="inline-flex w-fit items-center gap-1.75 mb-4 rounded-full border border-accent-line bg-accent-soft py-1.5 pl-2 pr-2.5 font-mono text-micro text-accent">
                   <span className="animate-pulse-ring h-1.5 w-1.5 rounded-full bg-accent" />
                   Available for new projects
                 </span>
