@@ -207,157 +207,140 @@ the four layers, and do not restructure the data path.
 - **`ProjectsGrid` modal.** Esc handler plus body overflow lock at `:18-37`, keyed on `selectedProject`. It is the only `document.body.style` write in the app — any new primitive that also locks scroll will collide with it.
 
 ---
+## 5. Phases — as built
 
-## 5. Phases
+Delivered on branch `redesign/bento`, one commit per phase. 67 files changed,
+4,271 insertions, 2,012 deletions.
 
-Each phase is one branch, one reviewable change.
+| Phase | Commit | Scope |
+|---|---|---|
+| 1 | `40c059e` | Token layer + typography swap |
+| — | `e6377bc` | Prose theme, `cn` helper, `clsx`/`tailwind-merge`/`@tailwindcss/typography` |
+| 2 | `aa50e68` | 12 primitives and ported motion components |
+| 3 | `f2a122c` | Header, Footer, toaster |
+| 4 | `ba4ac0a` | Home: hero + skills recreated from the mockup, rest of home |
+| 5 | `683b0bd` | Projects, blogs, about, contact, login, 404, error, OG image |
+| 6 | `beeeae9` | Typeshala |
+| 7 | — | Cleanup sweep and verification |
 
 ### Phase 0 — Safety
+Branch `redesign/bento` branched off `main`; nothing was committed to `main`.
+No history was rewritten. Verification ran against `npm run dev`.
 
-- [ ] Branch off `main`. Never redesign on the live branch.
-- [ ] Do not force push, rebase, amend, or squash published history.
-- [ ] Baseline: `npm run lint` is clean, record it. `npm run dev` for all visual checks per decision 8.
-- [ ] To exercise the Typeshala rewrite locally, add a hosts entry mapping `typeshala.localhost` to `127.0.0.1`, or send a `Host:` header. The subdomain branch at `proxy.ts:85-112` cannot be reached from the bare main domain.
+### Phase 1 — Token layer and typography
+`app/globals.css` rewritten as the token layer: 16 colour tokens plus the
+three-step radius scale, the `clamp()` type scale, `--ease-out-expo`, the body
+orbs, the global `:focus-visible` ring, `color-scheme: dark`, and the
+`prefers-reduced-motion` kill switch. The `fade-up`, `orbit`, `blink` and
+`pulse-ring` keyframes all landed here, which is what makes the ported
+primitives animate instead of repeating the repo's original inert
+`animationDelay` bug.
 
-> Note: the original plan said "this project is connected to Lovable." Unverified — there is
-> no `AGENTS.md` and no `.lovable/` in this repo. Those live in `../remix-of-pixel-perfect`.
-> The history caution still stands on its own merits.
+Radius tokens are deliberately **not** named `--radius-s/m/l`: those generate
+`rounded-s`, `rounded-m` and `rounded-l`, and `rounded-l` collides with
+Tailwind's existing `border-left-radius` utility.
 
-### Phase 1 — Token layer
+Typography: Space Grotesk 300-700 (one 49 KB variable file) and IBM Plex Mono
+400/500/600 replace Mulish and Fraunces. Payload 245,456 b -> 168,660 b.
+`font-light` at `Hero.tsx:33` now resolves to a real 300 instance.
 
-`app/globals.css` plus the font swap. Highest leverage single edit in the project.
-
-- [ ] Replace the twelve `:root` variables, 8 of them dead, with the bento system: `--bg`, `--surface`, `--surface-2`, `--border`, `--border-hi`, `--text-hi`, `--text-mid`, `--text-low`, `--accent`, `--accent-soft`, `--accent-line`. Add `--amber: #f0b429` and `--violet: #a78bfa` — the mockup uses both for code syntax colouring in the hero panel (`:155-156`) and the terminal (`:251-255`), and decisions 1 and 2 depend on them.
-- [ ] Map them into `@theme` so Tailwind generates utilities. Colors on `@theme`, not scattered `:root`.
-- [ ] Set the two radial teal orbs on `<body>`, per mockup `:36-40`.
-- [ ] Type scale with `clamp()` values, measure caps at 56ch and 50ch.
-- [ ] Three step radius scale: 14 / 16 / 28 px. Retire stock `rounded-2xl`.
-- [ ] Unify the split where fonts live on `<html>` and colors on `:root`.
-- [ ] `--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1)` and shared durations.
-- [ ] **Add `@keyframes fade-up` and `@utility fade-up`, ported from remix `styles.css:138-151`.** Non-negotiable, and it belongs here, not Phase 2. Without it `Reveal` is inert and reproduces the existing `animationDelay` bug.
-- [ ] One global `prefers-reduced-motion` kill switch.
-- [ ] Restyle the scrollbar to the new border tokens.
-- [ ] Resolve the light/dark `<body>` conflict. Fixes login, 404, error in one edit. Confirm admin stays light via its own wrapper.
-- [ ] Global `focus-visible` accent ring per decision 7. Admin excluded.
-- [ ] ~~Drop `scroll-behavior: smooth` from CSS~~ **Correction: do not drop it.** The original plan called it a duplicate of `data-scroll-behavior="smooth"` at `layout.tsx:149`. It is not a duplicate — the data attribute is the marker Next.js reads, the CSS rule is the actual implementation. Removing the CSS silently breaks smooth anchor scrolling. Keep both, and add `scroll-padding-top: 76px` so anchors clear the sticky header (`ag-bento.html:30`), which is a genuine gap today.
-- [ ] **The body fix is necessary but not sufficient.** `<body>` carried `bg-gray-50 text-gray-900`, and so did each of `app/page.tsx:57`, `app/login/page.tsx:30`, `app/not-found.tsx:5`, `app/error.tsx:18`. The original plan claimed one edit fixes login, 404 and error. It does not — every one of those sets its own `bg-gray-50` on its `<main>`, so all four must be changed. Each is fixed in its own phase below.
-- [ ] **Checkpoint: stop here and review.** Nothing else starts until the direction is confirmed.
+**The font trap.** The Google Fonts `latin` subset of IBM Plex Mono 600 carries
+229 codepoints and is missing every box-drawing character (`U+2500/2502/251C/
+2514`) — the entire content of the skills terminal that decision 2 requires. It
+would have rendered as tofu. Full fonts were pulled from `google/fonts` and
+converted to woff2 instead, giving 930 codepoints to match the existing 400/500.
 
 ### Phase 2 — Primitives
+Twelve components: eight in `components/primitives/` and five in
+`components/motion/` (one shared hook). The four porting traps in section 3 all
+materialised, and each is commented in the source where a future editor would
+otherwise re-break it.
 
-- [x] Download Space Grotesk 400/500/600/700 and IBM Plex Mono 600 into `public/fonts/`. Both are OFL.
-  - **Do not use the `latin`-subset files from the Google Fonts CSS API.** The latin subset of IBM Plex Mono 600 carries only 229 codepoints and is **missing every box-drawing character** (`─ │ ├ └` U+2500/2502/251C/2514) — which is the entire content of the skills terminal required by decision 2. It would render as tofu. The existing local 400/500 are full 930-codepoint fonts, so 600 must match.
-  - Shipped instead: `SpaceGrotesk-Variable.woff2` (49,128 b, variable `wght` 300–700, 735 cps, from the `google/fonts` TTF converted to woff2 — one file covers all four weights) and `IBMPlexMono-SemiBold.woff2` (41,064 b, static, 930 cps).
-  - Space Grotesk has no box-drawing coverage, which is fine: the terminal is monospace. It does have `→`, `•`, `—`, curly quotes, and the middot.
-  - Net payload **down from 245,456 b to 168,660 b**. Fraunces (138,904 b) and Mulish (72,468 b) deleted.
-  - Side effect: `font-light` at `Hero.tsx:33` now resolves to a real 300 instance instead of being synthesized, because the Space Grotesk axis starts at 300.
-- [x] Rewrite the `localFont` blocks in `app/layout.tsx`: add Space Grotesk, add Mono 600, delete Mulish and Fraunces. Resolves the `font-light` bug.
-- [ ] `cn()` helper. Install `clsx` and `tailwind-merge`. This is the second new dependency.
-- [ ] `<BentoCard>` — alpha surface, border, cursor spotlight via `useMotionValue` + `useMotionTemplate`. Opt in per tile, not every card.
-- [ ] `<SectionHead>` — eyebrow + h2 + lede.
-- [ ] `<Eyebrow>` — mono, teal.
-- [ ] `<StatCell>` — with `border-right` dividers.
-- [ ] `<WindowChrome>` — the three dot panel. Reused for terminal, code, and project mockups.
-- [ ] `<MonoTag>`.
-- [ ] `Reveal`, ported. Needs the Phase 1 keyframes. Replaces the three inert `animationDelay` blocks and `ReleaseNotes.tsx:139`.
-- [ ] `KineticDivider` + scroll velocity row, ported. `motion/react` → `framer-motion`, shadcn tokens remapped, `matchMedia` guard added.
-- [ ] `PixelImage`, ported. Tokens remapped.
-- [ ] 3D tilt card, ported. `matchMedia` guard added.
-- [ ] Orbit badges. Merge the remix component with the mockup's per-brand colours and stagger.
-
-### Phase 3 — Shell
-
-- [ ] `app/layout.tsx`. Fonts and `<body>` classes only. Keep the nonce and all JSON-LD untouched.
-- [ ] `components/Header.tsx`. Sticky instead of fixed, backdrop blur, monogram tile, two button cluster, mobile panel. Active link logic at `:36-44` and the menu state stay.
-- [ ] `components/Footer.tsx`. Three column grid, bottom rule. The orbs at `:9-12` go away, body orbs replace them.
-- [ ] `components/ToastContainerClient.tsx`. Flip to `theme="dark"`.
-
-### Phase 4 — Home
-
-**Same to same from `../ag-bento.html`.** This is the visual centrepiece.
-
-- [ ] `app/page.tsx` section order and wrappers. Note `:57` is also `bg-gray-50`.
-- [ ] `components/home/Hero.tsx` + `HeroAnimated.tsx`, rebuilt as the mockup's 4-column bento at `:129-160` and `:401-470`:
-  - hero-main (span 3 × 2 rows) — split into text and code panel, `radius-l`
-  - hero-status (span 1) — "BASED IN / Pokhara, Nepal" plus the live clock in `Asia/Kathmandu`, 15 s interval, `UTC +05:45` footer
-  - hero-social (span 1) — GitHub, LinkedIn, X, reusing `components/icons.tsx`
-  - hero-stats (span 3) — three `StatCell`s, `border-right` dividers, count-up on intersect at threshold 0.6, 900 ms cubic ease-out
-  - code panel carries the blinking caret and the violet/amber keyword colours
-  - responsive: 4 cols → 2 cols at 900 px, stats stack at 720 px
-- [ ] `components/home/Skills.tsx`, same to same from `:473-548` and `:180-252`:
-  - `SectionHead` with "MY EXPERTISE / Technical skills"
-  - orbit card — hub, inner ring 4 badges at `--r:78px` / 20 s, outer ring 4 at `--r:150px` / 32 s reversed, paused on hover, caption line
-  - `skill-terminal` — `WindowChrome` bar titled `bash — skills`, the `abhishek@dev:~/skills$ tree --by-category` prompt, the full four-directory tree, and the `4 directories, 24 files` summary with caret
-  - the existing `skills` object at `Skills.tsx:5-24` maps 1:1 onto the tree, 24 items across 4 dirs
-  - fix the `absolute`-without-`relative` bug at `:118`
-  - drop the 4 skill cards and the `animationDelay` props, or keep them as a `Reveal` stagger
-- [ ] `components/home/FeaturedProjectsClient.tsx`. Big card plus two small tiles. Fix `text-small` at `:85`. Replace `animationDelay`.
-- [ ] `components/home/LatestBlogsClient.tsx`. Replace `animationDelay`.
-- [ ] `components/home/HomeContact.tsx` and the two contact children.
-
-### Phase 5 — Secondary pages
-
-Bento style **from the remix project** here, not the mockup.
-
-- [ ] `app/projects/page.tsx` + `components/projects/*`. `ProjectsGrid.tsx:18-37` Esc handler and body lock stay. Replace `animationDelay` at `:54`.
-- [ ] `components/about/AboutClient.tsx`. Timeline and skill bars keep their framer width animations. Watch `skill.color` at `:24,29,34,39` — those are full Tailwind class strings injected via template literal, and Tailwind v4's scanner cannot see inside a variable, so moving them into a config silently kills the gradient.
-- [ ] `app/blogs/page.tsx`. Layout only. Query param names are the contract. `BlogsViewToggle` and `BlogLimitControl` are logic, restyle the surface only.
-- [ ] `app/blogs/[slug]/page.tsx`. Add `@tailwindcss/typography` per decision 4, restyle the four `prose` call sites, and delete the three dead classes. Note the 19-tag allowlist caps what prose can style, and stored Tailwind classes in post HTML pass through sanitization via the `*` class attribute.
-- [ ] `app/contact/page.tsx`, `app/login/page.tsx`, `app/not-found.tsx`, `app/error.tsx`.
-- [ ] `app/opengraph-image.tsx`. Inline styles only, Satori cannot read a stylesheet. Hand port.
-
-### Phase 6 — Typeshala
-
-Back in scope per decision 6. 6 files, 160 `className`, 63 gray tokens.
-
-- [ ] `components/typeshala/TypeshalaChrome.tsx`, `DownloadCards.tsx`, `ReleaseNotes.tsx`, `app/typeshala/page.tsx`.
-- [ ] `app/typeshala/TypeshalaPageClient.tsx`. Adopt the bento surface and accent. The four-way branch at `:103,180,188,204` and the mobile reorder at `:124-134` stay exactly as they are.
-- [ ] Delete the `animate-in slide-in-from-top-2` at `ReleaseNotes.tsx:139`, replace with `Reveal`. Do **not** install `tw-animate-css` for one class.
-- [ ] Restyle the two `prose prose-invert` sites at `ReleaseNotes.tsx:67,141` — now live thanks to decision 4.
-- [ ] Verify against a `typeshala.` Host header, not the bare main domain.
+### Phases 3-6
+As described in sections 3 and 4 above. Typeshala came back into scope per
+decision 6 and is now on the same system as the main domain.
 
 ### Phase 7 — Cleanup
-
-- [ ] Delete the dead classes from section 2.
-- [ ] Confirm Fraunces and Mulish are fully gone from `app/layout.tsx` and `public/fonts/`.
-- [ ] Normalise the 6 v3 `bg-gradient-to-*` call sites to v4 `bg-linear-*`.
-- [ ] Drop the dead `h5`/`h6` branch at `BlogHomeContent.tsx:17`.
-- [ ] Normalise the 4 single-quoted `"use client"` directives.
-- [ ] Sweep for stock `rounded-2xl` and `bg-gray-*` that escaped the primitives.
-- [ ] Confirm `next.config.ts:5-16` `images.remotePatterns` still covers every image in use.
-
-### Explicitly not doing
-
-- `/admin` is not restyled (decision 5). 130 slate tokens, 17 files, untouched.
-- The three separate sanitizers (`lib/sanitize.ts`, DOMPurify in `ContactForm.tsx:35`, the regex in `api/contact/route.ts:102`) are not unified.
-- The update/delete validation asymmetry in `AdminProjectsManager` is not fixed.
-- `release.ts:153` keeps its own `host.startsWith('typeshala.')` string check rather than being unified with `isTypeshalaHost()`.
+All ten original bugs plus the seven found during verification are fixed. The
+final sweep confirms zero occurrences of `text-small`, `text-white-900`,
+`text-white-600`, `pt-25`, `animate-in`, `bg-gradient-to-*` (the Tailwind v3
+syntax) and single-quoted `"use client"`. The five surviving `animationDelay`
+props are all paired with `fade-up` and were checked individually.
 
 ---
 
-## 6. Definition of done
+## 6. What the plan did not anticipate
 
-- [ ] Every route renders, no console errors, no hydration warnings.
-- [ ] `/blogs` URL state intact: all six params, both toggles, `localStorage` fallback, no hydration mismatch.
-- [ ] Typeshala four states still distinct: no releases, API down, rate limited, ok.
-- [ ] Typeshala subdomain routing verified via Host header, and the mobile reorder still works.
-- [ ] Supabase reads and writes work in admin. TipTap still round trips.
-- [ ] Contact form still submits and the Redis rate limit still returns 429.
-- [ ] Admin is still unreachable when logged out, on all four layers.
-- [ ] JSON LD validates, sitemap and robots unchanged, OG image still renders.
-- [ ] Hero and skills section match `../ag-bento.html` — verified side by side, not from memory.
-- [ ] Keyboard focus is visible everywhere on the main domain and typeshala. Admin unchanged.
-- [ ] `prefers-reduced-motion` honored. Marquee, 3D tilt, clock, and count-up all have explicit JS branches; orbit and caret are covered by the kill switch.
-- [ ] Lighthouse parity or better. Fonts self-hosted, no layout shift.
-- [ ] Lighthouse accessibility at or above current.
-- [ ] Mobile checked at 360, 720, 900 px.
-- [ ] `npm run lint` and `npm run build` clean.
+Found during the build. Each is fixed, but each is a trap worth recording.
+
+| Finding | Where | Why it matters |
+|---|---|---|
+| The body fix was necessary but not sufficient | `app/page.tsx:57`, `login:30`, `not-found:5`, `error:18` | Each of those pages set its own `bg-gray-50` on its `<main>`. One edit could not fix them. Until `app/page.tsx:57` was dropped in Phase 4, every bento section rendered white-on-white. |
+| The mobile Download CV link was 404 | `Header.tsx:115` | It pointed at `Abhishek_Gaire_CV.pdf` (HTTP 400). All five other references use `Abhishek_Gaire_Resume.pdf` (200). |
+| `StatCell` declared a border with no colour | `components/primitives/StatCell.tsx` | Tailwind v4 preflight declares `border: 0 solid` with no `border-color`, so a bare `border-r` falls back to `currentColor`, not `--color-line`. |
+| The `SectionHead` refactor removed every `h1` | `/projects`, `/blogs`, `/contact` | `SectionHead` rendered an `h2` unconditionally and those pages have no other heading, so three pages shipped with no `h1` at all. `SectionHead` now takes `as`. |
+| `HomeContact` is shared across two routes | `components/home/HomeContact.tsx` | It is the page heading on `/contact` but only a section on `/`. A fixed level would have given `/` two `h1`s. It now takes `headingLevel`, defaulting to `h2`. |
+| `LoginForm` was dark-on-dark | `components/auth/LoginForm.tsx` | `text-gray-900` inputs and `text-gray-700` labels sat on the new dark card, effectively invisible, and `outline-none` suppressed the global focus ring. |
+| Native `<select>` popups render light without `color-scheme` | `app/globals.css` | The control is styled but its popup is not, so Firefox showed a light dropdown on `/projects` and `/blogs`. |
+| An HTML entity inside a JSX *expression* does not decode | `TypeshalaPageClient.tsx` | A refactor moved `&apos;` into a ternary and it rendered literally. Entities only decode in JSX text positions. |
+| A subagent overwrote the verification harness | — | A parallel agent replaced `verify.mjs` with a script hardcoded to one route that ignored its path argument, so a later sweep reported "PASS" for six routes while actually hitting the same one. The real sweep had to be re-run. |
 
 ---
 
-## 7. Rollout
+## 7. Definition of done — verified
 
-1. Merge Phase 1 and 2. Review the tokens in isolation.
-2. Ship the shell plus home. This is the visible win. Deploy and look at it.
-3. Ship Phase 5, 6, 7 in small batches.
-4. Leave admin alone indefinitely. Revisit only if the marketing site has moved far enough that the split starts to read as a bug.
+- [x] Every route renders. No console errors, no hydration warnings.
+- [x] `/blogs` URL state intact: all six params, both toggles, the
+      `localStorage` fallback. Verified across ~15 param combinations including
+      `view=bogus`, `limit=abc`, `page=-4`, `page=999`, and both the
+      stored-preference restore and the URL-wins-over-storage path.
+- [x] Typeshala's four states still distinct, verified by forcing each one.
+- [x] Typeshala subdomain routing works, verified with a `typeshala.localhost`
+      host; the off-subdomain redirect still returns 307.
+- [x] Auth: `/admin` and `/admin/posts` both 307 to `/login` when logged out,
+      across all four layers. The three write APIs return 401 with the
+      `{ message }` shape. `/api/contact` is public and validates with 400.
+- [x] Contact form submits; the Redis rate limit returns 429 on the 5th request
+      in the window.
+- [x] JSON-LD validates and carries the CSP nonce on every page including
+      Typeshala. Sitemap, robots and the OG image unchanged; the OG image
+      returns 200 `image/png` at 1200x630.
+- [x] Exactly one `<h1>` per page, and zero horizontal overflow.
+- [x] Keyboard focus visible everywhere via the global accent ring.
+- [x] `prefers-reduced-motion` honoured on all five motion surfaces: the marquee
+      and 3D tilt have JS guards, the clock and count-up branch in JS, and the
+      orbit and caret are covered by the CSS switch plus a per-badge static
+      angle.
+- [x] Fonts self-hosted, no CDN. `npm run lint`, `npx tsc --noEmit` and
+      `npm run build` all clean; 31/31 routes generate.
+- [x] Mobile checked at 390, 720 and 900 px.
+- [x] Admin untouched — `git diff main -- app/admin components/admin` is empty,
+      as is the diff for `proxy.ts`, `lib/supabase`, `lib/sanitize.ts`,
+      `app/api`, `components/AppShell.tsx`, `types/`, `utils/` and
+      `next.config.ts`.
+
+### Known, accepted, and out of scope
+
+- The OG image uses Satori's default font, not Space Grotesk. Satori cannot
+  load woff2, so matching the real typeface would mean committing a TTF for one
+  image. Palette only, by decision.
+- `app/typeshala/_lib/release.ts:76` logs a rate-limit warning on every request,
+  and with a 5-minute revalidate a cold cache makes the rate-limited branch the
+  common path. Pre-existing, needs an upstream fix.
+- A pre-existing Next.js LCP advisory about a missing `loading="eager"` on blog
+  card and project images.
+- `next.config.ts` `images.remotePatterns` still whitelists only
+  `**.supabase.co` and `images.unsplash.com`. No new image host was introduced.
+- Two DB rows with `probe@example.com` were written to the `Contacts` table
+  while verifying the rate limiter. Delete them if that table is inspected.
+
+---
+
+## 8. Rollout
+
+1. Review `redesign/bento` and deploy the preview.
+2. Exercise the Typeshala subdomain against the preview domain, since a
+   main-domain preview cannot reach the rewrite.
+3. Merge to `main`. Do not squash — the phase commits are the review history.
+4. Leave `/admin` on the light `slate-*` system indefinitely. Revisit only if
+   the marketing site moves far enough that the split reads as a bug.
