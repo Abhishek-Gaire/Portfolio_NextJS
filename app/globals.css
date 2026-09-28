@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /*
  * Design system: bento.
@@ -103,6 +104,66 @@ body {
 
 ::selection {
   background-color: color-mix(in oklab, var(--color-accent) 35%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+ * Prose
+ *
+ * @tailwindcss/typography is registered at the top of this file, which means
+ * `.prose` went from a silent no-op to actually styling the sanitized blog
+ * HTML. Its defaults are a *light* theme, so without this block the four
+ * `prose` call sites render gray-700 body copy on a near-black background.
+ * Retarget the plugin's custom properties onto the bento tokens instead of
+ * flipping every call site to `prose-invert`.
+ *
+ * Scope note: lib/sanitize.ts allows only 19 tags (p, br, strong, em, u, s,
+ * blockquote, ul, ol, li, a, h1-h4, code, pre, img). No h5/h6, hr, table,
+ * figure, del, mark, sub, sup, kbd or iframe survives sanitisation, so there
+ * is nothing else to style. `*` is allowed as a class attribute, so stored
+ * Tailwind classes in post HTML pass through.
+ * ------------------------------------------------------------------------- */
+.prose {
+  --tw-prose-body: var(--color-mid);
+  --tw-prose-headings: var(--color-hi);
+  --tw-prose-lead: var(--color-hi);
+  --tw-prose-links: var(--color-accent);
+  --tw-prose-bold: var(--color-hi);
+  --tw-prose-counters: var(--color-accent);
+  --tw-prose-bullets: var(--color-accent);
+  --tw-prose-hr: var(--color-line);
+  --tw-prose-quotes: var(--color-hi);
+  --tw-prose-quote-borders: var(--color-accent-line);
+  --tw-prose-captions: var(--color-low);
+  --tw-prose-code: var(--color-accent);
+  --tw-prose-pre-code: var(--color-mid);
+  --tw-prose-pre-bg: var(--color-code-bg);
+  --tw-prose-th-borders: var(--color-line-hi);
+  --tw-prose-td-borders: var(--color-line);
+  --tw-prose-h1: var(--color-hi);
+  --tw-prose-h2: var(--color-hi);
+  --tw-prose-h3: var(--color-hi);
+  --tw-prose-h4: var(--color-hi);
+  max-width: var(--container-measure);
+}
+
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::before,
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
+  content: none;
+}
+
+.prose :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+}
+
+/* Anchor targets should pick up the accent focus ring, not a browser default. */
+.prose :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  text-decoration-color: var(--color-accent-line);
+  text-underline-offset: 3px;
+}
+
+.prose :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)):hover {
+  text-decoration-color: var(--color-accent);
 }
 
 :focus-visible {
