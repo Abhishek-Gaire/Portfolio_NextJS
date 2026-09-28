@@ -4,22 +4,25 @@ import { TYPESHala_SITE_URL } from "@/lib/site-urls";
 
 export const metadata: Metadata = {
   metadataBase: new URL(TYPESHala_SITE_URL),
-  title: 'Typeshala - Download Bilingual Typing Tutor',
-  description: 'Download Typeshala - A bilingual (English/Nepali) typing tutor with structured lessons, progress tracking, and cross-platform support for macOS, Windows, Linux, and Android.',
+  title: "Typeshala - Download Bilingual Typing Tutor",
+  description:
+    "Download Typeshala - A bilingual (English/Nepali) typing tutor with structured lessons, progress tracking, and cross-platform support for macOS, Windows, Linux, and Android.",
   alternates: {
-    canonical: '/',
+    canonical: "/",
   },
   openGraph: {
-    title: 'Typeshala - Bilingual Typing Tutor',
-    description: 'Download Typeshala for macOS, Windows, Linux, and Android. Practice English and Nepali typing with structured lessons.',
-    url: '/',
-    type: 'website',
-    siteName: 'Abhishek Gaire',
+    title: "Typeshala - Bilingual Typing Tutor",
+    description:
+      "Download Typeshala for macOS, Windows, Linux, and Android. Practice English and Nepali typing with structured lessons.",
+    url: "/",
+    type: "website",
+    siteName: "Abhishek Gaire",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'Typeshala - Bilingual Typing Tutor',
-    description: 'Download Typeshala for macOS, Windows, Linux, and Android.',
+    card: "summary_large_image",
+    title: "Typeshala - Bilingual Typing Tutor",
+    description:
+      "Download Typeshala for macOS, Windows, Linux, and Android.",
   },
 };
 
@@ -28,6 +31,8 @@ export default async function TypeshalaLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // proxy.ts stamps x-nonce on the subdomain rewrite response and re-sets the
+  // CSP on it, so this script tag can execute. Do not drop the attribute.
   const nonce = (await headers()).get("x-nonce") ?? "";
 
   return (
@@ -48,7 +53,8 @@ export default async function TypeshalaLayout({
               price: "0",
               priceCurrency: "USD",
             },
-            description: "A bilingual (English / Nepali) typing tutor desktop app with structured lessons, progress stats, themes, and a bonus Ramayana game.",
+            description:
+              "A bilingual (English / Nepali) typing tutor desktop app with structured lessons, progress stats, themes, and a bonus Ramayana game.",
           }),
         }}
       />

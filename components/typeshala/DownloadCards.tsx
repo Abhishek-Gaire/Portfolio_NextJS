@@ -1,9 +1,29 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Download, ExternalLink, CheckCircle, AlertCircle, Loader2, Copy } from 'lucide-react';
-import type { PlatformDownload } from '@/types/typeshala';
-import { useDetectedOS, orderPlatformsByOS, isRecommendedForOS } from './useDetectedOS';
+import { useState } from "react";
+import {
+  CheckCircle,
+  AlertCircle,
+  ChevronDown,
+  Copy,
+  Download,
+  ExternalLink,
+  Link2,
+  Loader2,
+} from "lucide-react";
+
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { Button } from "@/components/primitives/Button";
+import { MonoTag } from "@/components/primitives/MonoTag";
+import { Reveal } from "@/components/primitives/Reveal";
+import { cn } from "@/lib/utils";
+import { formatBytes } from "@/types/typeshala";
+import type { PlatformDownload } from "@/types/typeshala";
+import {
+  useDetectedOS,
+  orderPlatformsByOS,
+  isRecommendedForOS,
+} from "./useDetectedOS";
 
 interface DownloadAsset {
   name: string;
@@ -21,15 +41,24 @@ interface DownloadCardProps {
 
 function getAssetLabel(assetName: string, platform: PlatformDownload) {
   if (platform.downloadLabel) return platform.downloadLabel;
-  return assetName.match(/\.[^.]+$/)?.[0] || platform.assetPatterns[0]?.replace('.', '') || 'Installer';
+  return (
+    assetName.match(/\.[^.]+$/)?.[0] ||
+    platform.assetPatterns[0]?.replace(".", "") ||
+    "Installer"
+  );
 }
 
-export function DownloadCard({ platform, asset, isLoading, recommended }: DownloadCardProps) {
+export function DownloadCard({
+  platform,
+  asset,
+  isLoading,
+  recommended,
+}: DownloadCardProps) {
   const [copied, setCopied] = useState(false);
   const [instructionCopied, setInstructionCopied] = useState(false);
 
   const handleDownload = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const handleCopyLink = (url: string) => {
@@ -45,129 +74,153 @@ export function DownloadCard({ platform, asset, isLoading, recommended }: Downlo
     setTimeout(() => setInstructionCopied(false), 2000);
   };
 
-  const isFdroid = platform.platform === 'fdroid';
+  const isFdroid = platform.platform === "fdroid";
   // Manual URL (e.g. manually built Android APK) takes the place of a
   // release asset — the card behaves as if a download exists.
-  const downloadUrl = asset?.browser_download_url || platform.manualUrl || undefined;
+  const downloadUrl =
+    asset?.browser_download_url || platform.manualUrl || undefined;
   const hasDownload = !!downloadUrl && !isFdroid;
   // Only badge cards the visitor can actually download.
-  const showRecommended = !!recommended && platform.platform !== 'windows-msi' && hasDownload;
+  const showRecommended =
+    !!recommended && platform.platform !== "windows-msi" && hasDownload;
 
   return (
-    <div className={`group relative bg-gray-800/50 border rounded-2xl p-6 transition-all hover:border-blue-500/50 hover:bg-gray-800 ${!hasDownload && !isFdroid ? 'opacity-50' : ''} ${showRecommended ? 'border-blue-500/60 bg-gray-800' : ''}`}>
-      <div className="flex items-start space-x-4">
-        <div className="text-4xl shrink-0">{platform.icon}</div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold text-white">
-              {platform.label}
-              {showRecommended && (
-                <span className="ml-2 inline-flex items-center rounded-full border border-blue-500/40 bg-blue-500/15 px-2 py-0.5 align-middle text-xs font-medium text-blue-300">
-                  Recommended
-                </span>
-              )}
-            </h3>
-            {hasDownload && (
-              <a
-                href={downloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-blue-400 hover:text-blue-300 flex items-center space-x-1"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>Direct</span>
-              </a>
-            )}
+    <BentoCard
+      interactive
+      className={cn("h-full p-5", showRecommended && "border-accent-line")}
+    >
+      <div className="flex h-full flex-col">
+        <div className="mb-4 flex items-start justify-between gap-2.5">
+          <span
+            aria-hidden="true"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-line bg-surface-2 text-[19px] leading-none"
+          >
+            {platform.icon}
+          </span>
+          {showRecommended ? (
+            <MonoTag accent className="mt-1.5">
+              Recommended
+            </MonoTag>
+          ) : null}
+        </div>
+
+        <h3 className="text-[15px] font-semibold text-hi">{platform.label}</h3>
+        <p className="mt-1.5 text-[13px] leading-[1.55] text-mid">
+          {platform.description}
+        </p>
+
+        {hasDownload ? (
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            {asset ? (
+              <>
+                <MonoTag className="border-line-hi text-mid">
+                  {formatBytes(asset.size)}
+                </MonoTag>
+                <MonoTag className="border-line-hi text-mid">
+                  {getAssetLabel(asset.name, platform)}
+                </MonoTag>
+              </>
+            ) : null}
+            <a
+              href={downloadUrl!}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-mono text-[10.5px] text-accent transition-colors duration-200 hover:text-hi"
+            >
+              <ExternalLink className="h-3 w-3" />
+              <span>Direct link</span>
+            </a>
           </div>
-          <p className="text-gray-400 mt-1">{platform.description}</p>
+        ) : null}
 
-          {hasDownload && (
-            <div className="mt-4 flex flex-wrap gap-3">
-              <button
-                onClick={() => handleDownload(downloadUrl!)}
-                disabled={isLoading}
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Downloading...</span>
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4" />
-                    <span>Download {getAssetLabel(asset?.name || '', platform)}</span>
-                  </>
-                )}
-              </button>
-              <button
-                onClick={() => handleCopyLink(downloadUrl!)}
-                className="flex items-center space-x-2 border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white font-medium px-4 py-2 rounded-lg transition-colors"
-              >
-                <span className={copied ? 'text-green-400' : ''}>
-                  {copied ? (
-                    <CheckCircle className="w-4 h-4" />
-                  ) : (
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                    </svg>
-                  )}
-                </span>
-                <span>{copied ? 'Copied!' : 'Copy Link'}</span>
-              </button>
-            </div>
-          )}
+        {hasDownload ? (
+          <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
+            <Button
+              variant="primary"
+              onClick={() => handleDownload(downloadUrl!)}
+              disabled={isLoading}
+              className="disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Downloading...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4" />
+                  <span>
+                    Download {getAssetLabel(asset?.name || "", platform)}
+                  </span>
+                </>
+              )}
+            </Button>
+            <Button
+              onClick={() => handleCopyLink(downloadUrl!)}
+              className={cn(copied && "border-accent-line text-accent")}
+            >
+              {copied ? (
+                <CheckCircle className="h-4 w-4" />
+              ) : (
+                <Link2 className="h-4 w-4" />
+              )}
+              <span>{copied ? "Copied!" : "Copy Link"}</span>
+            </Button>
+          </div>
+        ) : null}
 
-          {!hasDownload && !isFdroid && (
-            <p className="mt-4 text-yellow-400 text-sm flex items-center space-x-1">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>Not available in latest release</span>
+        {!hasDownload && !isFdroid ? (
+          <p className="mt-auto flex items-center gap-1.5 pt-4 text-caption text-amber">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            <span>Not available in latest release</span>
+          </p>
+        ) : null}
+
+        {isFdroid ? (
+          <div className="mt-auto pt-4">
+            <Button
+              as="a"
+              href="https://f-droid.org/packages/com.abhishek.typeshala/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ExternalLink className="h-4 w-4" />
+              <span>View on F-Droid</span>
+            </Button>
+            <p className="mt-2.5 text-caption leading-[1.55] text-low">
+              {platform.installInstructions}
             </p>
-          )}
+          </div>
+        ) : null}
 
-          {isFdroid && (
-            <div className="mt-4">
-              <a
-                href="https://f-droid.org/packages/com.abhishek.typeshala/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center space-x-2 border border-green-500/50 text-green-400 hover:bg-green-500/10 font-medium px-4 py-2 rounded-lg transition-colors"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>View on F-Droid</span>
-              </a>
-              <p className="text-gray-500 text-sm mt-2">
+        {platform.installInstructions && hasDownload ? (
+          <details className="group/details mt-3.5 border-t border-line pt-3.5">
+            <summary className="flex cursor-pointer list-none items-center gap-1.5 text-[13px] text-mid transition-colors duration-200 hover:text-hi">
+              <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-open/details:rotate-180" />
+              <span>Show install instructions</span>
+            </summary>
+            <div className="mt-2.5 flex items-start gap-2">
+              <p className="min-w-0 flex-1 break-all rounded-control border border-line bg-code-bg p-3 font-mono text-caption leading-[1.7] text-mid">
                 {platform.installInstructions}
               </p>
+              <button
+                type="button"
+                onClick={handleCopyInstructions}
+                aria-label="Copy install instructions"
+                title="Copy install instructions"
+                className="shrink-0 rounded-control border border-line p-3 text-low transition-colors duration-200 hover:border-line-hi hover:text-accent"
+              >
+                {instructionCopied ? (
+                  <CheckCircle className="h-4 w-4 text-accent" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+              </button>
             </div>
-          )}
-
-          {platform.installInstructions && hasDownload && (
-            <details className="mt-4 group">
-              <summary className="text-sm text-gray-500 hover:text-gray-400 cursor-pointer flex items-center space-x-1">
-                <span>Show install instructions</span>
-                <svg className="w-4 h-4 transition-transform group-open:rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </summary>
-              <div className="mt-2 flex items-start gap-2">
-                <p className="flex-1 text-sm text-gray-400 bg-gray-900/50 p-3 rounded-lg font-mono break-all">{platform.installInstructions}</p>
-                <button
-                  type="button"
-                  onClick={handleCopyInstructions}
-                  aria-label="Copy install instructions"
-                  title="Copy install instructions"
-                  className="shrink-0 p-3 rounded-lg border border-gray-600 text-gray-400 hover:border-blue-500 hover:text-blue-400 transition-colors"
-                >
-                  {instructionCopied ? <CheckCircle className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-            </details>
-          )}
-        </div>
+          </details>
+        ) : null}
       </div>
-    </div>
+    </BentoCard>
   );
 }
 
@@ -177,22 +230,27 @@ interface DownloadGridProps {
   isLoading?: boolean;
 }
 
-export function DownloadGrid({ platforms, assets, isLoading }: DownloadGridProps) {
+export function DownloadGrid({
+  platforms,
+  assets,
+  isLoading,
+}: DownloadGridProps) {
   const os = useDetectedOS();
   const ordered = orderPlatformsByOS(platforms, os);
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {ordered.map(platform => {
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {ordered.map((platform, index) => {
         const matched = assets[platform.platform];
         return (
-          <DownloadCard
-            key={platform.platform}
-            platform={platform}
-            asset={matched?.asset}
-            isLoading={isLoading}
-            recommended={isRecommendedForOS(platform, os)}
-          />
+          <Reveal key={platform.platform} delay={index * 60} className="h-full">
+            <DownloadCard
+              platform={platform}
+              asset={matched?.asset}
+              isLoading={isLoading}
+              recommended={isRecommendedForOS(platform, os)}
+            />
+          </Reveal>
         );
       })}
     </div>
