@@ -232,28 +232,10 @@ body {
   animation: pulse-ring 2.2s ease-out infinite;
 }
 
-/* Drives the two counter-rotating skill rings. Ported from ag-bento.html:196-199. */
-@keyframes orbit {
-  from {
-    transform: rotate(0deg) translateX(var(--r)) rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg) translateX(var(--r)) rotate(-360deg);
-  }
-}
-
-@utility animate-orbit {
-  animation: orbit var(--dur) linear infinite;
-  animation-delay: var(--delay);
-}
-
 /*
  * Drives <OrbitingCircles>, ported verbatim from the remix reference's
- * styles.css:123-136. Kept separate from the `orbit` keyframes above because
- * the two are incompatible: those rotate on a fixed --r radius with translateX
- * and honour a --delay, these rotate each child by its own --angle, offset it
- * by --radius with translateY, and take their period from --duration. Merging
- * them would break the home page skills orbit that the first pair drives.
+ * styles.css:123-136. This is now the only orbit system on the site: both the
+ * home page skills diagram and the Typeshala stack section use it.
  */
 @keyframes orbit-angle {
   0% {

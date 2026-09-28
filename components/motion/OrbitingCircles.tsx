@@ -19,13 +19,18 @@ export interface OrbitingCirclesProps
  * Ported verbatim from
  * ../remix-of-pixel-perfect/src/components/ui/orbiting-circles.tsx
  *
- * One deviation, and it is only a name: the reference's `animate-orbit` is
- * `animate-orbit-angle` here. The remix keyframes rotate each child by its own
- * `--angle` and offset it by `--radius`, while this repo's pre-existing
- * `animate-orbit` (driving the home page skills orbit) rotates on a fixed
- * `--r` radius. Same shape on screen, different custom-property contract, so
- * they cannot share a keyframes name. The reference's `stroke-border` maps to
- * `border-line`, which is the only token translation.
+ * The reference's `animate-orbit` is `animate-orbit-angle` here, and
+ * `stroke-border` is `border-line`. The rename was originally needed because
+ * this repo already had an `animate-orbit` for a second, mockup-derived orbit
+ * component. That component is gone — the home page skills diagram and the
+ * Typeshala stack section both use this one now — so the two could be merged
+ * back, but the name is left alone rather than churning a working rename in a
+ * change that is otherwise about adopting the component.
+ *
+ * The parent must be a flex container that centres its children. The orbit
+ * children are absolutely positioned with no inset offsets, so their static
+ * position is what the flexbox places, and the keyframes rotate each one about
+ * that point.
  */
 export function OrbitingCircles({
   className,

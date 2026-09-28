@@ -1,5 +1,4 @@
-import { OrbitBadges } from "@/components/motion/OrbitBadges";
-import { BentoCard } from "@/components/primitives/BentoCard";
+import { OrbitingCircles } from "@/components/motion/OrbitingCircles";
 import { Reveal } from "@/components/primitives/Reveal";
 import { SectionHead } from "@/components/primitives/SectionHead";
 import { SkillsTerminal, type SkillDirectory } from "./SkillsTerminal";
@@ -40,20 +39,21 @@ const directories: SkillDirectory[] = TREE_DIRECTORIES.map(
   }),
 );
 
-/* Per-brand logo colours, the one place raw hex is the design. */
-const INNER_RING = [
-  { label: "Re", color: "#61dafb" },
-  { label: "TS", color: "#3178c6" },
-  { label: "Nd", color: "#3c873a" },
-  { label: "Ns", color: "#e0234e" },
+/*
+ * A curated subset of `skills` above, spanning all four categories, for the
+ * orbit rings. The terminal below stays the exhaustive list; these are the
+ * headline names. If one is removed from `skills`, update it here too.
+ */
+const ORBIT_OUTER = [
+  skills.frontend[0],
+  skills.frontend[1],
+  skills.backend[0],
+  skills.database[1],
+  skills.database[0],
+  skills.tools[1],
 ];
 
-const OUTER_RING = [
-  { label: "Pg", color: "#336791" },
-  { label: "Mg", color: "#47a248" },
-  { label: "Rd", color: "#dc382d" },
-  { label: "Dk", color: "#2496ed" },
-];
+const ORBIT_INNER = [skills.backend[1], skills.database[2], skills.tools[0]];
 
 export default function Skills() {
   return (
@@ -65,15 +65,37 @@ export default function Skills() {
           lede="A comprehensive toolkit of modern technologies and frameworks used to build exceptional digital experiences."
         />
 
+        {/*
+          Same treatment as the Typeshala stack section: the remix
+          OrbitingCircles at its reference geometry, scaled down on narrow
+          viewports rather than hidden, and paused on hover. The parent's flex
+          centring is load-bearing — the orbit children are absolutely
+          positioned with no inset offsets, so the flexbox is what places them.
+        */}
         <Reveal>
-          <BentoCard className="mb-4 flex flex-col items-center p-7 px-5 pb-5">
-            <OrbitBadges
-              innerItems={INNER_RING}
-              outerItems={OUTER_RING}
-              hubLabel="CORE STACK"
-              caption="Hover to pause · inner ring: language & frameworks · outer ring: data & infra"
-            />
-          </BentoCard>
+          <div className="relative mx-auto flex h-[420px] w-full origin-center items-center justify-center max-md:scale-[0.72] [&:hover_*]:[animation-play-state:paused]">
+            <span className="font-mono text-xs text-low">core</span>
+            <OrbitingCircles radius={170} duration={40} iconSize={56} speed={0.6}>
+              {ORBIT_OUTER.map((tech) => (
+                <span
+                  key={tech}
+                  className="flex size-14 items-center justify-center rounded-full border border-line bg-surface-2 px-1.5 text-center font-mono text-[11px] leading-tight text-hi"
+                >
+                  {tech}
+                </span>
+              ))}
+            </OrbitingCircles>
+            <OrbitingCircles radius={100} duration={32} iconSize={44} speed={0.6} reverse>
+              {ORBIT_INNER.map((tech) => (
+                <span
+                  key={tech}
+                  className="flex size-11 items-center justify-center rounded-full border border-line bg-surface-2 px-1 text-center font-mono text-[10px] leading-tight text-mid"
+                >
+                  {tech}
+                </span>
+              ))}
+            </OrbitingCircles>
+          </div>
         </Reveal>
 
         <Reveal>
