@@ -85,8 +85,10 @@ html {
   /* Smooth scroll is the CSS half of the data-scroll-behavior="smooth"
      contract that app/layout.tsx:149 sets. Both are required. */
   scroll-behavior: smooth;
-  /* Keep anchor targets clear of the sticky header (ag-bento.html:30). */
-  scroll-padding-top: 76px;
+  /* Keep any future in-page anchor target clear of the sticky header, which is
+     h-14 (56px) from sm up. There are no hash anchors in the site today, so
+     this is precautionary. (ag-bento.html:30 does the same for its 76px nav.) */
+  scroll-padding-top: 56px;
   /* Without this, native controls we do not style (the <select> on /projects and
      /blogs, scrollbar-less form widgets) render their popup and default UI light. */
   color-scheme: dark;
