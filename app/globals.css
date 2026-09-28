@@ -1,54 +1,214 @@
 @import "tailwindcss";
 
-:root {
-    --background: #0a0a0a;
-    --foreground: #ffffff;
-    --bg-primary: #0a0a0a;
-    --bg-secondary: #1a1a1a;
-    --bg-card: #1f1f1f;
-    --text-primary: #ffffff;
-    --text-secondary: #b3b3b3;
-    --text-muted: #808080;
-    --accent-primary: #3b82f6;
-    --accent-secondary: #10b981;
-    --border-color: #333333;
-    --hover-bg: #2a2a2a;
+/*
+ * Design system: bento.
+ *
+ * Values are ported from ../ag-bento.html:12-27 (tokens), :36-40 (body orbs),
+ * :30 (scroll padding), :952 (focus ring), and the typography scale read off
+ * the hero at :139-144 and the section head at :110-115.
+ *
+ * Everything lives in @theme so Tailwind emits the variables to :root and
+ * generates matching utilities in one declaration. `inline` is used only for
+ * the font families, because those reference next/font variables that are
+ * applied to <html> at runtime in app/layout.tsx.
+ */
+
+@theme {
+  /* ---- surfaces ---- */
+  --color-bg: #0a0a0c;
+  --color-surface: rgba(255, 255, 255, 0.035);
+  --color-surface-2: rgba(255, 255, 255, 0.05);
+  --color-code-bg: #0d0e10;
+  --color-chrome-dot: #26272b;
+
+  /* ---- lines ---- */
+  --color-line: rgba(255, 255, 255, 0.09);
+  --color-line-hi: rgba(255, 255, 255, 0.18);
+
+  /* ---- type ---- */
+  --color-hi: #f2f3f3;
+  --color-mid: #9a9ba0;
+  --color-low: #616267;
+
+  /* ---- accent ---- */
+  --color-accent: #2dd4bf;
+  --color-accent-soft: rgba(45, 212, 191, 0.1);
+  --color-accent-line: rgba(45, 212, 191, 0.35);
+  --color-amber: #f0b429;
+  --color-violet: #a78bfa;
+
+  /*
+   * Three card radii plus one control size, ported from ag-bento.html:24-27.
+   * Deliberately NOT named --radius-s/m/l: those generate rounded-s, rounded-m
+   * and rounded-l, and rounded-l collides with Tailwind's existing
+   * border-left-radius utility.
+   */
+  --radius-control: 10px;
+  --radius-tile: 14px;
+  --radius-card: 16px;
+  --radius-hero: 28px;
+
+  /* ---- type scale ---- */
+  --text-display: clamp(30px, 4.4vw, 44px);
+  --text-display--line-height: 1.1;
+  --text-display--letter-spacing: -0.025em;
+  --text-title: clamp(24px, 3.4vw, 32px);
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.02em;
+  --text-lede: 15px;
+  --text-lede--line-height: 1.65;
+  --text-caption: 12.5px;
+  --text-micro: 11.5px;
+
+  /* ---- layout ---- */
+  --container-shell: 1180px;
+  --container-measure: 56ch;
+  --container-measure-narrow: 50ch;
+
+  /* ---- motion ---- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 0.2s;
+  --duration-base: 0.3s;
+
+  /* ---- focus ring, opt-out via --focus-ring (see /admin) ---- */
+  --focus-ring: var(--color-accent);
 }
 
 @theme inline {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --font-sans: var(--font-mulish);
-    --font-mono: var(--font-ibm-mono);
-    --font-serif: var(--font-fraunces);
-}
-
-
-
-body {
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    font-family: var(--font-sans);
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-ibm-mono), ui-monospace, SFMono-Regular, monospace;
 }
 
 html {
-    scroll-behavior: smooth;
+  /* Smooth scroll is the CSS half of the data-scroll-behavior="smooth"
+     contract that app/layout.tsx:149 sets. Both are required. */
+  scroll-behavior: smooth;
+  /* Keep anchor targets clear of the sticky header (ag-bento.html:30). */
+  scroll-padding-top: 76px;
 }
 
-/* Custom scrollbar for dark theme */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-hi);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Two faint teal orbs, ported from ag-bento.html:36-40. These replace the
+     per-section blurred orb blocks that used to be scattered across the site. */
+  background-image:
+    radial-gradient(1000px 500px at 10% -8%, rgba(45, 212, 191, 0.06), transparent 60%),
+    radial-gradient(800px 500px at 95% 10%, rgba(45, 212, 191, 0.04), transparent 55%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background-color: color-mix(in oklab, var(--color-accent) 35%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Keyframes
+ *
+ * These are the CSS half of the ported Remix primitives. Without them the
+ * components are inert: `animationDelay` with no keyframes is exactly the bug
+ * already live in Skills.tsx:87, LatestBlogsClient.tsx:75 and
+ * ProjectsGrid.tsx:54. Any component ported in Phase 2 or 4 that sets an
+ * animation or animationDelay needs its keyframe declared here first.
+ * ------------------------------------------------------------------------- */
+
+/* Drives <Reveal>. Ported from remix-of-pixel-perfect/src/styles.css:138-151. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility fade-up {
+  animation: fade-up 0.6s var(--ease-out-expo) both;
+}
+
+/* Drives the hero code-panel caret and the terminal summary caret. */
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@utility animate-blink {
+  animation: blink 1.1s step-end infinite;
+}
+
+/* Drives the availability badge dot. */
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(45, 212, 191, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0);
+  }
+}
+
+@utility animate-pulse-ring {
+  animation: pulse-ring 2.2s ease-out infinite;
+}
+
+/* Drives the two counter-rotating skill rings. Ported from ag-bento.html:196-199. */
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(var(--r)) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(var(--r)) rotate(-360deg);
+  }
+}
+
+@utility animate-orbit {
+  animation: orbit var(--dur) linear infinite;
+  animation-delay: var(--delay);
+}
+
+/*
+ * Belt and braces for the pure-CSS animations above. The JS-driven motion
+ * (count-up, live clock, marquee, 3D tilt) is NOT covered by this and needs an
+ * explicit matchMedia guard in the component.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Scrollbar, restyled onto the new line tokens. */
 ::-webkit-scrollbar {
-    width: 8px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
+  background: var(--color-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 4px;
+  background: var(--color-line);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #555555;
+  background: var(--color-line-hi);
 }
