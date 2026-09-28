@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   Mail,
   MapPin,
@@ -9,132 +10,149 @@ import {
   Linkedin,
   Twitter,
 } from "@/components/icons";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { Button } from "@/components/primitives/Button";
+
+const CV_URL =
+  "https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/cv/Abhishek_Gaire_Resume.pdf";
+
+const socials = [
+  {
+    href: "https://github.com/Abhishek-Gaire",
+    label: "GitHub Profile",
+    Icon: Github,
+  },
+  {
+    href: "https://www.linkedin.com/in/abhisek-gaire-359294219/",
+    label: "LinkedIn Profile",
+    Icon: Linkedin,
+  },
+  {
+    href: "https://x.com/GaireAbhishek44",
+    label: "Twitter Profile",
+    Icon: Twitter,
+  },
+];
+
+const reasons = [
+  {
+    title: "Fast Response",
+    detail: "I typically respond within 24 hours",
+  },
+  {
+    title: "Quality Focused",
+    detail: "Clean code and modern best practices",
+  },
+  {
+    title: "Long-term Support",
+    detail: "Ongoing maintenance and updates",
+  },
+];
+
+function DetailIcon({ children }: { children: ReactNode }) {
+  return (
+    <span className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-[10px] border border-accent-line bg-accent-soft text-accent">
+      {children}
+    </span>
+  );
+}
 
 export default function ContactInformation() {
   return (
-    <>
-      <div>
-        <h3 className="text-2xl font-bold mb-8 text-white">
-          Contact Information
-        </h3>
-        <div className="space-y-6">
-          <div className="group flex items-start p-6 bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl hover:bg-gray-800/50 hover:border-gray-600/50 transition-all duration-300">
-            <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl mr-4 group-hover:bg-blue-500/20 group-hover:scale-110 transition-all duration-300">
-              <Mail className="text-blue-400" size={24} />
-            </div>
-            <div className="flex-1">
-              <p className="font-semibold text-white mb-1">Email</p>
+    <div className="flex flex-col gap-4">
+      <BentoCard>
+        <div className="flex flex-col px-6 pb-6 pt-2">
+          <div className="flex items-center gap-3.5 border-b border-line py-4">
+            <DetailIcon>
+              <Mail className="h-4 w-4" />
+            </DetailIcon>
+            <div>
+              <p className="font-mono text-[11.5px] text-low">Email</p>
               <a
                 href="mailto:abhisekgaire7@gmail.com"
-                className="text-gray-300 hover:text-blue-400 transition-colors text-lg"
+                className="text-[14.5px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
               >
                 abhisekgaire7@gmail.com
               </a>
             </div>
           </div>
 
-          <div className="group flex items-start p-6 bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl hover:bg-gray-800/50 hover:border-gray-600/50 transition-all duration-300">
-            <div className="p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl mr-4 group-hover:bg-purple-500/20 group-hover:scale-110 transition-all duration-300">
-              <MapPin className="text-purple-400" size={24} />
+          <div className="flex items-center gap-3.5 py-4">
+            <DetailIcon>
+              <MapPin className="h-4 w-4" />
+            </DetailIcon>
+            <div>
+              <p className="font-mono text-[11.5px] text-low">Location</p>
+              <p className="text-[14.5px] font-semibold text-hi">
+                Pokhara, Nepal
+              </p>
             </div>
-            <div className="flex-1">
-              <p className="font-semibold text-white mb-1">Location</p>
-              <p className="text-gray-300 text-lg">Pokhara, Nepal</p>
+          </div>
+        </div>
+
+        <div className="border-t border-line px-6 py-5">
+          <div className="mb-4 flex items-center gap-3.5">
+            <DetailIcon>
+              <FileText className="h-4 w-4" />
+            </DetailIcon>
+            <div>
+              <h3 className="text-[15px] font-semibold text-hi">
+                Professional CV
+              </h3>
+              <p className="text-[12.5px] text-mid">
+                Download my complete resume
+              </p>
             </div>
           </div>
 
-          <div className="p-8 bg-linear-to-br from-blue-900/20 to-purple-900/20 backdrop-blur-sm border border-blue-500/30 rounded-2xl">
-            <div className="flex items-center mb-4">
-              <div className="p-3 bg-blue-500/20 border border-blue-500/30 rounded-xl mr-4">
-                <FileText className="text-blue-400" size={24} />
-              </div>
+          <Button
+            as="a"
+            variant="primary"
+            href={CV_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full justify-center"
+          >
+            <Download className="h-4 w-4" />
+            <span>View &amp; Download CV</span>
+          </Button>
+        </div>
+
+        <div className="border-t border-line px-6 py-5">
+          <p className="mb-3 font-mono text-[11.5px] text-low">Follow Me</p>
+          <div className="flex gap-2.5">
+            {socials.map(({ href, label, Icon }) => (
+              <a
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="flex h-10 w-10 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 hover:border-line-hi hover:text-accent"
+              >
+                <Icon size={20} />
+              </a>
+            ))}
+          </div>
+        </div>
+      </BentoCard>
+
+      <BentoCard className="p-5">
+        <h3 className="mb-4 text-[15px] font-semibold text-hi">
+          Why Work With Me?
+        </h3>
+        <ul className="flex flex-col gap-3.5">
+          {reasons.map(({ title, detail }) => (
+            <li key={title} className="flex items-start gap-3.5">
+              <span className="mt-[7px] h-2 w-2 shrink-0 rounded-full bg-accent" />
               <div>
-                <h3 className="text-xl font-bold text-white">
-                  Professional CV
-                </h3>
-                <p className="text-gray-400 text-sm">
-                  Download my complete resume
-                </p>
+                <h4 className="text-[14px] font-semibold text-hi">{title}</h4>
+                <p className="text-[12.5px] leading-[1.5] text-mid">{detail}</p>
               </div>
-            </div>
-            <a
-              href="https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/cv/Abhishek_Gaire_Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center w-full justify-center px-6 py-3 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-xl transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-1 group"
-            >
-              <Download className="w-5 h-5 mr-2 group-hover:animate-bounce" />
-              <span className="font-medium">View & Download CV</span>
-            </a>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <h4 className="text-lg font-semibold text-white mb-4">Follow Me</h4>
-          <div className="flex space-x-4">
-            <a
-              href="https://github.com/Abhishek-Gaire"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub Profile"
-              className="p-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-gray-400 hover:text-white hover:bg-gray-700/50 hover:border-gray-600/50 transition-all duration-300 hover:scale-110"
-            >
-              <Github size={20} />
-            </a>
-            <a
-              href="https://www.linkedin.com/in/abhisek-gaire-359294219/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn Profile"
-              className="p-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-gray-400 hover:text-blue-400 hover:bg-gray-700/50 hover:border-gray-600/50 transition-all duration-300 hover:scale-110"
-            >
-              <Linkedin size={20} />
-            </a>
-            <a
-              href="https://x.com/GaireAbhishek44"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Twitter Profile"
-              className="p-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-gray-400 hover:text-blue-400 hover:bg-gray-700/50 hover:border-gray-600/50 transition-all duration-300 hover:scale-110"
-            >
-              <Twitter size={20} />
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-8 bg-gray-900/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl">
-        <h3 className="text-xl font-bold text-white mb-4">Why Work With Me?</h3>
-        <div className="space-y-4">
-          <div className="flex items-start">
-            <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-4"></div>
-            <div>
-              <h4 className="font-semibold text-white">Fast Response</h4>
-              <p className="text-gray-400 text-sm">
-                I typically respond within 24 hours
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start">
-            <div className="w-2 h-2 bg-green-400 rounded-full mt-2 mr-4"></div>
-            <div>
-              <h4 className="font-semibold text-white">Quality Focused</h4>
-              <p className="text-gray-400 text-sm">
-                Clean code and modern best practices
-              </p>
-            </div>
-          </div>
-          <div className="flex items-start">
-            <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 mr-4"></div>
-            <div>
-              <h4 className="font-semibold text-white">Long-term Support</h4>
-              <p className="text-gray-400 text-sm">
-                Ongoing maintenance and updates
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
+            </li>
+          ))}
+        </ul>
+      </BentoCard>
+    </div>
   );
 }

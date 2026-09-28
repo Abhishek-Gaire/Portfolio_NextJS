@@ -175,10 +175,12 @@ body {
  * Keyframes
  *
  * These are the CSS half of the ported Remix primitives. Without them the
- * components are inert: `animationDelay` with no keyframes is exactly the bug
- * already live in Skills.tsx:87, LatestBlogsClient.tsx:75 and
- * ProjectsGrid.tsx:54. Any component ported in Phase 2 or 4 that sets an
- * animation or animationDelay needs its keyframe declared here first.
+ * components are inert: `animationDelay` with no keyframes was the bug that
+ * used to sit in Skills.tsx:87, LatestBlogsClient.tsx:75 and
+ * ProjectsGrid.tsx:54, none of which ever animated. Those three are now gone
+ * from the home page (Reveal replaces them); ProjectsGrid.tsx is still pending
+ * and is a live reminder of why this section exists. Any component that sets
+ * an animation or an animationDelay needs its keyframe declared here first.
  * ------------------------------------------------------------------------- */
 
 /* Drives <Reveal>. Ported from remix-of-pixel-perfect/src/styles.css:138-151. */

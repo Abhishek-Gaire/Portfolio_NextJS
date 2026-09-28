@@ -1,14 +1,16 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Link from "next/link";
 import Image from "next/image";
-import {
-  ExternalLink,
-  Calendar,
-  Tag,
-} from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import { Github } from "@/components/icons";
+import { cn } from "@/lib/utils";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { Button } from "@/components/primitives/Button";
+import { MonoTag } from "@/components/primitives/MonoTag";
+import { Reveal } from "@/components/primitives/Reveal";
+import { SectionHead } from "@/components/primitives/SectionHead";
+import { WindowChrome } from "@/components/primitives/WindowChrome";
 import type { Project } from "../../types/project";
 
 type FeaturedProjectsClientProps = {
@@ -22,34 +24,17 @@ export default function FeaturedProjectsClient({
   projects,
 }: FeaturedProjectsClientProps) {
   return (
-    <section className="py-20 bg-gray-900 relative overflow-hidden">
-      <div className="absolute inset-0">
-        <div className="absolute top-20 right-10 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-10 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl"></div>
-      </div>
+    <section className="py-16">
+      <div className="mx-auto max-w-shell px-6">
+        <Reveal>
+          <SectionHead
+            eyebrow="FEATURED WORK"
+            title="Featured projects"
+            lede="A showcase of my recent work, featuring modern web applications and creative solutions."
+          />
+        </Reveal>
 
-      <div className="container mx-auto px-6 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">
-            Featured{" "}
-            <span className="bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Projects
-            </span>
-          </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-8">
-            A showcase of my recent work, featuring modern web applications and
-            creative solutions
-          </p>
-          <div className="w-24 h-1 bg-linear-to-r from-blue-600 to-purple-600 mx-auto"></div>
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {projects.map((project, index) => {
             const year = project.completionDate
               ? new Date(project.completionDate).getFullYear()
@@ -57,141 +42,135 @@ export default function FeaturedProjectsClient({
             const technologies = Array.isArray(project.technologies)
               ? project.technologies
               : [];
+            const featured = index === 0;
 
             return (
-              <motion.div
+              <Reveal
                 key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -10 }}
-                className="group bg-white/5 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-300"
+                delay={index * 80}
+                className={cn("h-full", featured && "sm:col-span-2")}
               >
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src={project.image_url?.trim() || FALLBACK_IMAGE}
-                    alt={project.title}
-                    width={640}
-                    height={360}
-                    unoptimized
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
-                  {year && (
-                    <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 flex items-center space-x-1">
-                      <Calendar className="w-4 h-4 text-gray-300" />
-                      <span className="text-small text-gray-300">{year}</span>
-                    </div>
+                <BentoCard
+                  interactive
+                  className={cn(
+                    "h-full",
+                    featured ? "rounded-hero" : "rounded-tile",
                   )}
+                >
+                  <div
+                    className={cn(
+                      "h-full",
+                      featured
+                        ? "grid grid-cols-1 lg:grid-cols-[1.1fr_1fr]"
+                        : "flex flex-col",
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "flex items-center justify-center bg-surface-2 p-6",
+                        featured
+                          ? "min-h-[220px] border-b border-line lg:border-b-0 lg:border-r"
+                          : "min-h-[150px] border-b border-line",
+                      )}
+                    >
+                      <WindowChrome
+                        title={project.title}
+                        className="h-auto w-[82%] max-w-[420px] overflow-hidden rounded-tile border border-line bg-code-bg"
+                      >
+                        <div className="h-[120px]">
+                          <Image
+                            src={project.image_url?.trim() || FALLBACK_IMAGE}
+                            alt={project.title}
+                            width={640}
+                            height={360}
+                            unoptimized
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                      </WindowChrome>
+                    </div>
 
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="flex space-x-3">
-                      {project.live_url && (
-                        <motion.a
-                          href={project.live_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label="Live Demo"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full transition-colors duration-200"
-                        >
-                          <ExternalLink className="w-5 h-5" />
-                        </motion.a>
+                    <div
+                      className={cn(
+                        "flex flex-col",
+                        featured ? "p-7" : "p-5.5",
                       )}
-                      {project.github_url && (
-                        <motion.a
-                          href={project.github_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label="Source Code"
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="bg-gray-800 hover:bg-gray-700 text-white p-3 rounded-full transition-colors duration-200"
-                        >
-                          <Github className="w-5 h-5" />
-                        </motion.a>
+                    >
+                      {year ? (
+                        <MonoTag className="mb-2.5 w-fit">{year}</MonoTag>
+                      ) : null}
+
+                      <h3
+                        className={cn(
+                          "font-semibold tracking-[-0.01em] text-hi",
+                          featured ? "text-[20px]" : "text-[16px]",
+                        )}
+                      >
+                        {project.title}
+                      </h3>
+
+                      <p
+                        className={cn(
+                          "mt-2.5 mb-4 text-[14px] leading-[1.6] text-mid",
+                          featured ? "line-clamp-3" : "line-clamp-2",
+                        )}
+                      >
+                        {project.description}
+                      </p>
+
+                      {technologies.length > 0 && (
+                        <div className="mb-4 flex flex-wrap gap-1.5">
+                          {technologies.slice(0, 3).map((tech, techIndex) => (
+                            <MonoTag key={`${project.id}-${tech}-${techIndex}`}>
+                              {tech}
+                            </MonoTag>
+                          ))}
+                          {technologies.length > 3 && (
+                            <MonoTag>+{technologies.length - 3} more</MonoTag>
+                          )}
+                        </div>
                       )}
+
+                      <div className="mt-auto flex flex-wrap items-center gap-2.5">
+                        {project.live_url && (
+                          <a
+                            href={project.live_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Live Demo"
+                            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
+                          >
+                            <span>Live demo</span>
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </a>
+                        )}
+                        {project.github_url && (
+                          <a
+                            href={project.github_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Source Code"
+                            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
+                          >
+                            <Github className="h-3.5 w-3.5" />
+                            <span>Source</span>
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors duration-200">
-                    {project.title}
-                  </h3>
-                  <p className="text-gray-400 mb-4 line-clamp-2">
-                    {project.description}
-                  </p>
-
-                  {technologies.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {technologies.slice(0, 3).map((tech, techIndex) => (
-                        <span
-                          key={`${project.id}-${tech}-${techIndex}`}
-                          className="inline-flex items-center space-x-1 bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full text-xs font-medium"
-                        >
-                          <Tag className="w-3 h-3" />
-                          <span>{tech}</span>
-                        </span>
-                      ))}
-                      {technologies.length > 3 && (
-                        <span className="text-gray-500 text-xs px-2 py-1">
-                          +{technologies.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex space-x-3">
-                      {project.live_url && (
-                        <a
-                          href={project.live_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-400 hover:text-blue-300 transition-colors duration-200 text-sm font-medium"
-                        >
-                          Live Demo
-                        </a>
-                      )}
-                      {project.github_url && (
-                        <a
-                          href={project.github_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-gray-400 hover:text-gray-300 transition-colors duration-200 text-sm font-medium"
-                        >
-                          Source Code
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
+                </BentoCard>
+              </Reveal>
             );
           })}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          viewport={{ once: true }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="text-center mt-12"
-        >
-          <Link
-            href="/projects"
-            className="inline-flex items-center space-x-2 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300"
-          >
-            <span>Explore My Complete Portfolio</span>
-            <ExternalLink className="w-5 h-5" />
-          </Link>
-        </motion.div>
+        <Reveal delay={160} className="mt-8 flex justify-center">
+          <Button as={Link} href="/projects" variant="primary">
+            <span>Explore my complete portfolio</span>
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </Reveal>
       </div>
     </section>
   );
