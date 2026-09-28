@@ -22,6 +22,7 @@ import { Eyebrow } from "@/components/primitives/Eyebrow";
 import { MonoTag } from "@/components/primitives/MonoTag";
 import { Reveal } from "@/components/primitives/Reveal";
 import { SectionHead } from "@/components/primitives/SectionHead";
+import { OrbitingCircles } from "@/components/motion/OrbitingCircles";
 import { DownloadGrid } from "@/components/typeshala/DownloadCards";
 import { useDetectedOS } from "@/components/typeshala/useDetectedOS";
 import {
@@ -89,16 +90,15 @@ const FEATURES: Feature[] = [
   },
 ];
 
-const TECH_STACK = [
+const TECH_STACK_OUTER = [
   "Tauri v2",
   "React 19",
   "TypeScript",
   "Vite",
-  "Tailwind CSS",
   "Rust",
-  "Zustand",
-  "Vitest",
 ];
+
+const TECH_STACK_INNER = ["Tailwind CSS", "Zustand", "Vitest"];
 
 export default function TypeshalaPageClient({
   data,
@@ -412,16 +412,53 @@ export default function TypeshalaPageClient({
         <section className="pb-16">
           <div className="mx-auto max-w-shell px-6">
             <Reveal>
-              <SectionHead eyebrow="STACK" title="Built with" align="center" />
-            </Reveal>
+              <h2 className="font-mono text-xs tracking-widest text-low uppercase">
+                Stack
+              </h2>
 
-            <Reveal delay={100}>
-              <div className="flex flex-wrap justify-center gap-2">
-                {TECH_STACK.map((tech) => (
-                  <MonoTag key={tech} className="px-3 py-1 text-micro">
-                    {tech}
-                  </MonoTag>
-                ))}
+              {/*
+                Structure copied from the remix reference at
+                src/routes/index.tsx:148-175. The parent's flex centring is
+                load-bearing: the orbit children are absolutely positioned with
+                no inset offsets, so their static position is what the flexbox
+                centres, and the keyframes then rotate each one about it.
+
+                One deliberate deviation. The reference hides the whole diagram
+                below md (`hidden md:flex`), which is the wrong trade for a
+                desktop app people discover on their phones, so the geometry is
+                kept at the reference values and scaled down with a transform on
+                narrow viewports instead of being removed. radius/iconSize are JS
+                props, not CSS, so this is the only way to shrink them
+                responsively.
+              */}
+              <div className="relative mx-auto mt-8 flex h-[420px] w-full origin-center items-center justify-center max-md:scale-[0.72] [&:hover_*]:[animation-play-state:paused]">
+                <span className="font-mono text-xs text-low">core</span>
+                <OrbitingCircles radius={170} duration={40} iconSize={56} speed={0.6}>
+                  {TECH_STACK_OUTER.map((tech) => (
+                    <span
+                      key={tech}
+                      className="flex size-14 items-center justify-center rounded-full border border-line bg-surface-2 px-1.5 text-center font-mono text-[11px] leading-tight text-hi"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </OrbitingCircles>
+                <OrbitingCircles
+                  radius={100}
+                  duration={32}
+                  iconSize={44}
+                  speed={0.6}
+                  reverse
+                >
+                  {TECH_STACK_INNER.map((tech) => (
+                    <span
+                      key={tech}
+                      className="flex size-11 items-center justify-center rounded-full border border-line bg-surface-2 px-1 text-center font-mono text-[10px] leading-tight text-mid"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </OrbitingCircles>
               </div>
             </Reveal>
           </div>

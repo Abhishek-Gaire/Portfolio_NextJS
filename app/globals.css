@@ -248,6 +248,47 @@ body {
 }
 
 /*
+ * Drives <OrbitingCircles>, ported verbatim from the remix reference's
+ * styles.css:123-136. Kept separate from the `orbit` keyframes above because
+ * the two are incompatible: those rotate on a fixed --r radius with translateX
+ * and honour a --delay, these rotate each child by its own --angle, offset it
+ * by --radius with translateY, and take their period from --duration. Merging
+ * them would break the home page skills orbit that the first pair drives.
+ */
+@keyframes orbit-angle {
+  0% {
+    transform: rotate(calc(var(--angle) * 1deg)) translateY(calc(var(--radius) * -1px))
+      rotate(calc(var(--angle) * -1deg));
+  }
+  100% {
+    transform: rotate(calc(var(--angle) * 1deg + 360deg)) translateY(calc(var(--radius) * -1px))
+      rotate(calc((var(--angle) * -1deg) - 360deg));
+  }
+}
+
+@utility animate-orbit-angle {
+  animation: orbit-angle calc(var(--duration) * 1s) linear infinite;
+}
+
+/*
+ * The orbit-angle keyframes have no static resting state, so the global
+ * reduced-motion switch above would drop every child back to its flex-centred
+ * static position and stack all of them on top of each other. Pin each child to
+ * the angle it would have animated to. This has to live here rather than as a
+ * `motion-reduce:` utility on the component, because OrbitingCircles also
+ * applies `transform-gpu`, which is another `transform` declaration.
+ *
+ * Declared after the kill switch so it wins the cascade.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .animate-orbit-angle {
+    animation: none;
+    transform: rotate(calc(var(--angle) * 1deg)) translateY(calc(var(--radius) * -1px))
+      rotate(calc(var(--angle) * -1deg));
+  }
+}
+
+/*
  * Belt and braces for the pure-CSS animations above. The JS-driven motion
  * (count-up, live clock, marquee, 3D tilt) is NOT covered by this and needs an
  * explicit matchMedia guard in the component.
