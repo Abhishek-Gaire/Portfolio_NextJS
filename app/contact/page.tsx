@@ -55,9 +55,10 @@ const REASONS = [
  * `text-destructive` styling came with that handler and are left behind with
  * it, since this form validates server-side and reports through toasts.
  *
- * The reference's world-map footer is also not ported. It points at
- * assets.aceternity.com, a third-party placeholder belonging to a different
- * site, which next.config.ts does not whitelist in images.remotePatterns.
+ * The reference's world-map footer is ported, but the SVG is vendored into
+ * public/world.svg rather than hotlinked from assets.aceternity.com, so this
+ * route has no third-party runtime dependency and next.config.ts needs no new
+ * remote pattern. The file is credited in its own header.
  */
 export default function ContactPage() {
   return (
@@ -153,6 +154,37 @@ export default function ContactPage() {
           <div className="grid-pattern rounded-card border border-line p-4 sm:p-5">
             <div className="rounded-card bg-bg/80 p-5 backdrop-blur-sm sm:p-6">
               <ContactForm />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-16">
+          <p className="mb-4 font-mono text-xs text-low">Based in Pokhara, Nepal</p>
+          <div className="relative overflow-hidden rounded-card border border-line bg-surface p-4">
+            <div className="relative">
+              {/* next/image buys nothing here: it passes SVG through
+                  unoptimised, and optimising SVG would need dangerouslyAllowSVG
+                  in next.config. A plain img is the right tool for a local,
+                  already-minimised vector. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/world.svg"
+                alt="World map showing Pokhara, Nepal"
+                loading="lazy"
+                decoding="async"
+                width={2000}
+                height={857}
+                className="block w-full opacity-30"
+              />
+              <span
+                className="absolute top-[36.9%] left-[72.4%] -translate-x-1/2 -translate-y-1/2"
+                aria-hidden="true"
+              >
+                <span className="relative flex size-2.5">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-accent opacity-70" />
+                  <span className="relative inline-flex size-2.5 rounded-full bg-accent ring-2 ring-bg" />
+                </span>
+              </span>
             </div>
           </div>
         </div>
