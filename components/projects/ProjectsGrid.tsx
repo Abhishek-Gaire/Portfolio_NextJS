@@ -1,16 +1,29 @@
 "use client";
 
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { ExternalLink, Share2, X } from "lucide-react";
 import { Github } from "@/components/icons";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { Button } from "@/components/primitives/Button";
+import { MonoTag } from "@/components/primitives/MonoTag";
+import { Reveal } from "@/components/primitives/Reveal";
+import { WindowChrome } from "@/components/primitives/WindowChrome";
+import { cn } from "@/lib/utils";
 import type { Project } from "../../types/project";
 
 type ProjectsGridProps = {
   projects: Project[];
   view: "grid" | "list";
 };
+
+const FALLBACK_IMAGE =
+  "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=600";
+
+const DIALOG_TITLE_ID = "project-dialog-title";
+
+const DIALOG_LABEL_CLASS = "mb-2 font-mono text-micro uppercase tracking-[0.14em] text-low";
 
 export default function ProjectsGrid({ projects, view }: ProjectsGridProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -36,206 +49,247 @@ export default function ProjectsGrid({ projects, view }: ProjectsGridProps) {
     };
   }, [selectedProject]);
 
+  const isList = view === "list";
+  const dialogYear = selectedProject?.completionDate
+    ? new Date(selectedProject.completionDate).getFullYear()
+    : null;
+
   return (
     <>
       <div
-        className={`grid gap-8 ${view === "grid"
-          ? "grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
-          : "grid-cols-1"
-          }`}
+        className={cn(
+          "grid gap-4",
+          isList ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3",
+        )}
       >
-        {projects.map((project, index) => (
-          <motion.div
-            key={project.id}
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{ animationDelay: `${index * 100}ms` }}
-            className={`group bg-gray-900/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 hover:border-blue-500/50 transition-all duration-500 hover:-translate-y-2 ${view === "list" ? "flex" : ""
-              }`}
-          >
-            {project.image_url?.trim() && (
-              <div
-                className={`relative overflow-hidden ${view === "list" ? "w-1/3" : ""}`}
-              >
-                <Image
-                  src={project.image_url.trim()}
-                  alt={project.title}
-                  width={640}
-                  height={360}
-                  sizes={
-                    view === "list"
-                      ? "33vw"
-                      : "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                  }
-                  unoptimized
-                  className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-gray-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </div>
-            )}
-            <div className={`p-8 ${view === "list" ? "w-2/3" : ""}`}>
-              <div className="flex justify-between items-start mb-6">
-                <h3
-                  onClick={() => setSelectedProject(project)}
-                  className="text-xl font-bold text-white cursor-pointer hover:text-blue-400 transition-all duration-300 group-hover:text-blue-400"
+        {projects.map((project, index) => {
+          const year = project.completionDate
+            ? new Date(project.completionDate).getFullYear()
+            : null;
+          const technologies = Array.isArray(project.technologies)
+            ? project.technologies
+            : [];
+
+          return (
+            <Reveal key={project.id} delay={index * 60} className="h-full">
+              <BentoCard interactive className="h-full">
+                <div
+                  className={cn(
+                    "flex h-full flex-col",
+                    isList && "sm:flex-row",
+                  )}
                 >
-                  {project.title}
-                </h3>
-                <span className="text-sm text-gray-500 bg-gray-800/50 px-3 py-1 rounded-full">
-                  {project.completionDate
-                    ? new Date(project.completionDate).getFullYear()
-                    : ""}
-                </span>
-              </div>
-              <p className="text-gray-400 mb-6 leading-relaxed">
-                {project.description}
-              </p>
-              <div className="flex flex-wrap gap-2 mb-6">
-                {(Array.isArray(project.technologies)
-                  ? project.technologies
-                  : []
-                ).map((tech) => (
-                  <span
-                    key={tech}
-                    className="px-3 py-1 bg-blue-500/10 text-blue-300 border border-blue-500/20 rounded-full text-xs font-medium hover:bg-blue-500/20 hover:border-blue-500/40 transition-all duration-300"
+                  <div
+                    className={cn(
+                      "shrink-0 border-b border-line bg-surface-2 p-5",
+                      isList && "sm:w-[38%] sm:border-b-0 sm:border-r",
+                    )}
                   >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-              <div className="flex justify-between items-center">
-                <div className="flex space-x-4">
-                  {project.live_url && (
-                    <a
-                      href={project.live_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center px-4 py-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg hover:bg-blue-500/20 hover:border-blue-500/40 transition-all duration-300 text-sm font-medium"
+                    <WindowChrome
+                      title={project.title}
+                      className="h-auto w-full overflow-hidden rounded-tile border border-line bg-code-bg"
                     >
-                      <ExternalLink size={16} className="mr-1" />
-                      Live
-                    </a>
-                  )}
-                  {project.github_url && (
-                    <a
-                      href={project.github_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center px-4 py-2 bg-gray-700/30 text-gray-400 border border-gray-600/30 rounded-lg hover:bg-gray-700/50 hover:border-gray-600/50 hover:text-white transition-all duration-300 text-sm font-medium"
+                      <div className="h-[136px]">
+                        <Image
+                          src={project.image_url?.trim() || FALLBACK_IMAGE}
+                          alt={project.title}
+                          width={640}
+                          height={360}
+                          sizes={
+                            isList
+                              ? "33vw"
+                              : "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                          }
+                          unoptimized
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    </WindowChrome>
+                  </div>
+
+                  <div
+                    className={cn(
+                      "flex flex-1 flex-col p-5.5",
+                      isList && "sm:p-7",
+                    )}
+                  >
+                    {year ? <MonoTag className="mb-2.5 w-fit">{year}</MonoTag> : null}
+
+                    <h3 className="text-[17px] font-semibold tracking-[-0.01em] text-hi transition-colors duration-200 group-hover/interactive:text-accent">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedProject(project)}
+                        className="text-left"
+                      >
+                        {project.title}
+                      </button>
+                    </h3>
+
+                    <p
+                      className={cn(
+                        "mt-2.5 mb-4 text-[14px] leading-[1.6] text-mid",
+                        !isList && "line-clamp-3",
+                      )}
                     >
-                      <Github size={16} className="mr-1" />
-                      Code
-                    </a>
-                  )}
+                      {project.description}
+                    </p>
+
+                    {technologies.length > 0 && (
+                      <div className="mb-4 flex flex-wrap gap-1.5">
+                        {technologies.map((tech, techIndex) => (
+                          <MonoTag key={`${project.id}-${tech}-${techIndex}`}>
+                            {tech}
+                          </MonoTag>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="mt-auto flex flex-wrap items-center gap-4">
+                      {project.live_url && (
+                        <a
+                          href={project.live_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Live demo for ${project.title}`}
+                          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          <span>Live demo</span>
+                        </a>
+                      )}
+                      {project.github_url && (
+                        <a
+                          href={project.github_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Source code for ${project.title}`}
+                          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
+                        >
+                          <Github className="h-3.5 w-3.5" />
+                          <span>Source</span>
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        aria-label="View project details"
+                        onClick={() => setSelectedProject(project)}
+                        className="ml-auto inline-flex h-8 w-8 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 hover:border-line-hi hover:text-hi"
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <button
-                  type="button"
-                  aria-label="View project details"
-                  onClick={() => setSelectedProject(project)}
-                  className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-300"
-                >
-                  <Share2 size={18} />
-                </button>
-              </div>
-            </div>
-            <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-          </motion.div>
-        ))}
+              </BentoCard>
+            </Reveal>
+          );
+        })}
       </div>
 
       {selectedProject && (
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-bg/80 p-4 backdrop-blur-sm"
           onClick={() => setSelectedProject(null)}
         >
           <motion.div
             role="dialog"
             aria-modal="true"
-            initial={{ opacity: 0, scale: 0.9 }}
+            aria-labelledby={DIALOG_TITLE_ID}
+            initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-gray-900/95 backdrop-blur-md border border-gray-700/50 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-card border border-line bg-code-bg"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="p-8">
-              <div className="flex justify-between items-start mb-6">
-                <h2 className="text-3xl font-bold text-white">
-                  {selectedProject.title}
-                </h2>
+            <div className="p-6 sm:p-7">
+              <div className="mb-6 flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  {dialogYear ? (
+                    <MonoTag className="mb-2.5">{dialogYear}</MonoTag>
+                  ) : null}
+                  <h2
+                    id={DIALOG_TITLE_ID}
+                    className="text-title font-bold text-hi"
+                  >
+                    {selectedProject.title}
+                  </h2>
+                </div>
                 <button
+                  type="button"
                   aria-label="Close project details"
                   onClick={() => setSelectedProject(null)}
-                  className="p-2 text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-all duration-300"
+                  className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 hover:border-line-hi hover:text-hi"
                 >
-                  <X size={24} />
+                  <X className="h-4 w-4" />
                 </button>
               </div>
+
               {selectedProject.image_url?.trim() && (
-                <Image
-                  src={selectedProject.image_url.trim()}
-                  alt={selectedProject.title}
-                  width={1200}
-                  height={600}
-                  sizes="100vw"
-                  unoptimized
-                  className="w-full h-80 object-cover rounded-xl mb-8"
-                />
+                <div className="mb-6 overflow-hidden rounded-tile border border-line">
+                  <Image
+                    src={selectedProject.image_url.trim()}
+                    alt={selectedProject.title}
+                    width={1200}
+                    height={600}
+                    sizes="100vw"
+                    unoptimized
+                    className="h-64 w-full object-cover"
+                  />
+                </div>
               )}
+
               <div className="space-y-6">
                 <div>
-                  <h3 className="font-bold text-xl mb-3 text-white">
-                    Description
-                  </h3>
-                  <p className="text-gray-400 leading-relaxed">
+                  <h3 className={DIALOG_LABEL_CLASS}>Description</h3>
+                  <p className="text-[14px] leading-[1.65] text-mid">
                     {selectedProject.description}
                   </p>
                 </div>
                 <div>
-                  <h3 className="font-bold text-xl mb-3 text-white">Role</h3>
-                  <p className="text-gray-400">{selectedProject.role}</p>
+                  <h3 className={DIALOG_LABEL_CLASS}>Role</h3>
+                  <p className="text-[14px] leading-[1.65] text-mid">
+                    {selectedProject.role}
+                  </p>
                 </div>
                 {selectedProject.challenges && (
                   <div>
-                    <h3 className="font-bold text-xl mb-3 text-white">
-                      Challenges
-                    </h3>
-                    <p className="text-gray-400 leading-relaxed">
+                    <h3 className={DIALOG_LABEL_CLASS}>Challenges</h3>
+                    <p className="text-[14px] leading-[1.65] text-mid">
                       {selectedProject.challenges}
                     </p>
                   </div>
                 )}
                 {selectedProject.solutions && (
                   <div>
-                    <h3 className="font-bold text-xl mb-3 text-white">
-                      Solutions
-                    </h3>
-                    <p className="text-gray-400 leading-relaxed">
+                    <h3 className={DIALOG_LABEL_CLASS}>Solutions</h3>
+                    <p className="text-[14px] leading-[1.65] text-mid">
                       {selectedProject.solutions}
                     </p>
                   </div>
                 )}
-                <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6">
+
+                <div className="flex flex-col gap-3 border-t border-line pt-6 sm:flex-row sm:justify-end">
                   {selectedProject.live_url && (
-                    <a
+                    <Button
+                      as="a"
                       href={selectedProject.live_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-6 py-3 bg-linear-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-500 hover:to-cyan-500 transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 font-medium"
+                      variant="primary"
                     >
-                      Live Url
-                    </a>
+                      Live site
+                    </Button>
                   )}
                   {selectedProject.github_url && (
-                    <a
+                    <Button
+                      as="a"
                       href={selectedProject.github_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-6 py-3 border border-gray-600/50 text-white rounded-xl hover:bg-gray-800/50 hover:border-gray-500/50 transition-all duration-300 font-medium"
                     >
-                      View Code
-                    </a>
+                      View code
+                    </Button>
                   )}
                 </div>
               </div>

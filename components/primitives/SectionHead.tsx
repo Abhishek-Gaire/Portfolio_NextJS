@@ -9,6 +9,12 @@ type SectionHeadProps = {
   lede?: string;
   id?: string;
   align?: "left" | "center";
+  /**
+   * Pass "h1" on a page whose section head IS the page's main heading
+   * (`/projects`, `/blogs`, `/contact`). Those pages have no other h1, and
+   * defaulting to h2 left them with none at all.
+   */
+  as?: "h1" | "h2" | "h3";
   className?: string;
   children?: ReactNode;
 };
@@ -19,6 +25,7 @@ export function SectionHead({
   lede,
   id,
   align = "left",
+  as: Heading = "h2",
   className,
   children,
 }: SectionHeadProps) {
@@ -27,9 +34,9 @@ export function SectionHead({
       className={cn("mb-8", align === "center" && "text-center", className)}
     >
       <Eyebrow>{eyebrow}</Eyebrow>
-      <h2 id={id} className="text-title font-bold text-hi">
+      <Heading id={id} className="text-title font-bold text-hi">
         {title}
-      </h2>
+      </Heading>
       {lede ? (
         <p className="mt-2.5 max-w-measure text-[15px] text-mid">{lede}</p>
       ) : null}

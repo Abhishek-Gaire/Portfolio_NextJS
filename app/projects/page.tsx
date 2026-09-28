@@ -70,26 +70,33 @@ export default async function ProjectsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black">
+    <main className="min-h-screen">
       <script
         type="application/ld+json"
         nonce={nonce}
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <section className="container mx-auto px-6 py-16">
-        <nav className="flex items-center mb-12 text-gray-400 text-sm">
-          <Link
-            href="/"
-            className="hover:text-white transition-colors hover:translate-x-1 duration-300"
+      <section className="py-16">
+        <div className="mx-auto max-w-shell px-6">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-8 flex items-center gap-2.5 font-mono text-micro text-low"
           >
-            Home
-          </Link>
-          <span className="mx-3 text-gray-600">/</span>
-          <span className="text-white">Projects</span>
-        </nav>
+            <Link
+              href="/"
+              className="transition-colors duration-200 hover:text-accent"
+            >
+              Home
+            </Link>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page" className="text-mid">
+              Projects
+            </span>
+          </nav>
 
-        <ProjectsPageClient projects={projects} />
+          <ProjectsPageClient projects={projects} />
+        </div>
       </section>
     </main>
   );

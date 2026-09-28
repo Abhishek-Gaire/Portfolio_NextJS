@@ -10,11 +10,13 @@ export default function BlogHomeContent({ content }: BlogContentProps) {
   const sanitized = sanitizeContent(content);
   const options: HTMLReactParserOptions = {
     replace: (domNode) => {
+      // No h5/h6 here: lib/sanitize.ts strips them, so those two entries could
+      // never match and only implied the list mirrored the full heading set.
       if (
         "type" in domNode &&
         domNode.type === "tag" &&
         "name" in domNode &&
-        ["p", "div", "h1", "h2", "h3", "h4", "h5", "h6"].includes(domNode.name)
+        ["p", "div", "h1", "h2", "h3", "h4"].includes(domNode.name)
       ) {
         const children =
           "children" in domNode ? (domNode.children as DOMNode[]) : [];

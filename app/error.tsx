@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
+import { Button } from "@/components/primitives/Button";
+import { MonoTag } from "@/components/primitives/MonoTag";
 
 type ErrorPageProps = {
   error: Error & { digest?: string };
@@ -15,37 +17,33 @@ export default function GlobalError({ error, reset }: ErrorPageProps) {
   }, [error]);
 
   return (
-    <main className="min-h-screen bg-gray-50 flex items-center justify-center px-6 py-16">
-      <section className="w-full max-w-2xl rounded-2xl bg-white border border-gray-200 shadow-sm p-8 md:p-10">
-        <p className="text-sm font-medium text-blue-600 mb-2">Something went wrong</p>
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+    <main className="flex min-h-screen items-center justify-center px-6 py-16">
+      <div className="w-full max-w-measure text-center">
+        <MonoTag accent as="p" className="mb-5 inline-block">
+          Something went wrong
+        </MonoTag>
+        <h1 className="font-mono text-[clamp(30px,5.4vw,52px)] font-bold leading-[1.1] tracking-[-0.03em] text-hi">
           We hit an unexpected error
         </h1>
-        <p className="text-gray-600 mb-8">
+        <p className="mx-auto mt-5 max-w-measure text-lede text-mid">
           Please try again. If the problem continues, refresh the page or come back later.
         </p>
 
         {error?.digest ? (
-          <p className="text-xs text-gray-500 mb-6">
-            Error reference: <span className="font-mono">{error.digest}</span>
+          <p className="mt-5 font-mono text-caption text-low">
+            Error reference: <span className="text-mid">{error.digest}</span>
           </p>
         ) : null}
 
-        <div className="flex flex-wrap gap-3">
-          <button
-            onClick={reset}
-            className="inline-flex items-center justify-center rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
-          >
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5">
+          <Button onClick={reset} variant="primary">
             Try again
-          </button>
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
-          >
+          </Button>
+          <Button as={Link} href="/">
             Go to homepage
-          </Link>
+          </Button>
         </div>
-      </section>
+      </div>
     </main>
   );
 }

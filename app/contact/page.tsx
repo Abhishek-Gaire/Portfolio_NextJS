@@ -25,8 +25,8 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-black">
-      <HomeContact />
+    <main className="min-h-screen">
+      <HomeContact headingLevel="h1" />
     </main>
   );
 }

@@ -4,7 +4,15 @@ import { BentoCard } from "@/components/primitives/BentoCard";
 import { Reveal } from "@/components/primitives/Reveal";
 import { SectionHead } from "@/components/primitives/SectionHead";
 
-export default function HomeContact() {
+type HomeContactProps = {
+  /**
+   * This section is the page's main heading on /contact, but only a section
+   * heading on / where the hero already owns the h1.
+   */
+  headingLevel?: "h1" | "h2";
+};
+
+export default function HomeContact({ headingLevel = "h2" }: HomeContactProps) {
   return (
     <section id="contact" className="py-16">
       <div className="mx-auto max-w-shell px-6">
@@ -12,6 +20,7 @@ export default function HomeContact() {
           <div className="flex flex-col gap-4">
             <Reveal>
               <SectionHead
+                as={headingLevel}
                 eyebrow="LET'S CONNECT"
                 title="Get in touch"
                 lede={

@@ -24,18 +24,21 @@ export default function BlogLimitControl({
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("limit", event.target.value);
+    // page=1 alongside the new limit: otherwise a higher page number can point
+    // past the end of the shorter result set and render an empty grid.
     params.set("page", "1");
     const query = params.toString();
     router.push(query ? `${pathname}?${query}` : pathname);
   };
 
   return (
-    <div className="flex items-center space-x-3">
-      <span className="text-sm text-gray-300">Show</span>
+    <div className="flex items-center gap-2.5">
+      <span className="font-mono text-[11.5px] text-low">PER PAGE</span>
       <select
         value={currentLimit}
         onChange={handleChange}
-        className="bg-gray-800/50 border border-gray-600/50 text-white rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300"
+        aria-label="Posts per page"
+        className="rounded-control border border-line bg-code-bg px-3 py-2 text-[13.5px] text-mid transition-colors duration-200 hover:border-line-hi focus:border-accent-line"
       >
         {options.map((option) => (
           <option key={option} value={option}>
@@ -43,7 +46,6 @@ export default function BlogLimitControl({
           </option>
         ))}
       </select>
-      <span className="text-sm text-gray-300">per page</span>
     </div>
   );
 }

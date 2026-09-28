@@ -16,27 +16,30 @@ import {
   Target,
   Users,
 } from "lucide-react";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { Button } from "@/components/primitives/Button";
+import { SectionHead } from "@/components/primitives/SectionHead";
 
 const skills = [
   {
     name: "Frontend Development",
     level: 90,
-    color: "from-blue-500 to-cyan-500",
+    color: "from-accent to-accent/45",
   },
   {
     name: "Backend Development",
     level: 85,
-    color: "from-green-500 to-emerald-500",
+    color: "from-accent to-violet/70",
   },
   {
     name: "Database Design",
     level: 80,
-    color: "from-purple-500 to-violet-500",
+    color: "from-violet to-accent/70",
   },
   {
     name: "DevOps & Deployment",
     level: 75,
-    color: "from-orange-500 to-red-500",
+    color: "from-amber to-accent/70",
   },
 ];
 
@@ -93,38 +96,44 @@ const timeline = [
   },
 ];
 
+const facts = [
+  { icon: MapPin, label: "Based in Pokhara, Nepal" },
+  { icon: Calendar, label: "3+ Years of Experience" },
+  { icon: Code, label: "10+ Projects Completed" },
+  { icon: Award, label: "100% Client Satisfaction" },
+];
+
 export default function AboutClient() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 pt-20">
-      <div className="container mx-auto px-6 py-16">
-        <nav className="flex items-center mb-12 text-gray-400 text-sm">
+    <main className="min-h-screen">
+      <div className="mx-auto max-w-shell px-6 pt-16 pb-16">
+        <nav className="mb-10 flex items-center gap-2 font-mono text-micro text-low">
           <Link
             href="/"
-            className="hover:text-white transition-colors hover:translate-x-1 duration-300"
+            className="transition-colors duration-200 hover:text-accent"
           >
             Home
           </Link>
-          <span className="mx-3 text-gray-600">/</span>
-          <span className="text-white">About</span>
+          <span aria-hidden="true" className="text-low/60">
+            /
+          </span>
+          <span className="text-mid">About</span>
         </nav>
 
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-20"
+          className="mb-16"
         >
-          <div className="inline-flex items-center px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-full text-gray-400 text-sm font-medium mb-6">
-            <Coffee size={16} className="mr-2" />
+          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent-line bg-accent-soft px-3.5 py-1.5 font-mono text-micro text-accent">
+            <Coffee className="h-3.5 w-3.5" />
             Get to Know Me
-          </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-            About{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Abhishek
-            </span>
+          </span>
+          <h1 className="mb-4 text-display font-bold text-hi">
+            About <span className="text-accent">Abhishek</span>
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+          <p className="max-w-measure text-lede text-mid">
             A passionate Full-Stack Developer from Nepal, dedicated to crafting
             exceptional digital experiences that bridge the gap between
             innovative design and powerful functionality.
@@ -135,94 +144,103 @@ export default function AboutClient() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20"
+          className="mb-16 grid grid-cols-1 gap-4 lg:grid-cols-[1.35fr_1fr]"
         >
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-white mb-6">My Story</h2>
-            <p className="text-gray-300 leading-relaxed">
-              My journey into web development began with curiosity and has
-              evolved into a passion for creating digital solutions that make a
-              difference. Based in the beautiful city of Pokhara, Nepal, I&apos;ve
-              dedicated myself to mastering the art and science of full-stack
-              development.
-            </p>
-            <p className="text-gray-300 leading-relaxed">
-              What started as a fascination with how websites work has grown
-              into expertise in modern web technologies. I specialize in the
-              MERN stack, but I&apos;m always eager to learn new technologies and
-              frameworks that can help me build better solutions.
-            </p>
-            <p className="text-gray-300 leading-relaxed">
-              When I&apos;m not coding, you&apos;ll find me exploring the latest tech
-              trends, contributing to open-source projects, or enjoying the
-              stunning mountain views that Nepal has to offer. I believe that
-              the best code comes from a balanced life and a curious mind.
-            </p>
-          </div>
-
-          <div className="space-y-6">
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8">
-              <h3 className="text-xl font-bold text-white mb-6">Quick Facts</h3>
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <MapPin className="text-blue-400 mr-3" size={20} />
-                  <span className="text-gray-300">
-                    Based in Pokhara, Nepal
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <Calendar className="text-green-400 mr-3" size={20} />
-                  <span className="text-gray-300">
-                    3+ Years of Experience
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <Code className="text-purple-400 mr-3" size={20} />
-                  <span className="text-gray-300">
-                    10+ Projects Completed
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <Award className="text-orange-400 mr-3" size={20} />
-                  <span className="text-gray-300">
-                    100% Client Satisfaction
-                  </span>
-                </div>
-              </div>
+          <BentoCard interactive className="rounded-card p-7">
+            <h2 className="mb-5 text-title font-bold text-hi">My Story</h2>
+            <div className="flex flex-col gap-4 text-[14.5px] leading-[1.65] text-mid">
+              <p>
+                My journey into web development began with curiosity and has
+                evolved into a passion for creating digital solutions that make a
+                difference. Based in the beautiful city of Pokhara, Nepal,
+                I&apos;ve dedicated myself to mastering the art and science of
+                full-stack development.
+              </p>
+              <p>
+                What started as a fascination with how websites work has grown
+                into expertise in modern web technologies. I specialize in the
+                MERN stack, but I&apos;m always eager to learn new technologies and
+                frameworks that can help me build better solutions.
+              </p>
+              <p>
+                When I&apos;m not coding, you&apos;ll find me exploring the latest tech
+                trends, contributing to open-source projects, or enjoying the
+                stunning mountain views that Nepal has to offer. I believe that
+                the best code comes from a balanced life and a curious mind.
+              </p>
             </div>
-          </div>
+          </BentoCard>
+
+          <BentoCard className="rounded-card p-7">
+            <h3 className="mb-1.5 text-[15px] font-semibold text-hi">
+              Quick Facts
+            </h3>
+            <p className="mb-5 font-mono text-micro text-low">
+              AT A GLANCE
+            </p>
+            <ul className="flex flex-col">
+              {facts.map(({ icon: Icon, label }, index) => (
+                <li
+                  key={label}
+                  className={`flex items-center gap-3.5 py-3.5 ${
+                    index > 0 ? "border-t border-line" : ""
+                  }`}
+                >
+                  <span className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-[10px] border border-accent-line bg-accent-soft text-accent">
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span className="text-[14px] font-semibold text-hi">
+                    {label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </BentoCard>
         </motion.section>
 
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mb-20"
+          className="mb-16"
         >
-          <h2 className="text-3xl font-bold text-white text-center mb-12">
-            Technical Expertise
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <SectionHead
+            eyebrow="CAPABILITIES"
+            title="Technical Expertise"
+            lede="Where I spend most of my time, from interface work through to shipping and running the thing."
+          />
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {skills.map((skill, index) => (
-              <div
+              <BentoCard
                 key={skill.name}
-                className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6"
+                interactive
+                className="rounded-tile p-6"
               >
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold text-white">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <h3 className="text-[15px] font-semibold text-hi">
                     {skill.name}
                   </h3>
-                  <span className="text-gray-400">{skill.level}%</span>
+                  <span className="font-mono text-caption text-accent">
+                    {skill.level}%
+                  </span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-3">
+                {/* The h-3 on both the track and the bar is load-bearing: the bar
+                    is animated on width only, so its height has to come from
+                    the class, not from the parent's content box. */}
+                <div className="h-3 w-full overflow-hidden rounded-full bg-surface-2">
                   <motion.div
-                    className={`h-3 rounded-full bg-gradient-to-r ${skill.color}`}
+                    /* `skill.color` must stay a literal class string in this
+                       file. Tailwind v4's scanner only sees source text, so
+                       moving these into a config or a stylesheet would emit no
+                       gradient utilities and the bars would render blank. */
+                    className={`h-3 rounded-full bg-linear-to-r ${skill.color}`}
                     initial={{ width: 0 }}
                     animate={{ width: `${skill.level}%` }}
                     transition={{ duration: 1, delay: index * 0.2 }}
                   />
                 </div>
-              </div>
+              </BentoCard>
             ))}
           </div>
         </motion.section>
@@ -231,29 +249,34 @@ export default function AboutClient() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="mb-20"
+          className="mb-16"
         >
-          <h2 className="text-3xl font-bold text-white text-center mb-12">
-            My Values
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <SectionHead
+            eyebrow="PRINCIPLES"
+            title="My Values"
+            lede="The handful of ideas I keep coming back to when the requirements get messy."
+          />
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             {values.map((value, index) => (
               <motion.div
                 key={value.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
-                className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 text-center hover:bg-gray-800/70 transition-all duration-300 hover:scale-105"
+                className="h-full"
               >
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-500/10 border border-blue-500/20 rounded-xl mb-4">
-                  <value.icon className="text-blue-400" size={24} />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-3">
-                  {value.title}
-                </h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  {value.description}
-                </p>
+                <BentoCard interactive className="h-full rounded-tile p-5.5">
+                  <span className="mb-4 flex h-9.5 w-9.5 items-center justify-center rounded-[10px] border border-accent-line bg-accent-soft text-accent">
+                    <value.icon className="h-4 w-4" />
+                  </span>
+                  <h3 className="mb-2 text-[15px] font-semibold text-hi">
+                    {value.title}
+                  </h3>
+                  <p className="text-caption leading-[1.6] text-mid">
+                    {value.description}
+                  </p>
+                </BentoCard>
               </motion.div>
             ))}
           </div>
@@ -263,16 +286,20 @@ export default function AboutClient() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="mb-20"
+          className="mb-16"
         >
-          <h2 className="text-3xl font-bold text-white text-center mb-12">
-            My Journey
-          </h2>
-          <div className="max-w-4xl mx-auto relative">
+          <SectionHead
+            eyebrow="TIMELINE"
+            title="My Journey"
+            lede="Four years of going from first commit to shipping full-stack products end to end."
+          />
+
+          <div className="relative mx-auto max-w-[860px]">
             <div
-              className="absolute left-1/2 transform -translate-x-1/2 w-0.5 bg-gradient-to-b from-blue-500 via-purple-500 to-blue-500 opacity-30"
+              aria-hidden="true"
+              className="absolute left-1/2 w-px -translate-x-1/2 bg-accent-line"
               style={{ height: "100%", top: 0, bottom: 0 }}
-            ></div>
+            />
 
             {timeline.map((item, index) => (
               <motion.div
@@ -280,26 +307,35 @@ export default function AboutClient() {
                 initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 1 + index * 0.2 }}
-                className={`flex items-center mb-12 ${index % 2 === 0 ? "flex-row" : "flex-row-reverse"
-                  }`}
+                className={`mb-8 flex items-center max-[760px]:flex-col ${
+                  index % 2 === 0 ? "flex-row" : "flex-row-reverse"
+                }`}
               >
                 <div
-                  className={`w-1/2 ${index % 2 === 0 ? "pr-8 text-right" : "pl-8 text-left"
-                    }`}
+                  className={`w-1/2 max-[760px]:w-full ${
+                    index % 2 === 0
+                      ? "pr-4 text-right max-[760px]:pr-0 max-[760px]:text-left"
+                      : "pl-4 text-left max-[760px]:pl-0"
+                  }`}
                 >
-                  <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6">
-                    <div className="text-2xl font-bold text-blue-400 mb-2">
+                  <BentoCard className="rounded-tile p-5.5">
+                    <div className="mb-1.5 font-mono text-[13px] font-semibold text-accent">
                       {item.year}
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-3">
+                    <h3 className="mb-2 text-[15px] font-semibold text-hi">
                       {item.title}
                     </h3>
-                    <p className="text-gray-400">{item.description}</p>
-                  </div>
+                    <p className="text-caption leading-[1.6] text-mid">
+                      {item.description}
+                    </p>
+                  </BentoCard>
                 </div>
 
-                <div className="w-4 h-4 bg-blue-500 rounded-full border-4 border-gray-900 relative z-10"></div>
-                <div className="w-1/2"></div>
+                <span
+                  aria-hidden="true"
+                  className="relative z-10 h-2.5 w-2.5 shrink-0 rounded-full border-2 border-bg bg-accent"
+                />
+                <div className="w-1/2 max-[760px]:hidden" />
               </motion.div>
             ))}
           </div>
@@ -309,48 +345,35 @@ export default function AboutClient() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1.2 }}
-          className="text-center bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-12"
         >
-          <h2 className="text-3xl font-bold text-white mb-6">
-            Let&apos;s Build Something Amazing Together
-          </h2>
-          <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            Ready to bring your ideas to life? I&apos;m always excited to work on
-            new projects and collaborate with fellow innovators.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a
-              href="https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/cv/Abhishek_Gaire_Resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-500 hover:to-emerald-500 transition-all duration-300 shadow-lg shadow-green-500/25 hover:shadow-xl hover:shadow-green-500/40 hover:-translate-y-1 group"
-            >
-              <FileText className="mr-2 group-hover:animate-pulse" size={20} />
-              <span className="font-medium">View My CV</span>
-            </a>
-            <Link
-              href="/contact"
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-500 hover:to-cyan-500 transition-all duration-300 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-1 group"
-            >
-              <Mail
-                className="mr-2 group-hover:translate-x-1 transition-transform duration-300"
-                size={20}
-              />
-              <span className="font-medium">Start a Conversation</span>
-            </Link>
-            <Link
-              href="/projects"
-              className="inline-flex items-center px-8 py-4 border border-gray-600/50 text-white rounded-xl hover:bg-gray-800/50 hover:border-gray-500/50 transition-all duration-300 group"
-            >
-              <span className="font-medium">
-                Explore My Full-Stack Projects
-              </span>
-              <ArrowRight
-                className="ml-2 group-hover:translate-x-1 transition-transform duration-300"
-                size={20}
-              />
-            </Link>
-          </div>
+          <BentoCard interactive className="rounded-card p-7 sm:p-9">
+            <h2 className="mb-3 text-title font-bold text-hi">
+              Let&apos;s Build Something Amazing Together
+            </h2>
+            <p className="mb-6 max-w-measure text-[15px] text-mid">
+              Ready to bring your ideas to life? I&apos;m always excited to work on
+              new projects and collaborate with fellow innovators.
+            </p>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <Button
+                as="a"
+                href="https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/cv/Abhishek_Gaire_Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FileText className="h-4 w-4" />
+                <span>View My CV</span>
+              </Button>
+              <Button as={Link} href="/contact" variant="primary">
+                <Mail className="h-4 w-4" />
+                <span>Start a Conversation</span>
+              </Button>
+              <Button as={Link} href="/projects">
+                <span>Explore My Full-Stack Projects</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </BentoCard>
         </motion.section>
       </div>
     </main>

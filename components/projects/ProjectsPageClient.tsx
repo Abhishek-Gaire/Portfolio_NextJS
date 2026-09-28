@@ -2,6 +2,10 @@
 
 import { Grid, List, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+
+import { Reveal } from "@/components/primitives/Reveal";
+import { SectionHead } from "@/components/primitives/SectionHead";
+import { cn } from "@/lib/utils";
 import type { Project, ProjectCategory } from "../../types/project";
 import ProjectsGrid from "./ProjectsGrid";
 
@@ -43,42 +47,46 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
 
   return (
     <>
-      <div className="text-center mb-16">
-        <div className="inline-flex items-center px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-full text-gray-400 text-sm font-medium mb-6">
-          <Grid size={16} className="mr-2" />
-          Portfolio Collection
-        </div>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-          My Projects
-        </h1>
-        <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-          A comprehensive showcase of my development journey, featuring
-          full-stack applications, collaborative projects, and innovative
-          solutions built with modern technologies
-        </p>
-      </div>
+      <Reveal>
+        <SectionHead
+          as="h1"
+          eyebrow="SELECTED WORK"
+          title="My projects"
+          lede="A comprehensive showcase of my development journey, featuring full-stack applications, collaborative projects, and innovative solutions built with modern technologies."
+        />
+      </Reveal>
 
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-12">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 flex-1">
+      {/*
+       * View, search and category live in plain useState and are intentionally
+       * NOT persisted to the URL or localStorage, unlike /blogs. Keep it that
+       * way: no searchParams, no router.replace, no useSyncExternalStore.
+       */}
+      <div className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative">
             <Search
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500"
-              size={20}
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-low"
             />
             <input
               type="text"
+              name="search"
+              aria-label="Search projects"
               placeholder="Search projects..."
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              className="pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 placeholder-gray-500 hover:border-gray-500/50 min-w-[300px]"
+              className="w-full rounded-control border border-line bg-code-bg py-2.5 pl-10 pr-4 text-[14px] text-hi transition-colors duration-200 placeholder:text-low hover:border-line-hi focus:border-accent-line sm:w-[300px]"
             />
           </div>
+
           <select
+            name="category"
+            aria-label="Filter projects by category"
             value={selectedCategory}
             onChange={(event) =>
               setSelectedCategory(event.target.value as ProjectCategory)
             }
-            className="px-4 py-3 bg-gray-800/50 border border-gray-600/50 text-white rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-gray-500/50"
+            className="rounded-control border border-line bg-code-bg px-4 py-2.5 text-[14px] text-hi transition-colors duration-200 hover:border-line-hi"
           >
             {categories.map((category) => (
               <option key={category} value={category}>
@@ -88,28 +96,38 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
           </select>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div
+          role="group"
+          aria-label="View mode"
+          className="inline-flex items-center gap-1 self-start rounded-control border border-line bg-surface p-1"
+        >
           <button
             type="button"
             onClick={() => setViewMode("grid")}
-            className={`p-3 rounded-xl transition-all duration-300 ${viewMode === "grid"
-                ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                : "text-gray-400 hover:text-white hover:bg-gray-800/50 border border-gray-700/50"
-              }`}
             aria-label="Grid view"
+            aria-pressed={viewMode === "grid"}
+            className={cn(
+              "inline-flex h-9 w-9 items-center justify-center rounded-[7px] transition-colors duration-200",
+              viewMode === "grid"
+                ? "bg-accent-soft text-accent"
+                : "text-low hover:bg-surface-2 hover:text-hi",
+            )}
           >
-            <Grid size={20} />
+            <Grid className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={() => setViewMode("list")}
-            className={`p-3 rounded-xl transition-all duration-300 ${viewMode === "list"
-                ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                : "text-gray-400 hover:text-white hover:bg-gray-800/50 border border-gray-700/50"
-              }`}
             aria-label="List view"
+            aria-pressed={viewMode === "list"}
+            className={cn(
+              "inline-flex h-9 w-9 items-center justify-center rounded-[7px] transition-colors duration-200",
+              viewMode === "list"
+                ? "bg-accent-soft text-accent"
+                : "text-low hover:bg-surface-2 hover:text-hi",
+            )}
           >
-            <List size={20} />
+            <List className="h-4 w-4" />
           </button>
         </div>
       </div>
