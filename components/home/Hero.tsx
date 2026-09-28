@@ -39,7 +39,7 @@ export default function Hero() {
           >
             <div className="grid h-full grid-cols-[1.05fr_0.95fr] max-[900px]:grid-cols-1">
               <div className="flex flex-col justify-center px-7 py-8">
-                <span className="inline-flex w-fit items-center gap-1.75 rounded-full border border-accent-line bg-accent-soft py-1.5 pl-2 pr-2.5 font-mono text-[11.5px] text-accent">
+                <span className="inline-flex w-fit items-center gap-1.75 rounded-full border border-accent-line bg-accent-soft py-1.5 pl-2 pr-2.5 font-mono text-micro text-accent">
                   <span className="animate-pulse-ring h-1.5 w-1.5 rounded-full bg-accent" />
                   Available for new projects
                 </span>
@@ -83,7 +83,7 @@ export default function Hero() {
                   <span className="h-2 w-2 rounded-full bg-chrome-dot" />
                 </div>
 
-                <pre className="m-0 overflow-x-auto font-mono text-[12.5px] leading-[1.9] text-mid">
+                <pre className="m-0 overflow-x-auto font-mono text-caption leading-[1.9] text-mid">
                   {"const developer = {\n  name: "}
                   <span className="text-amber">{"'Abhishek Gaire'"}</span>
                   {",\n  role: "}
@@ -102,7 +102,7 @@ export default function Hero() {
                   <span className="text-accent">available</span>
                   {": "}
                   <span className="text-violet">true</span>
-                  <span className="animate-blink inline-block h-[13px] w-1.5 bg-accent align-middle" />
+                  <span className="animate-blink inline-block h-3.25 w-1.5 bg-accent align-middle" />
                   {"\n};"}
                 </pre>
               </div>

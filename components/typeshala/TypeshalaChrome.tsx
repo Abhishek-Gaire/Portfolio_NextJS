@@ -16,7 +16,7 @@ export function TypeshalaTopNav() {
     <header className="sticky top-0 z-50 border-b border-line bg-[rgba(10,10,12,0.72)] backdrop-blur-[14px] pt-[env(safe-area-inset-top,0px)]">
       <div className="mx-auto flex w-full max-w-shell items-center justify-between gap-4 px-6 py-4">
         <span className="flex min-w-0 items-center gap-2.5">
-          <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-control border border-accent-line bg-accent-soft font-mono text-[13px] font-semibold text-accent">
+          <span className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-control border border-accent-line bg-accent-soft font-mono text-[13px] font-semibold text-accent">
             T
           </span>
           <strong className="truncate text-[15px] font-semibold text-hi">

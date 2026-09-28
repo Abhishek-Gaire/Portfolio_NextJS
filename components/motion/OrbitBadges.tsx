@@ -28,7 +28,7 @@ const OUTER_RING: RingConfig = {
   duration: 32,
   reverse: true,
   offset: 45,
-  badgeClassName: "size-[34px] text-[10.5px]",
+  badgeClassName: "size-8.5 text-[10.5px]",
 };
 
 type OrbitBadgesProps = {
@@ -96,7 +96,7 @@ export function OrbitBadges({
 }: OrbitBadgesProps) {
   return (
     <div className={cn("flex flex-col items-center", className)}>
-      <div className="group relative mx-auto aspect-square w-full max-w-[380px] max-[560px]:max-w-[280px]">
+      <div className="group relative mx-auto aspect-square w-full max-w-95 max-[560px]:max-w-70">
         <div className="pointer-events-none absolute left-1/2 top-1/2 z-[2] flex size-16 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center gap-0.5 rounded-tile border border-accent-line bg-accent-soft text-accent">
           <span className="font-mono text-[15px] font-semibold leading-none">&lt;/&gt;</span>
           <span className="font-mono text-[7px] tracking-[0.04em] text-low uppercase">

@@ -263,7 +263,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <div className="mx-auto max-w-shell px-6">
-        <nav className="mb-8 flex items-center gap-2 font-mono text-[11.5px] text-low">
+        <nav className="mb-8 flex items-center gap-2 font-mono text-micro text-low">
           <Link
             href="/"
             className="transition-colors duration-200 hover:text-accent"
@@ -340,7 +340,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
 
         {tags.length > 0 && (
           <div className="mb-8">
-            <p className="mb-3 font-mono text-[11.5px] text-low">
+            <p className="mb-3 font-mono text-micro text-low">
               FILTER BY TAGS
             </p>
             <div className="flex flex-wrap gap-2">
@@ -360,7 +360,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                       tags: nextSelected,
                     })}
                     aria-pressed={selectedTags.includes(tag.name)}
-                    className={`rounded-full border px-2.5 py-[5px] font-mono text-[10.5px] transition-colors duration-200 ${
+                    className={`rounded-full border px-2.5 py-1.25 font-mono text-[10.5px] transition-colors duration-200 ${
                       selectedTags.includes(tag.name)
                         ? "border-accent-line bg-accent-soft text-accent"
                         : "border-line text-low hover:border-line-hi hover:text-hi"
@@ -376,7 +376,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
 
         {paginatedPosts.length === 0 ? (
           <BentoCard className="p-10 text-center">
-            <p className="mb-2 font-mono text-[11.5px] text-accent">
+            <p className="mb-2 font-mono text-micro text-accent">
               NO POSTS FOUND
             </p>
             <h2 className="mb-2.5 text-[17px] font-semibold text-hi">
@@ -392,7 +392,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
             {hasActiveFilter && (
               <Link
                 href="/blogs"
-                className="mt-5 inline-flex items-center gap-1.5 font-mono text-[11.5px] text-hi transition-colors duration-200 hover:text-accent"
+                className="mt-5 inline-flex items-center gap-1.5 font-mono text-micro text-hi transition-colors duration-200 hover:text-accent"
               >
                 Clear all filters
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -430,7 +430,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                       // sliver. Fixed band, vertically centred instead.
                       <div
                         className={`flex shrink-0 items-center justify-center border-b border-line sm:border-b-0 sm:border-r ${
-                          isList ? "sm:w-56" : "h-[150px]"
+                          isList ? "sm:w-56" : "h-37.5"
                         }`}
                       >
                         <Image
@@ -473,7 +473,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                           />
                         </div>
                       )}
-                      <div className="mt-auto flex items-center justify-between border-t border-line pt-3.5 font-mono text-[11.5px] text-low">
+                      <div className="mt-auto flex items-center justify-between border-t border-line pt-3.5 font-mono text-micro text-low">
                         <span className="flex items-center gap-2">
                           <span>{readingTime} min read</span>
                           <time dateTime={post.created_at}>
@@ -526,7 +526,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
             >
               <ChevronLeft size={18} aria-hidden="true" />
             </Link>
-            <span className="min-w-[104px] text-center font-mono text-[11.5px] text-low">
+            <span className="min-w-26 text-center font-mono text-micro text-low">
               Page {safePage} of {totalPages}
             </span>
             <Link

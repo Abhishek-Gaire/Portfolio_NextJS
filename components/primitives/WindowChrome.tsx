@@ -21,7 +21,7 @@ export function WindowChrome({
     <div className={cn("flex h-full flex-col", className)}>
       <div
         className={cn(
-          "flex items-center gap-1.5 border-b border-line px-4 py-[11px]",
+          "flex items-center gap-1.5 border-b border-line px-4 py-2.75",
           barClassName,
         )}
       >

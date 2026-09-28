@@ -26,7 +26,7 @@ export default function Header() {
       <nav className="w-full">
         <div className="mx-auto flex w-full max-w-shell items-center justify-between gap-4 px-6 py-4">
           <Link href="/" className="flex shrink-0 items-center" aria-label="Abhishek Gaire, home">
-            <span className="flex h-[38px] w-[38px] items-center justify-center rounded-control border border-accent-line bg-accent-soft font-mono text-[13px] font-semibold text-accent">
+            <span className="flex h-9.5 w-9.5 items-center justify-center rounded-control border border-accent-line bg-accent-soft font-mono text-[13px] font-semibold text-accent">
               AG
             </span>
           </Link>
@@ -51,9 +51,9 @@ export default function Header() {
               href={CV_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-control border border-accent-line px-[18px] py-[9px] font-mono text-[12.5px] font-semibold text-accent transition-colors duration-200 ease-out-expo hover:bg-accent-soft"
+              className="inline-flex items-center gap-2 rounded-control border border-accent-line px-4.5 py-2.25 font-mono text-caption font-semibold text-accent transition-colors duration-200 ease-out-expo hover:bg-accent-soft"
             >
-              <Download className="h-[14px] w-[14px]" />
+              <Download className="h-3.5 w-3.5" />
               <span>CV</span>
             </a>
             <a
@@ -87,7 +87,7 @@ export default function Header() {
 
           <button
             aria-label="Toggle mobile menu"
-            className="inline-flex h-[38px] w-[38px] items-center justify-center rounded-[9px] border border-line text-hi transition-colors duration-200 ease-out-expo hover:border-line-hi lg:hidden"
+            className="inline-flex h-9.5 w-9.5 items-center justify-center rounded-[9px] border border-line text-hi transition-colors duration-200 ease-out-expo hover:border-line-hi lg:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -111,10 +111,10 @@ export default function Header() {
               href={CV_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 rounded-control border border-accent-line px-[18px] py-3 font-mono text-[12.5px] font-semibold text-accent transition-colors duration-200 ease-out-expo hover:bg-accent-soft"
+              className="inline-flex items-center justify-center gap-2 rounded-control border border-accent-line px-4.5 py-3 font-mono text-caption font-semibold text-accent transition-colors duration-200 ease-out-expo hover:bg-accent-soft"
               onClick={() => setIsMenuOpen(false)}
             >
-              <Download className="h-[14px] w-[14px]" />
+              <Download className="h-3.5 w-3.5" />
               Download CV
             </a>
 

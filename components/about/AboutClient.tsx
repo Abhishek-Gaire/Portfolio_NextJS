@@ -186,7 +186,7 @@ export default function AboutClient() {
                     index > 0 ? "border-t border-line" : ""
                   }`}
                 >
-                  <span className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-[10px] border border-accent-line bg-accent-soft text-accent">
+                  <span className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-control border border-accent-line bg-accent-soft text-accent">
                     <Icon className="h-4 w-4" />
                   </span>
                   <span className="text-[14px] font-semibold text-hi">
@@ -267,7 +267,7 @@ export default function AboutClient() {
                 className="h-full"
               >
                 <BentoCard interactive className="h-full rounded-tile p-5.5">
-                  <span className="mb-4 flex h-9.5 w-9.5 items-center justify-center rounded-[10px] border border-accent-line bg-accent-soft text-accent">
+                  <span className="mb-4 flex h-9.5 w-9.5 items-center justify-center rounded-control border border-accent-line bg-accent-soft text-accent">
                     <value.icon className="h-4 w-4" />
                   </span>
                   <h3 className="mb-2 text-[15px] font-semibold text-hi">
@@ -294,7 +294,7 @@ export default function AboutClient() {
             lede="Four years of going from first commit to shipping full-stack products end to end."
           />
 
-          <div className="relative mx-auto max-w-[860px]">
+          <div className="relative mx-auto max-w-narrow">
             <div
               aria-hidden="true"
               className="absolute left-1/2 w-px -translate-x-1/2 bg-accent-line"

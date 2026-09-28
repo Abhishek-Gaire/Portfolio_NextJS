@@ -75,7 +75,7 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
               placeholder="Search projects..."
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              className="w-full rounded-control border border-line bg-code-bg py-2.5 pl-10 pr-4 text-[14px] text-hi transition-colors duration-200 placeholder:text-low hover:border-line-hi focus:border-accent-line sm:w-[300px]"
+              className="w-full rounded-control border border-line bg-code-bg py-2.5 pl-10 pr-4 text-[14px] text-hi transition-colors duration-200 placeholder:text-low hover:border-line-hi focus:border-accent-line sm:w-75"
             />
           </div>
 

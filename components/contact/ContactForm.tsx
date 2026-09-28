@@ -68,7 +68,7 @@ export default function ContactForm() {
         <h3 className="mb-1.5 text-[15px] font-semibold text-hi">
           Send me a message
         </h3>
-        <p className="text-[12.5px] text-mid">
+        <p className="text-caption text-mid">
           I&apos;ll get back to you as soon as possible
         </p>
       </div>
@@ -134,7 +134,7 @@ export default function ContactForm() {
               placeholder="Your Message"
               required
               rows={6}
-              className="peer min-h-[132px] w-full resize-none rounded-control border border-line bg-surface-2 py-3 pl-10 pr-3.5 text-[14px] text-hi transition-colors duration-200 placeholder:text-low focus:border-accent-line"
+              className="peer min-h-33 w-full resize-none rounded-control border border-line bg-surface-2 py-3 pl-10 pr-3.5 text-[14px] text-hi transition-colors duration-200 placeholder:text-low focus:border-accent-line"
             />
             <MessageSquare className="pointer-events-none absolute left-3.5 top-4 h-4 w-4 text-low peer-focus:text-accent" />
           </div>

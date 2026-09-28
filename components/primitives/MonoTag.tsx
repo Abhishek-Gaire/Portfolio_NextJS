@@ -18,7 +18,7 @@ export function MonoTag({
   return (
     <Tag
       className={cn(
-        "rounded-full border px-2 py-[3px] font-mono text-[10.5px]",
+        "rounded-full border px-2 py-0.75 font-mono text-[10.5px]",
         accent ? "border-accent-line text-accent" : "border-line text-low",
         className,
       )}

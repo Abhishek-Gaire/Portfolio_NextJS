@@ -284,7 +284,7 @@ export default async function BlogDetailPage({
               __html: JSON.stringify(blogPostingJsonLd),
             }}
           />
-          <nav className="mb-8 flex items-center gap-2 font-mono text-[11.5px] text-low">
+          <nav className="mb-8 flex items-center gap-2 font-mono text-micro text-low">
             <Link
               href="/"
               className="transition-colors duration-200 hover:text-accent"
@@ -307,7 +307,7 @@ export default async function BlogDetailPage({
             <h1 className="mb-4 text-display font-bold text-hi">
               {post.title}
             </h1>
-            <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[11.5px] text-low">
+            <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-micro text-low">
               <span className="text-mid">{author}</span>
               <span aria-hidden="true">•</span>
               <time dateTime={post.created_at}>
@@ -364,7 +364,7 @@ export default async function BlogDetailPage({
                     aria-hidden="true"
                   />
                   <span className="min-w-0">
-                    <span className="block font-mono text-[11.5px]">
+                    <span className="block font-mono text-micro">
                       Previous
                     </span>
                     <span className="block truncate text-[14px] font-semibold text-hi">
@@ -381,7 +381,7 @@ export default async function BlogDetailPage({
                   className="group/next flex max-w-[45%] items-center gap-2.5 text-right text-low transition-colors duration-200 hover:text-accent"
                 >
                   <span className="min-w-0">
-                    <span className="block font-mono text-[11.5px]">Next</span>
+                    <span className="block font-mono text-micro">Next</span>
                     <span className="block truncate text-[14px] font-semibold text-hi">
                       {next.title}
                     </span>

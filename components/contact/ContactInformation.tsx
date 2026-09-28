@@ -51,7 +51,7 @@ const reasons = [
 
 function DetailIcon({ children }: { children: ReactNode }) {
   return (
-    <span className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-[10px] border border-accent-line bg-accent-soft text-accent">
+    <span className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-control border border-accent-line bg-accent-soft text-accent">
       {children}
     </span>
   );
@@ -67,7 +67,7 @@ export default function ContactInformation() {
               <Mail className="h-4 w-4" />
             </DetailIcon>
             <div>
-              <p className="font-mono text-[11.5px] text-low">Email</p>
+              <p className="font-mono text-micro text-low">Email</p>
               <a
                 href="mailto:abhisekgaire7@gmail.com"
                 className="text-[14.5px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
@@ -82,7 +82,7 @@ export default function ContactInformation() {
               <MapPin className="h-4 w-4" />
             </DetailIcon>
             <div>
-              <p className="font-mono text-[11.5px] text-low">Location</p>
+              <p className="font-mono text-micro text-low">Location</p>
               <p className="text-[14.5px] font-semibold text-hi">
                 Pokhara, Nepal
               </p>
@@ -99,7 +99,7 @@ export default function ContactInformation() {
               <h3 className="text-[15px] font-semibold text-hi">
                 Professional CV
               </h3>
-              <p className="text-[12.5px] text-mid">
+              <p className="text-caption text-mid">
                 Download my complete resume
               </p>
             </div>
@@ -119,7 +119,7 @@ export default function ContactInformation() {
         </div>
 
         <div className="border-t border-line px-6 py-5">
-          <p className="mb-3 font-mono text-[11.5px] text-low">Follow Me</p>
+          <p className="mb-3 font-mono text-micro text-low">Follow Me</p>
           <div className="flex gap-2.5">
             {socials.map(({ href, label, Icon }) => (
               <a
@@ -144,10 +144,10 @@ export default function ContactInformation() {
         <ul className="flex flex-col gap-3.5">
           {reasons.map(({ title, detail }) => (
             <li key={title} className="flex items-start gap-3.5">
-              <span className="mt-[7px] h-2 w-2 shrink-0 rounded-full bg-accent" />
+              <span className="mt-1.75 h-2 w-2 shrink-0 rounded-full bg-accent" />
               <div>
                 <h4 className="text-[14px] font-semibold text-hi">{title}</h4>
-                <p className="text-[12.5px] leading-[1.5] text-mid">{detail}</p>
+                <p className="text-caption leading-[1.5] text-mid">{detail}</p>
               </div>
             </li>
           ))}

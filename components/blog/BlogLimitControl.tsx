@@ -33,7 +33,7 @@ export default function BlogLimitControl({
 
   return (
     <div className="flex items-center gap-2.5">
-      <span className="font-mono text-[11.5px] text-low">PER PAGE</span>
+      <span className="font-mono text-micro text-low">PER PAGE</span>
       <select
         value={currentLimit}
         onChange={handleChange}

@@ -85,7 +85,7 @@ export function SkillsTerminal({ directories, className }: SkillsTerminalProps) 
           {directories.length} directories, {fileCount} files
           <span
             aria-hidden="true"
-            className="animate-blink ml-1 inline-block h-[14px] w-[7px] align-middle bg-accent"
+            className="animate-blink ml-1 inline-block h-3.5 w-1.75 align-middle bg-accent"
           />
         </span>
       </WindowChrome>

@@ -63,6 +63,7 @@
 
   /* ---- layout ---- */
   --container-shell: 1180px;
+  --container-narrow: 860px;
   --container-measure: 56ch;
   --container-measure-narrow: 50ch;
 

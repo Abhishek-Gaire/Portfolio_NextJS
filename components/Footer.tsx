@@ -116,7 +116,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-between gap-2.5 border-t border-line pt-6 text-[12.5px] text-low md:flex-row">
+        <div className="flex flex-col items-center justify-between gap-2.5 border-t border-line pt-6 text-caption text-low md:flex-row">
           <p>&copy; 2025 Abhishek Gaire. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <span>Made with ❤️ in Nepal</span>

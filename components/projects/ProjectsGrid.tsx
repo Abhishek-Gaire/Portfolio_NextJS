@@ -89,7 +89,7 @@ export default function ProjectsGrid({ projects, view }: ProjectsGridProps) {
                       title={project.title}
                       className="h-auto w-full overflow-hidden rounded-tile border border-line bg-code-bg"
                     >
-                      <div className="h-[136px]">
+                      <div className="h-34">
                         <Image
                           src={project.image_url?.trim() || FALLBACK_IMAGE}
                           alt={project.title}

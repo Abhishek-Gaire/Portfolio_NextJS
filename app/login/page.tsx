@@ -30,7 +30,7 @@ export default async function LoginPage() {
 
   return (
     <main className="min-h-screen px-6 py-20">
-      <div className="mx-auto w-full max-w-[440px]">
+      <div className="mx-auto w-full max-w-110">
         <BentoCard className="p-7 sm:p-8">
           <Eyebrow>SECURE AREA</Eyebrow>
           <h1 className="text-title font-bold text-hi">Login</h1>

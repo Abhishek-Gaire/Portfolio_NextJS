@@ -65,7 +65,7 @@ export default function LatestBlogsClient({ posts }: LatestBlogsClientProps) {
               <Reveal key={post.id} delay={index * 80} className="h-full">
                 <BentoCard interactive className="h-full">
                   <article className="flex h-full flex-col">
-                    <div className="relative h-[148px] shrink-0 overflow-hidden border-b border-line">
+                    <div className="relative h-37 shrink-0 overflow-hidden border-b border-line">
                       <Image
                         src={
                           post.imageUrl ||
@@ -77,7 +77,7 @@ export default function LatestBlogsClient({ posts }: LatestBlogsClientProps) {
                         unoptimized
                         className="h-full w-full object-cover"
                       />
-                      <span className="absolute bottom-3 left-3 rounded-full border border-line bg-code-bg/85 px-2 py-[3px] font-mono text-[10.5px] text-low backdrop-blur-sm">
+                      <span className="absolute bottom-3 left-3 rounded-full border border-line bg-code-bg/85 px-2 py-0.75 font-mono text-[10.5px] text-low backdrop-blur-sm">
                         {readingTime} min read
                       </span>
                     </div>
@@ -98,7 +98,7 @@ export default function LatestBlogsClient({ posts }: LatestBlogsClientProps) {
                         <BlogHomeContent content={preview} />
                       </div>
 
-                      <div className="mt-auto flex items-center justify-between border-t border-line pt-3.5 font-mono text-[11.5px] text-low">
+                      <div className="mt-auto flex items-center justify-between border-t border-line pt-3.5 font-mono text-micro text-low">
                         <time dateTime={post.created_at}>
                           {formatShortDate(post.created_at)}
                         </time>

@@ -69,15 +69,15 @@ export default function FeaturedProjectsClient({
                       className={cn(
                         "flex items-center justify-center bg-surface-2 p-6",
                         featured
-                          ? "min-h-[220px] border-b border-line lg:border-b-0 lg:border-r"
-                          : "min-h-[150px] border-b border-line",
+                          ? "min-h-55 border-b border-line lg:border-b-0 lg:border-r"
+                          : "min-h-37.5 border-b border-line",
                       )}
                     >
                       <WindowChrome
                         title={project.title}
-                        className="h-auto w-[82%] max-w-[420px] overflow-hidden rounded-tile border border-line bg-code-bg"
+                        className="h-auto w-[82%] max-w-105 overflow-hidden rounded-tile border border-line bg-code-bg"
                       >
-                        <div className="h-[120px]">
+                        <div className="h-30">
                           <Image
                             src={project.image_url?.trim() || FALLBACK_IMAGE}
                             alt={project.title}

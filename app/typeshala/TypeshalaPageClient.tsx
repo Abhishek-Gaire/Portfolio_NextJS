@@ -166,7 +166,7 @@ export default function TypeshalaPageClient({
         <section className="pt-16 pb-16">
           <div className="mx-auto max-w-shell px-6">
             <div className="max-w-[46rem]">
-              <span className="inline-flex w-fit items-center gap-1.75 rounded-full border border-accent-line bg-accent-soft py-1.5 pl-2 pr-2.5 font-mono text-[11.5px] text-accent">
+              <span className="inline-flex w-fit items-center gap-1.75 rounded-full border border-accent-line bg-accent-soft py-1.5 pl-2 pr-2.5 font-mono text-micro text-accent">
                 <span className="animate-pulse-ring h-1.5 w-1.5 rounded-full bg-accent" />
                 Available for download
               </span>
@@ -308,7 +308,7 @@ export default function TypeshalaPageClient({
           <section className="py-16">
             <div className="mx-auto max-w-shell px-6">
               <BentoCard className="mx-auto max-w-[44rem] rounded-hero p-7 text-center sm:p-9">
-                <span className="inline-flex items-center gap-1.75 rounded-full border border-[rgba(167,139,250,0.32)] bg-[rgba(167,139,250,0.1)] py-1.5 pl-2 pr-2.5 font-mono text-[11.5px] text-violet">
+                <span className="inline-flex items-center gap-1.75 rounded-full border border-[rgba(167,139,250,0.32)] bg-[rgba(167,139,250,0.1)] py-1.5 pl-2 pr-2.5 font-mono text-micro text-violet">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-violet" />
                   {releasesRateLimited
                     ? "GitHub API rate limited"
@@ -346,7 +346,7 @@ export default function TypeshalaPageClient({
           <section className="py-16">
             <div className="mx-auto max-w-shell px-6">
               <BentoCard className="mx-auto max-w-[44rem] rounded-hero p-7 text-center sm:p-9">
-                <span className="inline-flex items-center gap-1.75 rounded-full border border-[rgba(240,180,41,0.35)] bg-[rgba(240,180,41,0.1)] py-1.5 pl-2 pr-2.5 font-mono text-[11.5px] text-amber">
+                <span className="inline-flex items-center gap-1.75 rounded-full border border-[rgba(240,180,41,0.35)] bg-[rgba(240,180,41,0.1)] py-1.5 pl-2 pr-2.5 font-mono text-micro text-amber">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
                   No releases yet
                 </span>
@@ -393,7 +393,7 @@ export default function TypeshalaPageClient({
                   className="h-full"
                 >
                   <BentoCard interactive className="h-full p-5">
-                    <span className="mb-3.5 flex h-9.5 w-9.5 items-center justify-center rounded-[10px] border border-accent-line bg-accent-soft text-accent">
+                    <span className="mb-3.5 flex h-9.5 w-9.5 items-center justify-center rounded-control border border-accent-line bg-accent-soft text-accent">
                       <Icon size={17} />
                     </span>
                     <h3 className="text-[15px] font-semibold text-hi">
@@ -418,7 +418,7 @@ export default function TypeshalaPageClient({
             <Reveal delay={100}>
               <div className="flex flex-wrap justify-center gap-2">
                 {TECH_STACK.map((tech) => (
-                  <MonoTag key={tech} className="px-3 py-1 text-[11.5px]">
+                  <MonoTag key={tech} className="px-3 py-1 text-micro">
                     {tech}
                   </MonoTag>
                 ))}

@@ -20,7 +20,7 @@ export function StatCell({
   return (
     <div
       className={cn(
-        "px-[26px] py-[22px]",
+        "px-6.5 py-5.5",
         // The colour must be explicit: Tailwind v4 preflight declares
         // `border: 0 solid` with no border-color, so a bare `border-r` falls
         // back to currentColor rather than the --color-line token.
@@ -34,7 +34,7 @@ export function StatCell({
       <Tag className="block text-[28px] leading-none font-bold text-accent">
         {value}
       </Tag>
-      <span className="text-[12.5px] leading-[1.35] text-low">{label}</span>
+      <span className="text-caption leading-[1.35] text-low">{label}</span>
     </div>
   );
 }

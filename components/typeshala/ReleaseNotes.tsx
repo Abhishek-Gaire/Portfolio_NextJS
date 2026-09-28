@@ -100,7 +100,7 @@ export function ReleaseNotes({
       />
 
       <div className="prose prose-sm max-w-none">
-        <div className="whitespace-pre-wrap font-mono text-[12.5px] leading-[1.9] text-mid">
+        <div className="whitespace-pre-wrap font-mono text-caption leading-[1.9] text-mid">
           {expanded || !hasMore ? (
             body
           ) : (
@@ -168,7 +168,7 @@ export function PreviousRelease({
     <details className="group/details overflow-hidden rounded-card border border-line bg-surface transition-colors duration-300 open:bg-surface-2">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-accent-line bg-accent-soft font-mono text-[12.5px] font-semibold text-accent">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-accent-line bg-accent-soft font-mono text-caption font-semibold text-accent">
             v{version}
           </span>
           <div className="min-w-0">
@@ -199,7 +199,7 @@ export function PreviousRelease({
       <Reveal className="border-t border-line p-4">
         {body ? (
           <div className="prose prose-sm mb-4 max-w-none">
-            <div className="whitespace-pre-wrap font-mono text-[12.5px] leading-[1.9] text-mid">
+            <div className="whitespace-pre-wrap font-mono text-caption leading-[1.9] text-mid">
               {body}
             </div>
           </div>

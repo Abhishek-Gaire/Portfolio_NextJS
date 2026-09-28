@@ -22,7 +22,7 @@ export function Button({
   return (
     <Tag
       className={cn(
-        "inline-flex items-center gap-2 rounded-control border px-[18px] py-[11px] font-sans text-[13.5px] font-semibold transition-colors duration-200",
+        "inline-flex items-center gap-2 rounded-control border px-4.5 py-2.75 font-sans text-[13.5px] font-semibold transition-colors duration-200",
         variant === "primary"
           ? "border-accent bg-accent text-[#08110f] hover:bg-[#5eead4]"
           : "border-line bg-transparent text-hi hover:border-line-hi hover:bg-[rgba(255,255,255,0.03)]",

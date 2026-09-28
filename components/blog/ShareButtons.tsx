@@ -39,7 +39,7 @@ export default function ShareButtons({
 
   return (
     <div className="my-8 flex flex-wrap items-center gap-3 border-y border-line py-5">
-      <span className="font-mono text-[11.5px] text-low">SHARE</span>
+      <span className="font-mono text-micro text-low">SHARE</span>
       <div className="flex flex-wrap items-center gap-2.5">
         <a
           href={shareLinks.twitter}
