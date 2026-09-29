@@ -37,4 +37,14 @@ export interface Project {
    * than to a crash, and `null` and `undefined` both mean "not featured".
    */
   isFeatured?: boolean;
+  /**
+   * URL key for /projects/<slug>, added in
+   * supabase/migrations/20260929000002_add_projects_slug.sql.
+   *
+   * Stored rather than derived from the title so that editing a title in the
+   * admin form cannot break a live URL. Required on the type because the column
+   * is NOT NULL, but the page still treats a missing one as "no such project"
+   * rather than falling back to the title.
+   */
+  slug: string;
 }

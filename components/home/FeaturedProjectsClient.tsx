@@ -2,9 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Download, ExternalLink } from "lucide-react";
-import { Github } from "@/components/icons";
-import { getProjectDownloadUrl } from "@/lib/project-links";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BentoCard } from "@/components/primitives/BentoCard";
 import { Button } from "@/components/primitives/Button";
@@ -76,9 +74,6 @@ export default function FeaturedProjectsClient({
             const technologies = Array.isArray(project.technologies)
               ? project.technologies
               : [];
-            // Shared with /projects so the two cards cannot disagree about a
-            // download-only project. See lib/project-links.ts.
-            const downloadUrl = getProjectDownloadUrl(project.title);
             const isReversed = index % 2 === 1;
 
             const media = (
@@ -135,45 +130,26 @@ export default function FeaturedProjectsClient({
                 )}
 
                 <div className="mt-auto flex flex-wrap items-center gap-2.5">
-                  {downloadUrl ? (
-                    <a
-                      href={downloadUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Download ${project.title}`}
-                      className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
-                    >
-                      <span>Download</span>
-                      <Download className="h-3.5 w-3.5" />
-                    </a>
-                  ) : (
-                    <>
-                      {project.live_url && (
-                        <a
-                          href={project.live_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label="Live Demo"
-                          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
-                        >
-                          <span>Live demo</span>
-                          <ExternalLink className="h-3.5 w-3.5" />
-                        </a>
-                      )}
-                      {project.github_url && (
-                        <a
-                          href={project.github_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label="Source Code"
-                          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
-                        >
-                          <Github className="h-3.5 w-3.5" />
-                          <span>Source</span>
-                        </a>
-                      )}
-                    </>
-                  )}
+                  {/*
+                    One CTA, and it is a link to the case study. The card used
+                    to carry its own Live/Source pair and a name-keyed Download
+                    override, which meant the home page duplicated the whole
+                    link set of the project page — and the two already disagreed
+                    once, about the Download button.
+
+                    A teaser card should tease. Every destination now lives on
+                    /projects/<slug>, and that route is server-rendered, so the
+                    copy behind those links is finally visible to a crawler.
+                    The Download override is down to one call site, the detail
+                    page, instead of two that could drift.
+                  */}
+                  <Link
+                    href={`/projects/${project.slug}`}
+                    className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
+                  >
+                    <span>View project</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
                 </div>
               </div>
             );

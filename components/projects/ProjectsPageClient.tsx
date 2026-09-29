@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import {
   Download,
@@ -9,7 +10,6 @@ import {
   LayoutGrid,
   List,
   Search,
-  Share2,
 } from "lucide-react";
 
 import { Github } from "@/components/icons";
@@ -20,7 +20,6 @@ import { Reveal } from "@/components/primitives/Reveal";
 import { getProjectDownloadUrl } from "@/lib/project-links";
 import { cn } from "@/lib/utils";
 import type { Project, ProjectCategory } from "../../types/project";
-import ProjectDialog from "./ProjectDialog";
 
 /*
  * Ported from the reference project:
@@ -29,11 +28,12 @@ import ProjectDialog from "./ProjectDialog";
  * Three places the port does not follow the reference literally, each because
  * the reference's version depends on something this site does not have:
  *
- * 1. The reference's cards link the image and the title to /projects/$slug, a
- *    detail route that does not exist here and that this site has no data
- *    plumbing for. They open ProjectDialog instead, which is the existing
- *    mechanism and carries the same content the detail page would have: full
- *    description, role, challenges, solutions, and both links.
+ * 1. The reference's cards link the image and the title to /projects/$slug.
+ *    That route now exists here — see app/projects/[slug]/page.tsx — so this
+ *    port follows the reference rather than diverging from it. The image and
+ *    title are real links, which is why they cannot be nested: the Download
+ *    link beside them goes somewhere else entirely, and a link inside a link
+ *    is invalid and breaks keyboard and screen-reader navigation.
  *
  * 2. The reference's filter dropdown is decorative. `filter` is written to
  *    state and never read — the `visible` memo filters on `query` only, so
@@ -45,10 +45,10 @@ import ProjectDialog from "./ProjectDialog";
  *    The native select is also what globals.css sets `color-scheme: dark` for —
  *    its popup is styled, whereas a custom listbox would have to be rebuilt.
  *
- * 3. The reference's Share button copies a per-project URL to the clipboard.
- *    With no per-project URL there is nothing to share, so the icon keeps this
- *    site's existing behaviour of opening the details dialog. It is not
- *    pretending to copy anything.
+ * 3. The reference's Share button is gone rather than adapted. It copied a
+ *    per-project URL, and now that a per-project URL exists, the browser's own
+ *    share sheet does the job better — and the icon would have been a third
+ *    affordance doing what the title link already does.
  *
  * The reference's CardContainer/CardBody/CardItem 3D tilt is already ported to
  * this repo as TiltCard, unused until now. The reference layers four different
@@ -89,7 +89,6 @@ export default function ProjectsPageClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] =
     useState<ProjectCategory>("All");
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const normalizedSearch = searchQuery.toLowerCase().trim();
   const filteredProjects = projects.filter((project) => {
@@ -230,10 +229,9 @@ export default function ProjectsPageClient({
                         isList ? "flex-col sm:flex-row" : "flex-col",
                       )}
                     >
-                      <button
-                        type="button"
-                        onClick={() => setSelectedProject(project)}
-                        aria-label={`View details for ${project.title}`}
+                      <Link
+                        href={`/projects/${project.slug}`}
+                        aria-label={`View case study for ${project.title}`}
                         className={cn(
                           "block shrink-0 overflow-hidden rounded-tile",
                           isList ? "sm:w-[38%]" : "w-full",
@@ -255,18 +253,17 @@ export default function ProjectsPageClient({
                             isList ? "h-40 sm:h-full sm:min-h-45" : "h-48",
                           )}
                         />
-                      </button>
+                      </Link>
 
                       <div className="flex min-w-0 flex-1 flex-col">
                         <div className="mb-5 flex items-center justify-between gap-3">
                           <h2 className="text-xl font-bold text-hi">
-                            <button
-                              type="button"
-                              onClick={() => setSelectedProject(project)}
+                            <Link
+                              href={`/projects/${project.slug}`}
                               className="text-left transition-colors duration-200 hover:text-accent"
                             >
                               {project.title}
-                            </button>
+                            </Link>
                           </h2>
                           {project.completionDate ? (
                             <MonoTag className="shrink-0">
@@ -327,14 +324,6 @@ export default function ProjectsPageClient({
                               ) : null}
                             </div>
                           )}
-                          <button
-                            type="button"
-                            onClick={() => setSelectedProject(project)}
-                            aria-label={`View details for ${project.title}`}
-                            className="ml-auto text-low transition-colors duration-200 hover:text-hi"
-                          >
-                            <Share2 size={16} />
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -345,11 +334,6 @@ export default function ProjectsPageClient({
           })}
         </div>
       )}
-
-      <ProjectDialog
-        project={selectedProject}
-        onClose={() => setSelectedProject(null)}
-      />
     </>
   );
 }
