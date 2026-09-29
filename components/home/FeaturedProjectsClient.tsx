@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowRight, Download, ExternalLink } from "lucide-react";
 import { Github } from "@/components/icons";
+import { getProjectDownloadUrl } from "@/lib/project-links";
 import { cn } from "@/lib/utils";
 import { BentoCard } from "@/components/primitives/BentoCard";
 import { Button } from "@/components/primitives/Button";
@@ -61,6 +62,9 @@ export default function FeaturedProjectsClient({
               ? project.technologies
               : [];
             const featured = index === 0 && projects.length >= 3;
+            // Shared with /projects so the two cards cannot disagree about a
+            // download-only project. See lib/project-links.ts.
+            const downloadUrl = getProjectDownloadUrl(project.title);
 
             return (
               <Reveal
@@ -150,29 +154,44 @@ export default function FeaturedProjectsClient({
                       )}
 
                       <div className="mt-auto flex flex-wrap items-center gap-2.5">
-                        {project.live_url && (
+                        {downloadUrl ? (
                           <a
-                            href={project.live_url}
+                            href={downloadUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label="Live Demo"
+                            aria-label={`Download ${project.title}`}
                             className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
                           >
-                            <span>Live demo</span>
-                            <ExternalLink className="h-3.5 w-3.5" />
+                            <span>Download</span>
+                            <Download className="h-3.5 w-3.5" />
                           </a>
-                        )}
-                        {project.github_url && (
-                          <a
-                            href={project.github_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Source Code"
-                            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
-                          >
-                            <Github className="h-3.5 w-3.5" />
-                            <span>Source</span>
-                          </a>
+                        ) : (
+                          <>
+                            {project.live_url && (
+                              <a
+                                href={project.live_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Live Demo"
+                                className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
+                              >
+                                <span>Live demo</span>
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </a>
+                            )}
+                            {project.github_url && (
+                              <a
+                                href={project.github_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Source Code"
+                                className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
+                              >
+                                <Github className="h-3.5 w-3.5" />
+                                <span>Source</span>
+                              </a>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>

@@ -17,7 +17,7 @@ import { TiltCard } from "@/components/motion/TiltCard";
 import { BentoCard } from "@/components/primitives/BentoCard";
 import { MonoTag } from "@/components/primitives/MonoTag";
 import { Reveal } from "@/components/primitives/Reveal";
-import { TYPESHala_SITE_URL } from "@/lib/site-urls";
+import { getProjectDownloadUrl } from "@/lib/project-links";
 import { cn } from "@/lib/utils";
 import type { Project, ProjectCategory } from "../../types/project";
 import ProjectDialog from "./ProjectDialog";
@@ -68,22 +68,6 @@ const categories: ProjectCategory[] = [
   "Collaboration",
 ];
 
-/**
- * Projects that get a Download button in place of Live/Code, keyed on title.
- *
- * The reference drives this from a `downloadTo` field and points it at its own
- * `/typeshala` route. This site points at the Typeshala subdomain instead, so
- * there is no route to link to here — and a column for one row is not worth a
- * migration, which is why this is a lookup rather than a schema change.
- *
- * The fragility is real and worth stating plainly: renaming the row in
- * /admin silently drops the button, with no error anywhere. It is a table
- * rather than an inline `===` so there is exactly one place to look when that
- * happens, and so adding a second download-only project is a one-line change.
- */
-const DOWNLOAD_OVERRIDES: Record<string, string> = {
-  Typeshala: TYPESHala_SITE_URL,
-};
 
 /*
  * images.unsplash.com, not the images.pexels.com this used to point at.
@@ -225,7 +209,7 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
           )}
         >
           {filteredProjects.map((project, index) => {
-          const downloadUrl = DOWNLOAD_OVERRIDES[project.title];
+          const downloadUrl = getProjectDownloadUrl(project.title);
 
           return (
             <Reveal key={project.id} delay={index * 60} className="h-full">
