@@ -90,9 +90,22 @@ const FEATURES: Feature[] = [
   },
 ];
 
+/*
+ * Verified against the real app rather than from memory. `Zustand` was listed
+ * here and is a false claim: it is not in the app's package.json, not in its
+ * lockfile, and not imported anywhere in src/. The frontend has no external
+ * state library at all — persistence runs through Tauri commands into Rust
+ * (`src/infrastructure/tauriApi.ts` -> `invoke`), backed by
+ * `tauri-plugin-store`, with the shared shapes serialised by serde. So Serde
+ * replaces it, which is both true and the thing that actually does the job
+ * Zustand was credited with.
+ *
+ * Check the rest against ~/Desktop/OpenSource/Typeshala before changing either
+ * list — the other five are all real dependencies.
+ */
 const TECH_STACK_OUTER = ["Tauri v2", "React 19", "TypeScript", "Vite", "Rust"];
 
-const TECH_STACK_INNER = ["Tailwind CSS", "Zustand", "Vitest"];
+const TECH_STACK_INNER = ["Tailwind CSS", "Serde", "Vitest"];
 
 export default function TypeshalaPageClient({
   data,
@@ -217,10 +230,6 @@ export default function TypeshalaPageClient({
               </div>
 
               <div className="w-full lg:w-104">
-                <h2 className="font-mono text-xs tracking-widest text-low uppercase">
-                  Stack
-                </h2>
-
                 {/*
                   Structure copied from the remix reference at
                   src/routes/index.tsx:148-175. The parent's flex centring is
@@ -240,7 +249,7 @@ export default function TypeshalaPageClient({
                   effect, and this is above the fold — the observer would fire on
                   the first frame and the fade would just be a flash.
                 */}
-                <div className="relative mx-auto mt-6 flex h-[420px] w-full origin-center items-center justify-center max-md:scale-[0.72] [&:hover_*]:[animation-play-state:paused]">
+                <div className="relative mx-auto flex h-[420px] w-full origin-center items-center justify-center max-md:scale-[0.72] [&:hover_*]:[animation-play-state:paused]">
                   <span className="font-mono text-xs text-low">core</span>
                   <OrbitingCircles
                     radius={170}
