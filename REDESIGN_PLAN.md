@@ -245,6 +245,7 @@ not reflected in sections 1, 4 or 5:
 | *(uncommitted)* | Reference home CTA and reference footer replace the old home contact and the three-column footer; contact address moved to `CONTACT_EMAIL` |
 | *(uncommitted)* | Divider rows widened from 3–2 labels to 4–3 |
 | *(uncommitted)* | `/about` replaced wholesale with the reference route; `AboutClient.tsx` deleted; the reference's `Tools` block dropped as a duplicate of the home Skills section |
+| *(uncommitted)* | `/projects` replaced with the reference route; `ProjectsGrid.tsx` split into `ProjectDialog.tsx`; `TiltCard` gets its first call site |
 
 ### Phase 0 — Safety
 Branch `redesign/bento` branched off `main`; nothing was committed to `main`.
