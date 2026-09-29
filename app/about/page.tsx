@@ -34,6 +34,14 @@ export const metadata: Metadata = {
  * value cards and a "Download CV" button. The CV is still reachable from the
  * hero, the contact page and the footer, so nothing became unreachable.
  *
+ * One section from the reference is not ported. Its "Tools" block listed the
+ * same frontend / backend / database / tools groups, in the same order, as the
+ * home page's Skills section — which carries the fuller version in the orbit
+ * rings and the skills terminal. Two copies of the same list on two routes is
+ * a maintenance trap: they drift, and then the site contradicts itself. The
+ * reference has the same duplication, because its home page and its about page
+ * are separate; this site merges them.
+ *
  * This is a server component. The previous version was "use client" and
  * shipped its whole 381-line tree to the browser; nothing here needs state or
  * an effect. `Reveal` and `KineticDivider` are client components and nest
@@ -110,13 +118,6 @@ const journey = [
   },
 ];
 
-const stack = [
-  { group: "frontend", items: ["ReactJS", "TypeScript", "Tailwind CSS"] },
-  { group: "backend", items: ["Node.js", "NestJS", "Express", "WebSockets"] },
-  { group: "database", items: ["PostgreSQL", "MongoDB", "Redis", "Supabase"] },
-  { group: "tools", items: ["Docker", "Git", "CI/CD", "AWS S3"] },
-];
-
 const now = [
   "Building realtime classroom tooling for a school in Pokhara",
   "Refactoring an automation pipeline to run entirely on schedules",
@@ -176,7 +177,7 @@ export default function AboutPage() {
               </p>
             </Reveal>
             <Reveal delay={80}>
-              <h1 className="mt-6 max-w-3xl text-[clamp(30px,4.4vw,44px)] leading-[1.1] font-bold tracking-[-0.025em] text-balance text-hi">
+              <h1 className="mt-6 max-w-3xl text-[clamp(30px,4.4vw,44px)] leading-[1.1] font-bold tracking-tight text-balance text-hi">
                 I build systems that behave the same on day one and day one
                 hundred.
               </h1>
@@ -303,8 +304,8 @@ export default function AboutPage() {
                   delay={i * 80}
                   className={
                     i % 2 === 0
-                      ? "md:col-start-1 md:mr-[-0.5rem] md:text-right"
-                      : "md:col-start-2 md:ml-[-0.5rem]"
+                      ? "md:col-start-1 md:-mr-2 md:text-right"
+                      : "md:col-start-2 md:-ml-2"
                   }
                 >
                   <div className="ml-10 rounded-card border border-line bg-surface p-6 md:ml-0">
@@ -359,34 +360,6 @@ export default function AboutPage() {
             </ul>
           </div>
         </Reveal>
-      </section>
-
-      <section
-        className="mx-auto max-w-shell px-6 py-16"
-        aria-labelledby="tools-heading"
-      >
-        <Reveal>
-          <h2
-            id="tools-heading"
-            className="font-mono text-xs tracking-widest text-mid uppercase"
-          >
-            Tools
-          </h2>
-        </Reveal>
-        <dl className="mt-8 grid grid-cols-1 gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
-          {stack.map((s, i) => (
-            <Reveal key={s.group} delay={i * 70} className="bg-bg p-5">
-              <dt className="font-mono text-[11px] tracking-widest text-accent uppercase">
-                {s.group}
-              </dt>
-              <dd className="mt-3 space-y-1.5 font-mono text-xs text-mid">
-                {s.items.map((item) => (
-                  <div key={item}>{item}</div>
-                ))}
-              </dd>
-            </Reveal>
-          ))}
-        </dl>
       </section>
 
       <section
