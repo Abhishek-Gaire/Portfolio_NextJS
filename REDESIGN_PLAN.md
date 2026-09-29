@@ -244,6 +244,7 @@ not reflected in sections 1, 4 or 5:
 | *(uncommitted)* | Kinetic divider rebuilt as a continuous marquee with a hover pause |
 | *(uncommitted)* | Reference home CTA and reference footer replace the old home contact and the three-column footer; contact address moved to `CONTACT_EMAIL` |
 | *(uncommitted)* | Divider rows widened from 3–2 labels to 4–3 |
+| *(uncommitted)* | `/about` replaced wholesale with the reference route; `AboutClient.tsx` deleted |
 
 ### Phase 0 — Safety
 Branch `redesign/bento` branched off `main`; nothing was committed to `main`.
@@ -437,8 +438,9 @@ spelling was used.
       Typeshala. Sitemap, robots and the OG image unchanged; the OG image
       returns 200 `image/png` at 1200x630.
 - [x] Exactly one `<h1>` per page, re-confirmed across all seven public routes at
-      390/720/900/1280px. Zero horizontal overflow except `/about` at two widths
-      — pre-existing, recorded below.
+      390/720/900/1280px, and zero horizontal overflow on every route at every
+      width. The `/about` exception that used to be recorded below is gone — the
+      route was replaced wholesale and took the offending row with it.
 - [x] Keyboard focus visible everywhere via the global accent ring.
 - [x] `prefers-reduced-motion` honoured on all six motion surfaces: the marquee,
       3D tilt and architecture beams have JS guards, the clock and count-up
@@ -473,11 +475,11 @@ spelling was used.
   `**.supabase.co` and `images.unsplash.com`. No new image host was introduced.
 - Two DB rows with `probe@example.com` were written to the `Contacts` table
   while verifying the rate limiter. Delete them if that table is inspected.
-- **`/about` overflows horizontally by 26px at 390px and 900px**, from the
-  `flex-row-reverse` header row in `AboutClient.tsx`. Pre-existing — confirmed
-  by re-running the sweep with the architecture work stashed. The old
-  "zero horizontal overflow" claim above was true when it was written and is no
-  longer accurate for `/about` at those two widths.
+- **Resolved — `/about` used to overflow horizontally by 26px at 390px and 900px,**
+  from a `flex-row-reverse` header row in `AboutClient.tsx`. Replacing the route
+  with the reference version removed that component and the row with it, so the
+  site has no horizontal overflow on any route at any of the four widths. The
+  "zero horizontal overflow" claim is accurate again.
 
 ---
 
