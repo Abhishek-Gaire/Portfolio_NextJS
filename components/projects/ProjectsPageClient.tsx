@@ -62,11 +62,19 @@ const categories: ProjectCategory[] = [
   "All",
   "Full Stack",
   "Backend",
+  "Frontend",
   "Collaboration",
 ];
 
+/*
+ * images.unsplash.com, not the images.pexels.com this used to point at.
+ * next.config.ts only whitelists **.supabase.co and images.unsplash.com, so a
+ * project row with a null or blank image_url hit the fallback and threw at
+ * runtime instead of degrading. No current row does, but the branch is one bad
+ * row away from taking /projects down.
+ */
 const FALLBACK_IMAGE =
-  "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=600";
+  "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=800&q=80";
 
 type ProjectsPageClientProps = {
   projects: Project[];

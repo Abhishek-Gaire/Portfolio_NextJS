@@ -17,8 +17,17 @@ type FeaturedProjectsClientProps = {
   projects: Project[];
 };
 
+/*
+ * Was `images.pexels.com`, which is NOT in next.config.ts remotePatterns —
+ * only **.supabase.co and images.unsplash.com are. Any project row with a
+ * null or blank image_url therefore hit the fallback and threw at runtime
+ * rather than degrading. No row has done so far, which is exactly why it went
+ * unnoticed: the branch is only reachable from data the admin UI cannot
+ * currently produce, but it is one bad row away from taking the page down.
+ * images.unsplash.com is whitelisted, so the fallback is safe by construction.
+ */
 const FALLBACK_IMAGE =
-  "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=600";
+  "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=800&q=80";
 
 export default function FeaturedProjectsClient({
   projects,
