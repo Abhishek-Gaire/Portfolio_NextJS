@@ -30,6 +30,30 @@ type FeaturedProjectsClientProps = {
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=800&q=80";
 
+/*
+ * One project per row, image and text alternating sides.
+ *
+ * The previous layout was a two-column grid with the first card spanning both
+ * columns. At two projects that put two cards side by side, each image about
+ * 400px wide, and the crop then cut the identifying part out of both — the
+ * Typeshala capture lost its toolbar, the calendar lost the "Baisakh / BS 2083"
+ * header. A full-width row gives the media half the row instead of a third of
+ * it, so the image reads as a picture of the project rather than a texture.
+ *
+ * `object-position` is top-anchored on the media for the same reason. The two
+ * seeded screenshots are both wider than the box they are cropped into, and
+ * both carry their most identifying detail along the top edge. Bottom-anchored
+ * would keep the least useful part.
+ *
+ * There is no "hero card" branch any more. Every card is full width, so the
+ * old `index === 0 && length >= 3` split has nothing left to distinguish, and
+ * dropping it means raising FEATURED_LIMIT to 3 or 4 needs no change here.
+ *
+ * Alternation is by odd/even index, so it holds for any number of projects:
+ * 0 image-left, 1 image-right, 2 image-left. Below lg the grid is one column
+ * and the order is moot — the image stacks above the text either way, which is
+ * the right reading order on a phone regardless of which side it came from.
+ */
 export default function FeaturedProjectsClient({
   projects,
 }: FeaturedProjectsClientProps) {
@@ -44,16 +68,7 @@ export default function FeaturedProjectsClient({
           />
         </Reveal>
 
-        {/*
-          `sm:grid-cols-2` with the first card spanning both columns. That only
-          tiles cleanly for an ODD number of cards: 3 gives one full-width row
-          over a full row of two halves. The home page is now capped at 2, where
-          a full-width first card would leave the right half of the second row
-          empty, so the hero treatment is gated on there being at least 3 and the
-          two-card case renders as a plain side-by-side pair. Raising
-          FEATURED_LIMIT in FeaturedProjects.tsx re-enables it automatically.
-        */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="flex flex-col gap-5">
           {projects.map((project, index) => {
             const year = project.completionDate
               ? new Date(project.completionDate).getFullYear()
@@ -61,140 +76,123 @@ export default function FeaturedProjectsClient({
             const technologies = Array.isArray(project.technologies)
               ? project.technologies
               : [];
-            const featured = index === 0 && projects.length >= 3;
             // Shared with /projects so the two cards cannot disagree about a
             // download-only project. See lib/project-links.ts.
             const downloadUrl = getProjectDownloadUrl(project.title);
+            const isReversed = index % 2 === 1;
+
+            const media = (
+              <div
+                className={cn(
+                  "flex items-center justify-center bg-surface-2 p-5 sm:p-6",
+                  isReversed
+                    ? "border-t border-line lg:border-t-0 lg:border-l"
+                    : "border-t border-line lg:border-t-0 lg:border-r",
+                )}
+              >
+                <WindowChrome
+                  title={project.title}
+                  className="h-auto w-full max-w-125 overflow-hidden rounded-tile border border-line bg-code-bg"
+                >
+                  <div className="aspect-16/10">
+                    <Image
+                      src={project.image_url?.trim() || FALLBACK_IMAGE}
+                      alt={project.title}
+                      width={1024}
+                      height={640}
+                      sizes="(min-width: 1024px) 590px, 100vw"
+                      unoptimized
+                      className="h-full w-full object-cover object-top"
+                    />
+                  </div>
+                </WindowChrome>
+              </div>
+            );
+
+            const body = (
+              <div className="flex flex-col p-6 sm:p-7">
+                {year ? <MonoTag className="mb-2.5 w-fit">{year}</MonoTag> : null}
+
+                <h3 className="text-[19px] font-semibold tracking-[-0.01em] text-hi">
+                  {project.title}
+                </h3>
+
+                <p className="mt-3 mb-5 text-[14px] leading-[1.6] text-mid">
+                  {project.description}
+                </p>
+
+                {technologies.length > 0 && (
+                  <div className="mb-5 flex flex-wrap gap-1.5">
+                    {technologies.slice(0, 3).map((tech, techIndex) => (
+                      <MonoTag key={`${project.id}-${tech}-${techIndex}`}>
+                        {tech}
+                      </MonoTag>
+                    ))}
+                    {technologies.length > 3 && (
+                      <MonoTag>+{technologies.length - 3} more</MonoTag>
+                    )}
+                  </div>
+                )}
+
+                <div className="mt-auto flex flex-wrap items-center gap-2.5">
+                  {downloadUrl ? (
+                    <a
+                      href={downloadUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Download ${project.title}`}
+                      className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
+                    >
+                      <span>Download</span>
+                      <Download className="h-3.5 w-3.5" />
+                    </a>
+                  ) : (
+                    <>
+                      {project.live_url && (
+                        <a
+                          href={project.live_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Live Demo"
+                          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
+                        >
+                          <span>Live demo</span>
+                          <ExternalLink className="h-3.5 w-3.5" />
+                        </a>
+                      )}
+                      {project.github_url && (
+                        <a
+                          href={project.github_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Source Code"
+                          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
+                        >
+                          <Github className="h-3.5 w-3.5" />
+                          <span>Source</span>
+                        </a>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            );
 
             return (
-              <Reveal
-                key={project.id}
-                delay={index * 80}
-                className={cn("h-full", featured && "sm:col-span-2")}
-              >
-                <BentoCard
-                  interactive
-                  className={cn(
-                    "h-full",
-                    featured ? "rounded-hero" : "rounded-tile",
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "h-full",
-                      featured
-                        ? "grid grid-cols-1 lg:grid-cols-[1.1fr_1fr]"
-                        : "flex flex-col",
+              <Reveal key={project.id} delay={index * 80}>
+                <BentoCard interactive className="rounded-card">
+                  <div className="grid grid-cols-1 lg:grid-cols-2">
+                    {isReversed ? (
+                      <>
+                        {body}
+                        {media}
+                      </>
+                    ) : (
+                      <>
+                        {media}
+                        {body}
+                      </>
                     )}
-                  >
-                    <div
-                      className={cn(
-                        "flex items-center justify-center bg-surface-2 p-6",
-                        featured
-                          ? "min-h-55 border-b border-line lg:border-b-0 lg:border-r"
-                          : "min-h-37.5 border-b border-line",
-                      )}
-                    >
-                      <WindowChrome
-                        title={project.title}
-                        className="h-auto w-[82%] max-w-105 overflow-hidden rounded-tile border border-line bg-code-bg"
-                      >
-                        <div className="h-30">
-                          <Image
-                            src={project.image_url?.trim() || FALLBACK_IMAGE}
-                            alt={project.title}
-                            width={640}
-                            height={360}
-                            unoptimized
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                      </WindowChrome>
-                    </div>
-
-                    <div
-                      className={cn(
-                        "flex flex-col",
-                        featured ? "p-7" : "p-5.5",
-                      )}
-                    >
-                      {year ? (
-                        <MonoTag className="mb-2.5 w-fit">{year}</MonoTag>
-                      ) : null}
-
-                      <h3
-                        className={cn(
-                          "font-semibold tracking-[-0.01em] text-hi",
-                          featured ? "text-[20px]" : "text-[16px]",
-                        )}
-                      >
-                        {project.title}
-                      </h3>
-
-                      <p
-                        className={cn(
-                          "mt-2.5 mb-4 text-[14px] leading-[1.6] text-mid",
-                          featured ? "line-clamp-3" : "line-clamp-2",
-                        )}
-                      >
-                        {project.description}
-                      </p>
-
-                      {technologies.length > 0 && (
-                        <div className="mb-4 flex flex-wrap gap-1.5">
-                          {technologies.slice(0, 3).map((tech, techIndex) => (
-                            <MonoTag key={`${project.id}-${tech}-${techIndex}`}>
-                              {tech}
-                            </MonoTag>
-                          ))}
-                          {technologies.length > 3 && (
-                            <MonoTag>+{technologies.length - 3} more</MonoTag>
-                          )}
-                        </div>
-                      )}
-
-                      <div className="mt-auto flex flex-wrap items-center gap-2.5">
-                        {downloadUrl ? (
-                          <a
-                            href={downloadUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={`Download ${project.title}`}
-                            className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
-                          >
-                            <span>Download</span>
-                            <Download className="h-3.5 w-3.5" />
-                          </a>
-                        ) : (
-                          <>
-                            {project.live_url && (
-                              <a
-                                href={project.live_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label="Live Demo"
-                                className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
-                              >
-                                <span>Live demo</span>
-                                <ExternalLink className="h-3.5 w-3.5" />
-                              </a>
-                            )}
-                            {project.github_url && (
-                              <a
-                                href={project.github_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                aria-label="Source Code"
-                                className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-hi transition-colors duration-200 hover:text-accent"
-                              >
-                                <Github className="h-3.5 w-3.5" />
-                                <span>Source</span>
-                              </a>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </div>
                   </div>
                 </BentoCard>
               </Reveal>
