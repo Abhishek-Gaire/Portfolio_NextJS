@@ -25,7 +25,7 @@ insert into "Projects" (
   'TICS Nepal',
   'A development consultancy site for TICS Nepal — six research and policy service verticals, a partner and client directory, and a private admin area for enquiries. Deployed on Cloudflare Workers.',
   '2026-05-23',
-  '__TICS_IMAGE_URL__',
+  'https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/tics-nepal.png',
   array['Next.js 16', 'TypeScript', 'Tailwind CSS v4', 'Cloudflare Workers', 'Drizzle ORM', 'Neon', 'GSAP', 'Zod'],
   'Creator',
   'Content-heavy and serverless at the same time. Six service verticals each need a long-form page with its own overview, bullet set, stat and SEO metadata, and the whole site has to run without a conventional Node server. Enquiries and admin data still need somewhere durable to go.',
@@ -49,11 +49,19 @@ insert into "Projects" (
 --   update "Projects" set github_url =
 --     'https://github.com/Abhishek-Gaire/next_tics' where slug = 'tics-nepal';
 --
--- image_url must be a Supabase storage URL. The site's own OG image lives on
--- www.ticsnepal.com.np, which is NOT in next.config.ts remotePatterns — only
--- **.supabase.co and images.unsplash.com are — so pointing at it would make
--- next/image throw at render time and take the card down with it. Upload the
--- image and replace the placeholder before running this.
+-- The image is a Supabase storage URL on the whitelisted **.supabase.co host.
+-- The site's own OG image was NOT used: it lives on www.ticsnepal.com.np,
+-- which is not in next.config.ts remotePatterns (only **.supabase.co and
+-- images.unsplash.com are), so pointing at it would make next/image throw at
+-- render time and take the card down.
+--
+-- NOTE ON WEIGHT. tics-nepal.png is 2497x1457 at 809 KB — roughly five times
+-- the Typeshala capture and ten times the calendar one. The project cards pass
+-- `unoptimized` to next/image, so the browser downloads the full file rather
+-- than a resized variant, and at ~360px wide in a three-up grid that is the
+-- heaviest asset on the site. Re-exporting it as webp or a ~1600px-wide jpeg
+-- would cut it by an order of magnitude with no visible difference. Not fixed
+-- here because the file lives in Supabase storage, not in this repo.
 
 select title, slug, category, "completionDate", "isFeatured",
        case when github_url is null then 'no source link (private repo)'
