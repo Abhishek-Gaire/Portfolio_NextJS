@@ -149,7 +149,19 @@ body {
   --tw-prose-h2: var(--color-hi);
   --tw-prose-h3: var(--color-hi);
   --tw-prose-h4: var(--color-hi);
-  max-width: var(--container-measure);
+  /*
+    768px, NOT --container-measure. That token is 56ch and is shared by nine
+    lede and notice blocks across the site — SectionHead, the error and
+    not-found pages, Typeshala, the home CTA. Widening it to 768px would take
+    every one of those one-sentence ledes out to roughly 90 characters a line,
+    which is well past comfortable. Body copy wants a wider measure than a
+    lede does, so the two are deliberately different numbers.
+
+    The blog article wrapper is max-w-4xl (896px), which is headroom around
+    this. The two are set together; changing one without the other leaves a
+    gap that looks like a mistake.
+  */
+  max-width: 768px;
 }
 
 .prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::before,

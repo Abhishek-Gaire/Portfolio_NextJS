@@ -275,7 +275,12 @@ export default async function BlogDetailPage({
   return (
     <main className="min-h-screen py-16">
       <div className="mx-auto max-w-shell px-6">
-        <article className="mx-auto max-w-3xl">
+        {/*
+          max-w-4xl here, max-w-3xl on the .prose inside it. The article is
+          headroom; the prose is the measure. They move together — see the
+          matching note on `.prose` in app/globals.css.
+        */}
+        <article className="mx-auto max-w-4xl">
           <script
             type="application/ld+json"
             nonce={nonce}
