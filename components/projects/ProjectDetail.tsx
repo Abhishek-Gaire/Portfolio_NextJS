@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Download, ExternalLink } from "lucide-react";
 
 import { Github } from "@/components/icons";
+import { Breadcrumb } from "@/components/primitives/Breadcrumb";
 import { Button } from "@/components/primitives/Button";
 import { MonoTag } from "@/components/primitives/MonoTag";
 import { getProjectDownloadUrl } from "@/lib/project-links";
@@ -37,9 +38,23 @@ export default function ProjectDetail({ project }: { project: Project }) {
 
   return (
     <article className="mx-auto max-w-shell px-6 py-16">
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Projects", href: "/projects" },
+          { label: project.title },
+        ]}
+      />
+
+      {/*
+        The back link stays alongside the breadcrumb rather than replacing it.
+        The breadcrumb is what tells a screen reader where this page sits in the
+        hierarchy; the back link is the control someone actually reaches for.
+        Two links to /projects on one page is deliberate, not an oversight.
+      */}
       <Link
         href="/projects"
-        className="mb-10 inline-flex items-center gap-2 font-mono text-xs text-mid transition-colors duration-200 hover:text-hi"
+        className="mb-8 inline-flex items-center gap-2 font-mono text-xs text-mid transition-colors duration-200 hover:text-hi"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         All projects

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Breadcrumb } from "@/components/primitives/Breadcrumb";
 
 import ContactForm from "../../components/contact/ContactForm";
 import { CONTACT_EMAIL } from "@/lib/site-urls";
@@ -32,7 +32,10 @@ const CV_URL =
 
 const SOCIALS = [
   { label: "GitHub", href: "https://github.com/Abhishek-Gaire" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/abhisek-gaire-359294219/" },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/abhisek-gaire-359294219/",
+  },
   { label: "Twitter", href: "https://x.com/GaireAbhishek44" },
 ];
 
@@ -64,18 +67,9 @@ export default function ContactPage() {
   return (
     <main className="min-h-screen">
       <div className="mx-auto max-w-shell px-6 py-16">
-        <nav aria-label="Breadcrumb" className="mb-12 text-sm">
-          <Link
-            href="/"
-            className="text-mid transition-colors duration-200 hover:text-hi"
-          >
-            Home
-          </Link>
-          <span className="mx-2 text-low">/</span>
-          <span className="font-semibold text-hi" aria-current="page">
-            Contact
-          </span>
-        </nav>
+        <Breadcrumb
+          items={[{ label: "Home", href: "/" }, { label: "Contact" }]}
+        />
 
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-2">
           <div>
@@ -134,7 +128,10 @@ export default function ContactPage() {
               </h2>
               <dl className="mt-6 space-y-5">
                 {REASONS.map((reason) => (
-                  <div key={reason.title} className="border-l-2 border-accent pl-4">
+                  <div
+                    key={reason.title}
+                    className="border-l-2 border-accent pl-4"
+                  >
                     <dt className="text-sm font-medium text-hi">
                       {reason.title}
                     </dt>
@@ -159,7 +156,9 @@ export default function ContactPage() {
         </div>
 
         <div className="mt-16">
-          <p className="mb-4 font-mono text-xs text-low">Based in Pokhara, Nepal</p>
+          <p className="mb-4 font-mono text-xs text-low">
+            Based in Pokhara, Nepal
+          </p>
           <div className="relative overflow-hidden rounded-card border border-line bg-surface p-4">
             <div className="relative">
               {/* next/image buys nothing here: it passes SVG through

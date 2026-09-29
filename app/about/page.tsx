@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Breadcrumb } from "@/components/primitives/Breadcrumb";
 
 import { Reveal } from "@/components/primitives/Reveal";
 import { KineticDivider } from "@/components/home/KineticDivider";
@@ -156,18 +157,9 @@ export default function AboutPage() {
   return (
     <>
       <section className="mx-auto max-w-shell px-6 py-16">
-        <nav aria-label="Breadcrumb" className="mb-12 text-sm">
-          <Link
-            href="/"
-            className="text-mid transition-colors duration-200 hover:text-hi"
-          >
-            Home
-          </Link>
-          <span className="mx-2 text-low">/</span>
-          <span className="font-semibold text-hi" aria-current="page">
-            About
-          </span>
-        </nav>
+        <Breadcrumb
+          items={[{ label: "Home", href: "/" }, { label: "About" }]}
+        />
 
         <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[1fr_20rem]">
           <div>
@@ -185,18 +177,19 @@ export default function AboutPage() {
             <Reveal delay={160}>
               <div className="mt-8 max-w-2xl space-y-5 text-base leading-relaxed text-mid">
                 <p>
-                  I&apos;m Abhishek Gaire, a full-stack developer. My journey into
-                  web development began with curiosity and has evolved into a
-                  passion for creating digital solutions that make a difference.
-                  Based in the beautiful city of Pokhara, Nepal, I&apos;ve
-                  dedicated myself to mastering the art and science of full-stack
-                  development.
+                  I&apos;m Abhishek Gaire, a full-stack developer. My journey
+                  into web development began with curiosity and has evolved into
+                  a passion for creating digital solutions that make a
+                  difference. Based in the beautiful city of Pokhara, Nepal,
+                  I&apos;ve dedicated myself to mastering the art and science of
+                  full-stack development.
                 </p>
                 <p>
                   What started as a fascination with how websites work has grown
                   into expertise in modern web technologies. I specialize in the
-                  MERN stack, but I&apos;m always eager to learn new technologies
-                  and frameworks that can help me build better solutions.
+                  MERN stack, but I&apos;m always eager to learn new
+                  technologies and frameworks that can help me build better
+                  solutions.
                 </p>
               </div>
             </Reveal>

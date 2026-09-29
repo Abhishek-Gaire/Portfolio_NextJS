@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import Link from "next/link";
+import { Breadcrumb } from "@/components/primitives/Breadcrumb";
 import ProjectsPageClient from "../../components/projects/ProjectsPageClient";
 import { getSupabaseServerClient } from "../../lib/supabase/server";
 import type { Project } from "../../types/project";
@@ -79,21 +79,9 @@ export default async function ProjectsPage() {
       />
       <section className="py-16">
         <div className="mx-auto max-w-shell px-6">
-          <nav
-            aria-label="Breadcrumb"
-            className="mb-8 flex items-center gap-2.5 font-mono text-micro text-low"
-          >
-            <Link
-              href="/"
-              className="transition-colors duration-200 hover:text-accent"
-            >
-              Home
-            </Link>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page" className="text-mid">
-              Projects
-            </span>
-          </nav>
+          <Breadcrumb
+            items={[{ label: "Home", href: "/" }, { label: "Projects" }]}
+          />
 
           <ProjectsPageClient projects={projects} />
         </div>

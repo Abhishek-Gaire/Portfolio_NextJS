@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
+import { Breadcrumb } from "@/components/primitives/Breadcrumb";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { notFound } from "next/navigation";
 import BlogContent from "../../../components/blog/BlogContent";
@@ -289,23 +290,13 @@ export default async function BlogDetailPage({
               __html: JSON.stringify(blogPostingJsonLd),
             }}
           />
-          <nav className="mb-8 flex items-center gap-2 font-mono text-micro text-low">
-            <Link
-              href="/"
-              className="transition-colors duration-200 hover:text-accent"
-            >
-              Home
-            </Link>
-            <span aria-hidden="true">/</span>
-            <Link
-              href="/blogs"
-              className="transition-colors duration-200 hover:text-accent"
-            >
-              Blogs
-            </Link>
-            <span aria-hidden="true">/</span>
-            <span className="truncate text-mid">{post.title}</span>
-          </nav>
+          <Breadcrumb
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Blogs", href: "/blogs" },
+              { label: post.title },
+            ]}
+          />
 
           <header className="mb-8">
             <p className="mb-2.5 font-mono text-[13px] text-accent">WRITING</p>
@@ -369,9 +360,7 @@ export default async function BlogDetailPage({
                     aria-hidden="true"
                   />
                   <span className="min-w-0">
-                    <span className="block font-mono text-micro">
-                      Previous
-                    </span>
+                    <span className="block font-mono text-micro">Previous</span>
                     <span className="block truncate text-[14px] font-semibold text-hi">
                       {prev.title}
                     </span>

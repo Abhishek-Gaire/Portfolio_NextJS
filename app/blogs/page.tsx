@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
+import { Breadcrumb } from "@/components/primitives/Breadcrumb";
 import { ArrowRight, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import BlogHomeContent from "../../components/blog/BlogHomeContent";
 import BlogTagContent from "../../components/blog/BlogTagContent";
@@ -172,7 +173,7 @@ function parsePositiveInt(
   value: string | undefined,
   fallback: number,
   min = 1,
-  max?: number
+  max?: number,
 ) {
   const parsed = Number.parseInt(value ?? "", 10);
   if (Number.isNaN(parsed)) {
@@ -242,9 +243,13 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
     })
     .sort((a, b) => {
       if (sortBy === "oldest") {
-        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        return (
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
       }
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
     });
 
   const totalPages = Math.max(1, Math.ceil(filteredPosts.length / limit));
@@ -263,16 +268,9 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <div className="mx-auto max-w-shell px-6">
-        <nav className="mb-8 flex items-center gap-2 font-mono text-micro text-low">
-          <Link
-            href="/"
-            className="transition-colors duration-200 hover:text-accent"
-          >
-            Home
-          </Link>
-          <span aria-hidden="true">/</span>
-          <span className="text-mid">Blogs</span>
-        </nav>
+        <Breadcrumb
+          items={[{ label: "Home", href: "/" }, { label: "Blogs" }]}
+        />
 
         <SectionHead
           as="h1"
@@ -340,9 +338,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
 
         {tags.length > 0 && (
           <div className="mb-8">
-            <p className="mb-3 font-mono text-micro text-low">
-              FILTER BY TAGS
-            </p>
+            <p className="mb-3 font-mono text-micro text-low">FILTER BY TAGS</p>
             <div className="flex flex-wrap gap-2">
               {tags.map((tag) => {
                 const nextSelected = selectedTags.includes(tag.name)
