@@ -1,13 +1,62 @@
 "use client";
 
-import { Grid, List, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import Image from "next/image";
+import { useState } from "react";
+import {
+  ExternalLink,
+  Grid,
+  LayoutGrid,
+  List,
+  Search,
+  Share2,
+} from "lucide-react";
 
+import { Github } from "@/components/icons";
+import { TiltCard } from "@/components/motion/TiltCard";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { MonoTag } from "@/components/primitives/MonoTag";
 import { Reveal } from "@/components/primitives/Reveal";
-import { SectionHead } from "@/components/primitives/SectionHead";
 import { cn } from "@/lib/utils";
 import type { Project, ProjectCategory } from "../../types/project";
-import ProjectsGrid from "./ProjectsGrid";
+import ProjectDialog from "./ProjectDialog";
+
+/*
+ * Ported from the reference project:
+ * ../remix-of-pixel-perfect/src/routes/projects/index.tsx
+ *
+ * Three places the port does not follow the reference literally, each because
+ * the reference's version depends on something this site does not have:
+ *
+ * 1. The reference's cards link the image and the title to /projects/$slug, a
+ *    detail route that does not exist here and that this site has no data
+ *    plumbing for. They open ProjectDialog instead, which is the existing
+ *    mechanism and carries the same content the detail page would have: full
+ *    description, role, challenges, solutions, and both links.
+ *
+ * 2. The reference's filter dropdown is decorative. `filter` is written to
+ *    state and never read — the `visible` memo filters on `query` only, so
+ *    picking a category changes the label and nothing else. Porting that would
+ *    be a regression against the working <select> this replaces, so the control
+ *    is a native select and it actually filters. The reference's own category
+ *    names ("Full-stack", "Frontend", "Automation") are that project's data;
+ *    this site's are ProjectCategory, so the reference's values are not used.
+ *    The native select is also what globals.css sets `color-scheme: dark` for —
+ *    its popup is styled, whereas a custom listbox would have to be rebuilt.
+ *
+ * 3. The reference's Share button copies a per-project URL to the clipboard.
+ *    With no per-project URL there is nothing to share, so the icon keeps this
+ *    site's existing behaviour of opening the details dialog. It is not
+ *    pretending to copy anything.
+ *
+ * The reference's CardContainer/CardBody/CardItem 3D tilt is already ported to
+ * this repo as TiltCard, unused until now. The reference layers four different
+ * translateZ depths inside one card; TiltCard takes a single depth for the
+ * whole child, so the tilt is faithful and the layered depth is not.
+ *
+ * Search still matches description and technologies as well as title. That is
+ * the behaviour this replaced, and it is a superset of the reference's
+ * title-only match.
+ */
 
 const categories: ProjectCategory[] = [
   "All",
@@ -15,6 +64,9 @@ const categories: ProjectCategory[] = [
   "Backend",
   "Collaboration",
 ];
+
+const FALLBACK_IMAGE =
+  "https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=600";
 
 type ProjectsPageClientProps = {
   projects: Project[];
@@ -24,115 +76,229 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<ProjectCategory>("All");
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const filteredProjects = useMemo(() => {
-    const normalizedSearch = searchQuery.toLowerCase().trim();
-    return projects.filter((project) => {
-      const technologies = Array.isArray(project.technologies)
-        ? project.technologies
-        : [];
+  const normalizedSearch = searchQuery.toLowerCase().trim();
+  const filteredProjects = projects.filter((project) => {
+    const technologies = Array.isArray(project.technologies)
+      ? project.technologies
+      : [];
 
-      const matchesSearch =
-        !normalizedSearch ||
-        project.title.toLowerCase().includes(normalizedSearch) ||
-        project.description.toLowerCase().includes(normalizedSearch) ||
-        technologies.some((tech) => tech.toLowerCase().includes(normalizedSearch));
+    const matchesSearch =
+      !normalizedSearch ||
+      project.title.toLowerCase().includes(normalizedSearch) ||
+      project.description.toLowerCase().includes(normalizedSearch) ||
+      technologies.some((tech) => tech.toLowerCase().includes(normalizedSearch));
 
-      const matchesCategory =
-        selectedCategory === "All" || project.category === selectedCategory;
+    const matchesCategory =
+      selectedCategory === "All" || project.category === selectedCategory;
 
-      return matchesSearch && matchesCategory;
-    });
-  }, [projects, searchQuery, selectedCategory]);
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <>
       <Reveal>
-        <SectionHead
-          as="h1"
-          eyebrow="SELECTED WORK"
-          title="My projects"
-          lede="A comprehensive showcase of my development journey, featuring full-stack applications, collaborative projects, and innovative solutions built with modern technologies."
-        />
+        <header className="mx-auto mt-12 max-w-2xl text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 font-mono text-xs text-mid">
+            <LayoutGrid className="h-3.5 w-3.5 text-accent" />
+            Portfolio Collection
+          </span>
+          <h1 className="mt-5 text-title font-bold tracking-[-0.02em] text-hi">
+            My Projects
+          </h1>
+          <p className="mx-auto mt-4 max-w-measure text-[15px] leading-relaxed text-mid">
+            A comprehensive showcase of my development journey, featuring
+            full-stack applications, collaborative projects, and innovative
+            solutions built with modern technologies
+          </p>
+        </header>
       </Reveal>
 
       {/*
-       * View, search and category live in plain useState and are intentionally
-       * NOT persisted to the URL or localStorage, unlike /blogs. Keep it that
-       * way: no searchParams, no router.replace, no useSyncExternalStore.
-       */}
-      <div className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <div className="relative">
+        View, search and category live in plain useState and are intentionally
+        NOT persisted to the URL or localStorage, unlike /blogs. Keep it that
+        way: no searchParams, no router.replace, no useSyncExternalStore.
+      */}
+      <Reveal delay={60}>
+        <div className="mt-12 flex w-full flex-col gap-4 lg:flex-row lg:items-center">
+          <div className="relative flex-1">
             <Search
               aria-hidden="true"
               className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-low"
             />
             <input
-              type="text"
+              type="search"
               name="search"
               aria-label="Search projects"
               placeholder="Search projects..."
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              className="w-full rounded-control border border-line bg-code-bg py-2.5 pl-10 pr-4 text-[14px] text-hi transition-colors duration-200 placeholder:text-low hover:border-line-hi focus:border-accent-line sm:w-75"
+              className="h-10 w-full rounded-control border border-line bg-surface pr-3 pl-10 text-sm text-hi transition-colors duration-200 placeholder:text-low hover:border-line-hi focus:border-accent-line"
             />
           </div>
 
-          <select
-            name="category"
-            aria-label="Filter projects by category"
-            value={selectedCategory}
-            onChange={(event) =>
-              setSelectedCategory(event.target.value as ProjectCategory)
-            }
-            className="rounded-control border border-line bg-code-bg px-4 py-2.5 text-[14px] text-hi transition-colors duration-200 hover:border-line-hi"
-          >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="flex items-center gap-2">
+            <select
+              name="category"
+              aria-label="Filter projects by category"
+              value={selectedCategory}
+              onChange={(event) =>
+                setSelectedCategory(event.target.value as ProjectCategory)
+              }
+              className="h-10 rounded-control border border-line bg-surface px-4 text-sm text-hi transition-colors duration-200 hover:border-line-hi"
+            >
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
 
+            <div role="group" aria-label="View mode" className="flex gap-2">
+              {(
+                [
+                  ["grid", Grid, "Grid view"],
+                  ["list", List, "List view"],
+                ] as const
+              ).map(([view, Icon, label]) => (
+                <button
+                  key={view}
+                  type="button"
+                  aria-label={label}
+                  aria-pressed={viewMode === view}
+                  onClick={() => setViewMode(view)}
+                  className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-control border transition-colors duration-200",
+                    viewMode === view
+                      ? "border-accent bg-accent text-[#08110f]"
+                      : "border-line bg-surface text-low hover:text-hi",
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Reveal>
+
+      {filteredProjects.length === 0 ? (
+        <p className="mt-16 text-center text-sm text-mid">
+          No projects match &ldquo;{searchQuery.trim()}&rdquo;
+          {selectedCategory !== "All" ? ` in ${selectedCategory}` : ""}.
+        </p>
+      ) : (
         <div
-          role="group"
-          aria-label="View mode"
-          className="inline-flex items-center gap-1 self-start rounded-control border border-line bg-surface p-1"
+          className={cn(
+            "mt-4 grid gap-6",
+            viewMode === "grid"
+              ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+              : "grid-cols-1",
+          )}
         >
-          <button
-            type="button"
-            onClick={() => setViewMode("grid")}
-            aria-label="Grid view"
-            aria-pressed={viewMode === "grid"}
-            className={cn(
-              "inline-flex h-9 w-9 items-center justify-center rounded-[7px] transition-colors duration-200",
-              viewMode === "grid"
-                ? "bg-accent-soft text-accent"
-                : "text-low hover:bg-surface-2 hover:text-hi",
-            )}
-          >
-            <Grid className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode("list")}
-            aria-label="List view"
-            aria-pressed={viewMode === "list"}
-            className={cn(
-              "inline-flex h-9 w-9 items-center justify-center rounded-[7px] transition-colors duration-200",
-              viewMode === "list"
-                ? "bg-accent-soft text-accent"
-                : "text-low hover:bg-surface-2 hover:text-hi",
-            )}
-          >
-            <List className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
+          {filteredProjects.map((project, index) => (
+            <Reveal key={project.id} delay={index * 60} className="h-full">
+              <TiltCard
+                depth={100}
+                wrapperClassName="h-full w-full"
+                className="h-full w-full"
+              >
+                <BentoCard interactive className="h-full w-full">
+                  <div className="flex h-full flex-col p-6">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedProject(project)}
+                      aria-label={`View details for ${project.title}`}
+                      className="block w-full"
+                    >
+                      <Image
+                        src={project.image_url?.trim() || FALLBACK_IMAGE}
+                        alt={project.title}
+                        width={1024}
+                        height={640}
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                        unoptimized
+                        className="h-48 w-full rounded-tile object-cover"
+                      />
+                    </button>
 
-      <ProjectsGrid projects={filteredProjects} view={viewMode} />
+                    <div className="mt-4 mb-6 flex items-center justify-between gap-3">
+                      <h2 className="text-xl font-bold text-hi">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedProject(project)}
+                          className="text-left transition-colors duration-200 hover:text-accent"
+                        >
+                          {project.title}
+                        </button>
+                      </h2>
+                      {project.completionDate ? (
+                        <MonoTag className="shrink-0">
+                          {new Date(project.completionDate).getFullYear()}
+                        </MonoTag>
+                      ) : null}
+                    </div>
+
+                    <p className="mt-2 line-clamp-3 max-w-sm text-sm text-mid">
+                      {project.description}
+                    </p>
+
+                    {Array.isArray(project.technologies) &&
+                    project.technologies.length > 0 ? (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {project.technologies.map((tech, techIndex) => (
+                          <MonoTag key={`${project.id}-${tech}-${techIndex}`} accent>
+                            {tech}
+                          </MonoTag>
+                        ))}
+                      </div>
+                    ) : null}
+
+                    <div className="mt-6 flex items-center justify-between gap-3">
+                      <div className="flex flex-wrap gap-2">
+                        {project.live_url ? (
+                          <a
+                            href={project.live_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 rounded-control border border-accent-line px-4 py-2 font-mono text-xs font-semibold text-accent transition-colors duration-200 hover:bg-accent-soft"
+                          >
+                            <ExternalLink size={14} /> Live
+                          </a>
+                        ) : null}
+                        {project.github_url ? (
+                          <a
+                            href={project.github_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 rounded-control border border-line px-4 py-2 font-mono text-xs font-semibold text-hi transition-colors duration-200 hover:border-line-hi"
+                          >
+                            <Github size={14} /> Code
+                          </a>
+                        ) : null}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedProject(project)}
+                        aria-label={`View details for ${project.title}`}
+                        className="ml-auto text-low transition-colors duration-200 hover:text-hi"
+                      >
+                        <Share2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </BentoCard>
+              </TiltCard>
+            </Reveal>
+          ))}
+        </div>
+      )}
+
+      <ProjectDialog
+        project={selectedProject}
+        onClose={() => setSelectedProject(null)}
+      />
     </>
   );
 }
