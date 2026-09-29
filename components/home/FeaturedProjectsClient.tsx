@@ -34,6 +34,15 @@ export default function FeaturedProjectsClient({
           />
         </Reveal>
 
+        {/*
+          `sm:grid-cols-2` with the first card spanning both columns. That only
+          tiles cleanly for an ODD number of cards: 3 gives one full-width row
+          over a full row of two halves. The home page is now capped at 2, where
+          a full-width first card would leave the right half of the second row
+          empty, so the hero treatment is gated on there being at least 3 and the
+          two-card case renders as a plain side-by-side pair. Raising
+          FEATURED_LIMIT in FeaturedProjects.tsx re-enables it automatically.
+        */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {projects.map((project, index) => {
             const year = project.completionDate
@@ -42,7 +51,7 @@ export default function FeaturedProjectsClient({
             const technologies = Array.isArray(project.technologies)
               ? project.technologies
               : [];
-            const featured = index === 0;
+            const featured = index === 0 && projects.length >= 3;
 
             return (
               <Reveal

@@ -17,6 +17,7 @@ type FormState = {
   solutions: string;
   live_url: string;
   github_url: string;
+  isFeatured: boolean;
 };
 
 type SubmitState = "idle" | "saving" | "error";
@@ -33,9 +34,16 @@ const emptyForm: FormState = {
   solutions: "",
   live_url: "",
   github_url: "",
+  isFeatured: false,
 };
 
 const categories = ["Full Stack", "Backend", "Collaboration"];
+
+/**
+ * The database rejects a third featured row with a trigger, so the checkbox
+ * needs to say so before the user hits Save rather than after.
+ */
+const FEATURED_LIMIT = 2;
 
 function normalizeTechnologies(input: string): string[] {
   return input
@@ -67,6 +75,19 @@ export default function AdminProjectsManager({
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
 
   const supabase = useMemo(() => getSupabaseBrowserClient(), []);
+
+  // Featured rows excluding the one currently open in the form, so the counter
+  // answers "how many would be featured if I saved this?" rather than "how many
+  // already are".
+  const featuredCount = useMemo(
+    () =>
+      projects.filter(
+        (project) => project.isFeatured === true && project.id !== editingProjectId
+      ).length,
+    [projects, editingProjectId]
+  );
+
+  const atFeaturedLimit = featuredCount >= FEATURED_LIMIT;
 
   const fetchProjects = async () => {
     setIsLoading(true);
@@ -104,6 +125,7 @@ export default function AdminProjectsManager({
       solutions: project.solutions ?? "",
       live_url: project.live_url ?? "",
       github_url: project.github_url ?? "",
+      isFeatured: project.isFeatured === true,
     });
   };
 
@@ -132,6 +154,18 @@ export default function AdminProjectsManager({
     setSubmitState("saving");
     setErrorMessage("");
 
+    // Checked before the write, so the user gets a sentence instead of a
+    // Postgres exception. The trigger is still there for direct table writes.
+    if (formState.isFeatured && editingProjectId === null) {
+      if (featuredCount >= FEATURED_LIMIT) {
+        setSubmitState("error");
+        setErrorMessage(
+          `Only ${FEATURED_LIMIT} projects can be featured on the home page. Unfeature one first.`
+        );
+        return;
+      }
+    }
+
     const payload = {
       title: formState.title.trim(),
       description: formState.description.trim(),
@@ -144,6 +178,7 @@ export default function AdminProjectsManager({
       solutions: formState.solutions.trim(),
       live_url: formState.live_url.trim() || null,
       github_url: formState.github_url.trim() || null,
+      isFeatured: formState.isFeatured,
     };
 
     if (!payload.title || !payload.description) {
@@ -292,6 +327,39 @@ export default function AdminProjectsManager({
             </div>
           </div>
 
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <div className="flex items-start gap-3">
+              <input
+                id="isFeatured"
+                type="checkbox"
+                checked={formState.isFeatured}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, isFeatured: event.target.checked }))
+                }
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500"
+              />
+              <div>
+                <label
+                  className="block text-sm font-medium text-slate-900"
+                  htmlFor="isFeatured"
+                >
+                  Feature on the home page
+                </label>
+                <p className="mt-1 text-xs text-slate-500">
+                  {featuredCount} of {FEATURED_LIMIT} featured slots in use. The home
+                  page shows the newest {FEATURED_LIMIT} flagged projects; everything
+                  else still appears on the projects page.
+                </p>
+                {formState.isFeatured && atFeaturedLimit && (
+                  <p className="mt-1.5 text-xs text-amber-700">
+                    Unfeature another project first — saving this now would be
+                    rejected.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="imageUrl">
               Project Image URL
@@ -426,9 +494,16 @@ export default function AdminProjectsManager({
               className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between"
             >
               <div>
-                <h3 className="text-base font-semibold text-slate-900">
-                  {project.title}
-                </h3>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-base font-semibold text-slate-900">
+                    {project.title}
+                  </h3>
+                  {project.isFeatured === true && (
+                    <span className="rounded-full bg-slate-900 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white">
+                      Featured
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-slate-500">{project.category}</p>
               </div>
               <div className="flex items-center gap-2">
