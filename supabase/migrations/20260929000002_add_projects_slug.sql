@@ -9,6 +9,17 @@
 -- without trim() that row slugifies to "digital-kirana-" with a trailing dash.
 -- That is the exact class of bug that is invisible until someone hits the page.
 --
+-- ⚠ BUG IN THIS FILE, FIXED IN 20260929000003. Read that one too. Two lines
+-- below were meant to prevent this and both failed:
+--   - `trim(both from regexp_replace(...))` trims SPACES, but the regexp has
+--     already turned the newline into a dash by then. Correct order is
+--     btrim(title) -> slugify -> btrim(result, '-').
+--   - the guard `slug !~ '^[a-z0-9][a-z0-9-]*$'` allows a trailing dash,
+--     because `-` occupies the last character-class position.
+-- Left as-written because it has already run against the live database and this
+-- file is the record of what actually happened. Do not replay it on a fresh
+-- database without applying 000003 as well.
+--
 -- NOT NULL is not set: the column is added nullable and then backfilled, and
 -- only then enforced. Adding it NOT NULL with no default would fail outright on
 -- a table that already has nine rows.
