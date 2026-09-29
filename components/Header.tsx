@@ -45,7 +45,7 @@ export default function Header() {
           href="/"
           className="font-mono text-sm tracking-tight text-hi transition-colors duration-200 hover:text-accent"
         >
-          abhisek<span className="text-accent">.</span>gaire
+          abhishek<span className="text-accent">.</span>gaire
         </Link>
         <ul className="flex flex-wrap items-center gap-1">
           {links.map((link) => {

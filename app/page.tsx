@@ -3,8 +3,8 @@ import { headers } from "next/headers";
 import FeaturedProjects from "../components/home/FeaturedProjects";
 import Hero from "../components/home/Hero";
 import HomeContact from "../components/home/HomeContact";
-import LatestBlogs from "../components/home/LatestBlogs";
 import Skills from "../components/home/Skills";
+import { KineticDivider } from "@/components/home/KineticDivider";
 
 export const metadata: Metadata = {
   title: "Abhishek Gaire | Full Stack Developer",
@@ -63,8 +63,8 @@ export default async function HomePage() {
       />
       <Hero />
       <Skills />
+      <KineticDivider />
       <FeaturedProjects />
-      <LatestBlogs />
       <HomeContact />
     </main>
   );
