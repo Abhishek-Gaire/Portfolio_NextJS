@@ -1,4 +1,17 @@
-export type ProjectCategory = "All" | "Full Stack" | "Backend" | "Collaboration";
+/**
+ * "Frontend" was added with the 2026 seed in
+ * supabase/migrations/20260929000001_seed_two_more_projects.sql, for the npm
+ * package and the Tauri desktop app. Neither is a backend project and calling
+ * them "Full Stack" would be wrong. Note that "Collaboration" is in this union
+ * and in both selects but has no row in the table, so it is an option that
+ * currently matches nothing.
+ */
+export type ProjectCategory =
+  | "All"
+  | "Full Stack"
+  | "Backend"
+  | "Frontend"
+  | "Collaboration";
 
 export interface Project {
   id: string;

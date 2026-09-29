@@ -37,7 +37,7 @@ const emptyForm: FormState = {
   isFeatured: false,
 };
 
-const categories = ["Full Stack", "Backend", "Collaboration"];
+const categories = ["Full Stack", "Backend", "Frontend", "Collaboration"];
 
 /**
  * The database rejects a third featured row with a trigger, so the checkbox
