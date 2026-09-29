@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import {
+  Download,
   ExternalLink,
   Grid,
   LayoutGrid,
@@ -16,6 +17,7 @@ import { TiltCard } from "@/components/motion/TiltCard";
 import { BentoCard } from "@/components/primitives/BentoCard";
 import { MonoTag } from "@/components/primitives/MonoTag";
 import { Reveal } from "@/components/primitives/Reveal";
+import { TYPESHala_SITE_URL } from "@/lib/site-urls";
 import { cn } from "@/lib/utils";
 import type { Project, ProjectCategory } from "../../types/project";
 import ProjectDialog from "./ProjectDialog";
@@ -65,6 +67,23 @@ const categories: ProjectCategory[] = [
   "Frontend",
   "Collaboration",
 ];
+
+/**
+ * Projects that get a Download button in place of Live/Code, keyed on title.
+ *
+ * The reference drives this from a `downloadTo` field and points it at its own
+ * `/typeshala` route. This site points at the Typeshala subdomain instead, so
+ * there is no route to link to here — and a column for one row is not worth a
+ * migration, which is why this is a lookup rather than a schema change.
+ *
+ * The fragility is real and worth stating plainly: renaming the row in
+ * /admin silently drops the button, with no error anywhere. It is a table
+ * rather than an inline `===` so there is exactly one place to look when that
+ * happens, and so adding a second download-only project is a one-line change.
+ */
+const DOWNLOAD_OVERRIDES: Record<string, string> = {
+  Typeshala: TYPESHala_SITE_URL,
+};
 
 /*
  * images.unsplash.com, not the images.pexels.com this used to point at.
@@ -205,7 +224,10 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
               : "grid-cols-1",
           )}
         >
-          {filteredProjects.map((project, index) => (
+          {filteredProjects.map((project, index) => {
+          const downloadUrl = DOWNLOAD_OVERRIDES[project.title];
+
+          return (
             <Reveal key={project.id} delay={index * 60} className="h-full">
               <TiltCard
                 depth={100}
@@ -264,28 +286,39 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
                     ) : null}
 
                     <div className="mt-6 flex items-center justify-between gap-3">
-                      <div className="flex flex-wrap gap-2">
-                        {project.live_url ? (
-                          <a
-                            href={project.live_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 rounded-control border border-accent-line px-4 py-2 font-mono text-xs font-semibold text-accent transition-colors duration-200 hover:bg-accent-soft"
-                          >
-                            <ExternalLink size={14} /> Live
-                          </a>
-                        ) : null}
-                        {project.github_url ? (
-                          <a
-                            href={project.github_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 rounded-control border border-line px-4 py-2 font-mono text-xs font-semibold text-hi transition-colors duration-200 hover:border-line-hi"
-                          >
-                            <Github size={14} /> Code
-                          </a>
-                        ) : null}
-                      </div>
+                      {downloadUrl ? (
+                        <a
+                          href={downloadUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 rounded-control border border-accent bg-accent px-4 py-2 font-mono text-xs font-semibold text-[#08110f] transition-colors duration-200 hover:bg-[#5eead4]"
+                        >
+                          <Download size={14} /> Download
+                        </a>
+                      ) : (
+                        <div className="flex flex-wrap gap-2">
+                          {project.live_url ? (
+                            <a
+                              href={project.live_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 rounded-control border border-accent-line px-4 py-2 font-mono text-xs font-semibold text-accent transition-colors duration-200 hover:bg-accent-soft"
+                            >
+                              <ExternalLink size={14} /> Live
+                            </a>
+                          ) : null}
+                          {project.github_url ? (
+                            <a
+                              href={project.github_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 rounded-control border border-line px-4 py-2 font-mono text-xs font-semibold text-hi transition-colors duration-200 hover:border-line-hi"
+                            >
+                              <Github size={14} /> Code
+                            </a>
+                          ) : null}
+                        </div>
+                      )}
                       <button
                         type="button"
                         onClick={() => setSelectedProject(project)}
@@ -299,7 +332,8 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
                 </BentoCard>
               </TiltCard>
             </Reveal>
-          ))}
+          );
+        })}
         </div>
       )}
 
