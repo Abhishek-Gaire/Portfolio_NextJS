@@ -68,7 +68,6 @@ const categories: ProjectCategory[] = [
   "Collaboration",
 ];
 
-
 /*
  * images.unsplash.com, not the images.pexels.com this used to point at.
  * next.config.ts only whitelists **.supabase.co and images.unsplash.com, so a
@@ -83,10 +82,13 @@ type ProjectsPageClientProps = {
   projects: Project[];
 };
 
-export default function ProjectsPageClient({ projects }: ProjectsPageClientProps) {
+export default function ProjectsPageClient({
+  projects,
+}: ProjectsPageClientProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<ProjectCategory>("All");
+  const [selectedCategory, setSelectedCategory] =
+    useState<ProjectCategory>("All");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const normalizedSearch = searchQuery.toLowerCase().trim();
@@ -99,7 +101,9 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
       !normalizedSearch ||
       project.title.toLowerCase().includes(normalizedSearch) ||
       project.description.toLowerCase().includes(normalizedSearch) ||
-      technologies.some((tech) => tech.toLowerCase().includes(normalizedSearch));
+      technologies.some((tech) =>
+        tech.toLowerCase().includes(normalizedSearch),
+      );
 
     const matchesCategory =
       selectedCategory === "All" || project.category === selectedCategory;
@@ -209,115 +213,136 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
           )}
         >
           {filteredProjects.map((project, index) => {
-          const downloadUrl = getProjectDownloadUrl(project.title);
+            const downloadUrl = getProjectDownloadUrl(project.title);
+            const isList = viewMode === "list";
 
-          return (
-            <Reveal key={project.id} delay={index * 60} className="h-full">
-              <TiltCard
-                depth={100}
-                wrapperClassName="h-full w-full"
-                className="h-full w-full"
-              >
-                <BentoCard interactive className="h-full w-full">
-                  <div className="flex h-full flex-col p-6">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedProject(project)}
-                      aria-label={`View details for ${project.title}`}
-                      className="block w-full"
-                    >
-                      <Image
-                        src={project.image_url?.trim() || FALLBACK_IMAGE}
-                        alt={project.title}
-                        width={1024}
-                        height={640}
-                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                        unoptimized
-                        className="h-48 w-full rounded-tile object-cover"
-                      />
-                    </button>
-
-                    <div className="mt-4 mb-6 flex items-center justify-between gap-3">
-                      <h2 className="text-xl font-bold text-hi">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedProject(project)}
-                          className="text-left transition-colors duration-200 hover:text-accent"
-                        >
-                          {project.title}
-                        </button>
-                      </h2>
-                      {project.completionDate ? (
-                        <MonoTag className="shrink-0">
-                          {new Date(project.completionDate).getFullYear()}
-                        </MonoTag>
-                      ) : null}
-                    </div>
-
-                    <p className="mt-2 line-clamp-3 max-w-sm text-sm text-mid">
-                      {project.description}
-                    </p>
-
-                    {Array.isArray(project.technologies) &&
-                    project.technologies.length > 0 ? (
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {project.technologies.map((tech, techIndex) => (
-                          <MonoTag key={`${project.id}-${tech}-${techIndex}`} accent>
-                            {tech}
-                          </MonoTag>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    <div className="mt-6 flex items-center justify-between gap-3">
-                      {downloadUrl ? (
-                        <a
-                          href={downloadUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 rounded-control border border-accent bg-accent px-4 py-2 font-mono text-xs font-semibold text-[#08110f] transition-colors duration-200 hover:bg-[#5eead4]"
-                        >
-                          <Download size={14} /> Download
-                        </a>
-                      ) : (
-                        <div className="flex flex-wrap gap-2">
-                          {project.live_url ? (
-                            <a
-                              href={project.live_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 rounded-control border border-accent-line px-4 py-2 font-mono text-xs font-semibold text-accent transition-colors duration-200 hover:bg-accent-soft"
-                            >
-                              <ExternalLink size={14} /> Live
-                            </a>
-                          ) : null}
-                          {project.github_url ? (
-                            <a
-                              href={project.github_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 rounded-control border border-line px-4 py-2 font-mono text-xs font-semibold text-hi transition-colors duration-200 hover:border-line-hi"
-                            >
-                              <Github size={14} /> Code
-                            </a>
-                          ) : null}
-                        </div>
+            return (
+              <Reveal key={project.id} delay={index * 60} className="h-full">
+                <TiltCard
+                  depth={100}
+                  wrapperClassName="h-full w-full"
+                  className="h-full w-full"
+                >
+                  <BentoCard interactive className="h-full w-full">
+                    <div
+                      className={cn(
+                        "flex h-full gap-5 p-5",
+                        isList ? "flex-col sm:flex-row" : "flex-col",
                       )}
+                    >
                       <button
                         type="button"
                         onClick={() => setSelectedProject(project)}
                         aria-label={`View details for ${project.title}`}
-                        className="ml-auto text-low transition-colors duration-200 hover:text-hi"
+                        className={cn(
+                          "block shrink-0 overflow-hidden rounded-tile",
+                          isList ? "sm:w-[38%]" : "w-full",
+                        )}
                       >
-                        <Share2 size={16} />
+                        <Image
+                          src={project.image_url?.trim() || FALLBACK_IMAGE}
+                          alt={project.title}
+                          width={1024}
+                          height={640}
+                          sizes={
+                            isList
+                              ? "(min-width: 640px) 38vw, 100vw"
+                              : "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                          }
+                          unoptimized
+                          className={cn(
+                            "w-full rounded-tile object-cover",
+                            isList ? "h-40 sm:h-full sm:min-h-45" : "h-48",
+                          )}
+                        />
                       </button>
+
+                      <div className="flex min-w-0 flex-1 flex-col">
+                        <div className="mb-5 flex items-center justify-between gap-3">
+                          <h2 className="text-xl font-bold text-hi">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedProject(project)}
+                              className="text-left transition-colors duration-200 hover:text-accent"
+                            >
+                              {project.title}
+                            </button>
+                          </h2>
+                          {project.completionDate ? (
+                            <MonoTag className="shrink-0">
+                              {new Date(project.completionDate).getFullYear()}
+                            </MonoTag>
+                          ) : null}
+                        </div>
+
+                        <p className="mt-2 line-clamp-3 max-w-sm text-sm text-mid">
+                          {project.description}
+                        </p>
+
+                        {Array.isArray(project.technologies) &&
+                        project.technologies.length > 0 ? (
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {project.technologies.map((tech, techIndex) => (
+                              <MonoTag
+                                key={`${project.id}-${tech}-${techIndex}`}
+                                accent
+                              >
+                                {tech}
+                              </MonoTag>
+                            ))}
+                          </div>
+                        ) : null}
+
+                        <div className="mt-6 flex items-center justify-between gap-3">
+                          {downloadUrl ? (
+                            <a
+                              href={downloadUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 rounded-control border border-accent bg-accent px-4 py-2 font-mono text-xs font-semibold text-[#08110f] transition-colors duration-200 hover:bg-[#5eead4]"
+                            >
+                              <Download size={14} /> Download
+                            </a>
+                          ) : (
+                            <div className="flex flex-wrap gap-2">
+                              {project.live_url ? (
+                                <a
+                                  href={project.live_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 rounded-control border border-accent-line px-4 py-2 font-mono text-xs font-semibold text-accent transition-colors duration-200 hover:bg-accent-soft"
+                                >
+                                  <ExternalLink size={14} /> Live
+                                </a>
+                              ) : null}
+                              {project.github_url ? (
+                                <a
+                                  href={project.github_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 rounded-control border border-line px-4 py-2 font-mono text-xs font-semibold text-hi transition-colors duration-200 hover:border-line-hi"
+                                >
+                                  <Github size={14} /> Code
+                                </a>
+                              ) : null}
+                            </div>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedProject(project)}
+                            aria-label={`View details for ${project.title}`}
+                            className="ml-auto text-low transition-colors duration-200 hover:text-hi"
+                          >
+                            <Share2 size={16} />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </BentoCard>
-              </TiltCard>
-            </Reveal>
-          );
-        })}
+                  </BentoCard>
+                </TiltCard>
+              </Reveal>
+            );
+          })}
         </div>
       )}
 

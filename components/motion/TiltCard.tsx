@@ -74,8 +74,18 @@ export function TiltCard({
         )}
         style={{ transformStyle: "preserve-3d" }}
       >
+        {/*
+          `w-full` is load-bearing and was missing until /projects switched to
+          a list view. This wrapper is a flex item with no width of its own, so
+          it sizes to its content. A card with `w-full` inside it then resolves
+          100% against a content-sized box and collapses to shrink-to-fit — the
+          card rendered 434px wide inside a 1132px row. It only looked correct
+          in the grid view because the grid cell happened to constrain the
+          width, which is what made the bug invisible until a full-width layout
+          exposed it.
+        */}
         <div
-          className="[transform-style:preserve-3d] [&>*]:[transform-style:preserve-3d]"
+          className="w-full [transform-style:preserve-3d] [&>*]:[transform-style:preserve-3d]"
           style={{
             transform: isMouseEntered ? `translateZ(${depth}px)` : "translateZ(0px)",
           }}
