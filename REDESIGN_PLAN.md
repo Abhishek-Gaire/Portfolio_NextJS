@@ -206,7 +206,7 @@ the four layers, and do not restructure the data path.
 - **Typeshala four way branch.** `app/typeshala/TypeshalaPageClient.tsx:103,180,188,204`. No releases, API down, rate limited, and ok must stay distinct. The two fallback branches each require **all three** of `!latestRelease`, `previousReleases.length === 0`, and the relevant flag. Collapsing one silently merges states. Note `release.ts:63-65` treats HTTP 404 as *success with fallback*, which is the only thing keeping "no releases" distinct from "API down".
 - **Typeshala mobile reorder.** `TypeshalaPageClient.tsx:124-134` swaps sections via `useDetectedOS`, which is another `useSyncExternalStore` with `getServerSnapshot → null`. SSR emits desktop first, then reorders after hydration. Preserved by construction.
 - **RSC and client split.** 30 files are `"use client"`. Moving markup *into* a client primitive is safe. Converting the reverse is not.
-- **`ProjectsGrid` modal.** Esc handler plus body overflow lock at `:18-37`, keyed on `selectedProject`. It is the only `document.body.style` write in the app — any new primitive that also locks scroll will collide with it.
+- **Project detail pages.** `app/projects/[slug]/page.tsx`, one per row in `Projects`, keyed on the **stored** `slug` column rather than one derived from the title. Two traps, both hit: a title in the table carries a trailing newline (`"Digital Kirana\n"`), and the first backfill turned it into `digital-kirana-` because `trim` strips whitespace, not the dash the regexp had already produced. See section 6. Cards link the image and title; `Download` is a **sibling** link, never nested — a link inside a link is invalid and breaks keyboard and screen-reader navigation.
 
 ---
 ## 5. Phases — as built
@@ -314,7 +314,67 @@ Found during the build. Each is fixed, but each is a trap worth recording.
 | A subagent overwrote the verification harness | — | A parallel agent replaced `verify.mjs` with a script hardcoded to one route that ignored its path argument, so a later sweep reported "PASS" for six routes while actually hitting the same one. The real sweep had to be re-run. |
 | `AnimatedBeam` was listed as a Phase 2 motif and never ported | `../remix-of-pixel-perfect/src/routes/index.tsx:53-108,193-204` | Section 3 claims the primitive shipped. It did not — `components/motion/` went out with four components and the architecture section did not exist on the home page at all. Ported after the fact; see below. |
 
+### The project modal was hiding the project's own writing
+
+The project detail view was a dialog mounted on click from client state. Measured against the
+server-rendered HTML of `/projects`, before the change:
+
+| String | Occurrences in the payload |
+|---|---|
+| `Challenges` | **0** |
+| `Solutions` | **0** |
+| `Creator` | 1 — and only because it is also visible text in the card |
+
+Nine projects' worth of Challenges and Solutions copy was invisible to anything that reads markup
+rather than clicking. `app/projects/[slug]/page.tsx` fixes that for free, because the query runs
+server-side. Verified after: all nine pages return 200 with `Challenges` and `Solutions` present,
+one `h1` each, a canonical URL and a `BreadcrumbList` + `CreativeWork` `@graph`, and an unknown
+slug returns 404.
+
+The dialog also went away as a side effect, which removed the app's **only**
+`document.body.style` write — the collision risk this section listed as a risk area. The browser
+now supplies focus handling, Escape and the scroll lock.
+
+Two things were decided rather than inherited:
+
+- **The home card is now a single "View project" CTA.** It was carrying a Live/Source pair plus a
+  name-keyed Download override, which is the whole link set of the project page — and the two had
+  already disagreed once, about the Download button. The override is down to one call site, so it
+  cannot drift again. A teaser card should tease.
+- **`/typeshala` was NOT folded in.** It is 1306 lines across six files, mostly a distribution
+  portal: 8 platform download cards, release notes fetched from the GitLab API, version history,
+  its own chrome. The subdomain is live and returns 200, and `proxy.ts` carries split-domain
+  hosting for it. Merging a distribution portal into a case-study page would produce something
+  that is half of each, and would break links the project does not control. The detail page's
+  Download button leaves the portfolio for the subdomain instead.
+
+### Two guards that could not catch the bug they were written for
+
+The slug backfill failed on its first run, and the failure is worth recording because the safety
+rails were the thing that broke.
+
+`Digital Kirana` is stored as `"Digital Kirana\n"`. Two lines in the migration existed to stop that
+newline reaching the slug, and both were wrong:
+
+- `trim(both from regexp_replace(lower(title), '[^a-z0-9]+', '-', 'g'))` — the regexp runs
+  **first** and had already converted the newline to a dash, so there was no whitespace left for
+  `trim` to remove. And `trim` strips spaces, not dashes, so even in the right order it would not
+  have helped. The correct sequence is `btrim(title)` → slugify → `btrim(result, '-')`.
+- The fallback guard `slug !~ '^[a-z0-9][a-z0-9-]*$'` **permits** a trailing dash, because `-`
+  sits in the final character-class position. A pattern that cannot distinguish the bad value from
+  the good one is not a guard. The fixed form anchors the last character too:
+  `^[a-z0-9]([a-z0-9-]*[a-z0-9])?$`.
+
+The page at `/projects/digital-kirana-` did render, so nothing was broken — it is a permanently
+ugly public URL and the first thing in a sitemap. Corrected in `20260929000003`; the original file
+is left as-written and annotated, because it has already run against the live database and is the
+record of what actually happened.
+
+The general lesson: a validation regex needs a fixture that fails it. This one had no test, and
+the only way it was found was reading a screenshot of the migration's own output.
+
 ### The architecture section, ported late
+
 
 `components/motion/AnimatedBeam.tsx` and `components/home/Architecture.tsx`, wired into
 `app/page.tsx` between `<Skills />` and `<KineticDivider />` to match the reference's section
