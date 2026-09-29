@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import ContactForm from "../../components/contact/ContactForm";
+import { CONTACT_EMAIL } from "@/lib/site-urls";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -25,7 +26,6 @@ export const metadata: Metadata = {
   },
 };
 
-const EMAIL = "abhisekgaire7@gmail.com";
 const LOCATION = "Pokhara, Nepal";
 const CV_URL =
   "https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/cv/Abhishek_Gaire_Resume.pdf";
@@ -91,10 +91,10 @@ export default function ContactPage() {
                 <dt className="text-low">email</dt>
                 <dd className="mt-1">
                   <a
-                    href={`mailto:${EMAIL}`}
+                    href={`mailto:${CONTACT_EMAIL}`}
                     className="text-hi transition-colors duration-200 hover:text-accent"
                   >
-                    {EMAIL}
+                    {CONTACT_EMAIL}
                   </a>
                 </dd>
               </div>

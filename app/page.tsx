@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import FeaturedProjects from "../components/home/FeaturedProjects";
 import Hero from "../components/home/Hero";
-import HomeContact from "../components/home/HomeContact";
 import Skills from "../components/home/Skills";
+import Architecture from "../components/home/Architecture";
+import ContactCta from "../components/home/ContactCta";
 import { KineticDivider } from "@/components/home/KineticDivider";
 
 export const metadata: Metadata = {
@@ -63,9 +64,10 @@ export default async function HomePage() {
       />
       <Hero />
       <Skills />
+      <Architecture />
       <KineticDivider />
       <FeaturedProjects />
-      <HomeContact />
+      <ContactCta />
     </main>
   );
 }

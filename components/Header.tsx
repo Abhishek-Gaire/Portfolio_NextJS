@@ -29,8 +29,8 @@ const links = [
  * The reference nav has no mobile menu: the link list wraps. The previous
  * header here had a disclosure button, a useState toggle and a CV button plus
  * three social links, none of which the reference has. The CV and the social
- * profiles are still reachable from the hero, the footer, the contact page and
- * the about page.
+ * profiles are still reachable from the hero, the contact page and the about
+ * page.
  */
 export default function Header() {
   const pathname = usePathname();
