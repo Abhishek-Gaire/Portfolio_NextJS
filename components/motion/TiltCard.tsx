@@ -11,26 +11,47 @@ import {
 
 import { cn } from "@/lib/utils";
 
+import { TiltHoverContext } from "./CardItem";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 
 const PERSPECTIVE = 1000;
 const ROTATION_DIVISOR = 25;
 
+/**
+ * Ported from ../remix-of-pixel-perfect/src/components/ui/3d-card.tsx
+ * (CardContainer).
+ *
+ * Two departures from the reference, both forced by the port:
+ *
+ * 1. It publishes hover state through `TiltHoverContext` rather than the
+ *    reference's `MouseEnterContext`, so `CardItem` can sit at its own
+ *    translateZ. The reference's context is the same idea with a different
+ *    name; the shape had to change because that file is also its own
+ *    component, and two files cannot both be the provider.
+ *
+ * 2. The `depth` prop is gone. It translated a single wrapper div, which is
+ *    fine for a card with one visual region and wrong for a card with five —
+ *    the reference gives the image, the title, the description and the tags
+ *    four different depths, and a wrapper cannot express that. Expressing
+ *    depth in exactly one place, on CardItem, also means the two cannot stack
+ *    by accident: a wrapper depth of 100 plus an image item depth of 100 would
+ *    put the image at 200.
+ */
+
 type TiltCardProps = {
   children: ReactNode;
   className?: string;
-  depth?: number;
   wrapperClassName?: string;
 };
 
 export function TiltCard({
   children,
   className,
-  depth = 0,
   wrapperClassName,
 }: TiltCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMouseEntered, setIsMouseEntered] = useState(false);
+
 
   // The global `prefers-reduced-motion` block in globals.css only clamps CSS
   // animation/transition durations. This component writes `style.transform`
@@ -84,13 +105,10 @@ export function TiltCard({
           width, which is what made the bug invisible until a full-width layout
           exposed it.
         */}
-        <div
-          className="w-full [transform-style:preserve-3d] [&>*]:[transform-style:preserve-3d]"
-          style={{
-            transform: isMouseEntered ? `translateZ(${depth}px)` : "translateZ(0px)",
-          }}
-        >
-          {children}
+        <div className="w-full [transform-style:preserve-3d] [&>*]:[transform-style:preserve-3d]">
+          <TiltHoverContext.Provider value={isMouseEntered}>
+            {children}
+          </TiltHoverContext.Provider>
         </div>
       </div>
     </div>

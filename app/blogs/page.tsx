@@ -9,7 +9,10 @@ import BlogTagContent from "../../components/blog/BlogTagContent";
 import BlogLimitControl from "../../components/blog/BlogLimitControl";
 import BlogsViewToggle from "../../components/blog/BlogsViewToggle";
 import { BentoCard } from "@/components/primitives/BentoCard";
+import { CardBody, CardItem } from "@/components/motion/CardItem";
+import { TiltCard } from "@/components/motion/TiltCard";
 import { MonoTag } from "@/components/primitives/MonoTag";
+import { Reveal } from "@/components/primitives/Reveal";
 import { SectionHead } from "@/components/primitives/SectionHead";
 
 import type { BlogPost, Tag } from "../../types/blog";
@@ -416,81 +419,98 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
               const imageUrl = post.imageUrl?.trim();
 
               return (
-                <BentoCard key={post.id} interactive className="h-full">
-                  <article
-                    className={`flex h-full flex-col ${isList ? "sm:flex-row" : ""}`}
-                  >
-                    {imageUrl && (
-                      // A list card is far taller than 224px is wide, so a
-                      // full-height fill would crop these 16:9 covers down to a
-                      // sliver. Fixed band, vertically centred instead.
-                      <div
-                        className={`flex shrink-0 items-center justify-center border-b border-line sm:border-b-0 sm:border-r ${
-                          isList ? "sm:w-56" : "h-37.5"
-                        }`}
-                      >
-                        <Image
-                          src={imageUrl}
-                          alt={post.title}
-                          width={640}
-                          height={360}
-                          sizes={
-                            isList
-                              ? "224px"
-                              : "(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                          }
-                          loading={index === 0 ? "eager" : "lazy"}
-                          unoptimized
-                          className={isList ? "h-40 w-full" : "h-full w-full"}
-                        />
-                      </div>
-                    )}
-                    <div className="flex flex-1 flex-col p-5.5">
-                      {categoryTag && (
-                        <MonoTag accent className="mb-3 w-fit">
-                          {categoryTag.name}
-                        </MonoTag>
-                      )}
-                      <h2 className="mb-3 line-clamp-2 text-[16px] font-semibold leading-[1.4] text-hi">
-                        <Link
-                          href={href}
-                          className="transition-colors duration-200 hover:text-accent"
+                <Reveal key={post.id} delay={index * 60} className="h-full">
+                  <TiltCard wrapperClassName="h-full w-full" className="h-full w-full">
+                    <CardBody className="h-full w-full">
+                      <BentoCard interactive clip={false} className="h-full w-full">
+                        <article
+                          className={`flex h-full flex-col ${isList ? "sm:flex-row" : ""}`}
                         >
-                          {post.title}
-                        </Link>
-                      </h2>
-                      <div className="mb-5 [&_.prose]:mb-0 [&_.prose]:text-[13.5px] [&_.prose]:leading-[1.6]">
-                        <BlogHomeContent content={previewContent} />
-                      </div>
-                      {remainingTags.length > 0 && (
-                        <div className="mb-4">
-                          <BlogTagContent
-                            post={{ ...post, tags: remainingTags }}
-                          />
-                        </div>
-                      )}
-                      <div className="mt-auto flex items-center justify-between border-t border-line pt-3.5 font-mono text-micro text-low">
-                        <span className="flex items-center gap-2">
-                          <span>{readingTime} min read</span>
-                          <time dateTime={post.created_at}>
-                            {formatShortDate(post.created_at)}
-                          </time>
-                        </span>
-                        <Link
-                          href={href}
-                          aria-label={`Read ${post.title}`}
-                          className="group/read inline-flex items-center gap-1.5 text-hi transition-colors duration-200 hover:text-accent"
-                        >
-                          <span>Read</span>
-                          <ArrowRight
-                            className="h-3.5 w-3.5 transition-transform duration-200 group-hover/read:translate-x-[3px]"
-                            aria-hidden="true"
-                          />
-                        </Link>
-                      </div>
-                    </div>
-                  </article>
-                </BentoCard>
+                          {imageUrl && (
+                            <CardItem translateZ={100} className="shrink-0">
+                              {/*
+                                A list card is far taller than 224px is wide,
+                                so a full-height fill would crop these 16:9
+                                covers down to a sliver. Fixed band, vertically
+                                centred instead.
+                              */}
+                              <div
+                                className={`flex shrink-0 items-center justify-center overflow-hidden rounded-t-card border-b border-line sm:border-b-0 sm:border-r ${
+                                  isList ? "sm:w-56" : "h-37.5"
+                                }`}
+                              >
+                                <Image
+                                  src={imageUrl}
+                                  alt={post.title}
+                                  width={640}
+                                  height={360}
+                                  sizes={
+                                    isList
+                                      ? "224px"
+                                      : "(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                                  }
+                                  loading={index === 0 ? "eager" : "lazy"}
+                                  unoptimized
+                                  className={isList ? "h-40 w-full" : "h-full w-full"}
+                                />
+                              </div>
+                            </CardItem>
+                          )}
+                          <div className="flex flex-1 flex-col p-5.5">
+                            <CardItem translateZ={50}>
+                              {categoryTag && (
+                                <MonoTag accent className="mb-3 w-fit">
+                                  {categoryTag.name}
+                                </MonoTag>
+                              )}
+                              <h2 className="mb-3 line-clamp-2 text-[16px] font-semibold leading-[1.4] text-hi">
+                                <Link
+                                  href={href}
+                                  className="transition-colors duration-200 hover:text-accent"
+                                >
+                                  {post.title}
+                                </Link>
+                              </h2>
+                            </CardItem>
+                            <CardItem
+                              translateZ={30}
+                              className="mb-5 [&_.prose]:mb-0 [&_.prose]:text-[13.5px] [&_.prose]:leading-[1.6]"
+                            >
+                              <BlogHomeContent content={previewContent} />
+                            </CardItem>
+                            {remainingTags.length > 0 && (
+                              <CardItem translateZ={20} className="mb-4">
+                                <BlogTagContent post={{ ...post, tags: remainingTags }} />
+                              </CardItem>
+                            )}
+                            <CardItem
+                              translateZ={20}
+                              className="mt-auto flex items-center justify-between border-t border-line pt-3.5 font-mono text-micro text-low"
+                            >
+                              <span className="flex items-center gap-2">
+                                <span>{readingTime} min read</span>
+                                <time dateTime={post.created_at}>
+                                  {formatShortDate(post.created_at)}
+                                </time>
+                              </span>
+                              <Link
+                                href={href}
+                                aria-label={`Read ${post.title}`}
+                                className="group/read inline-flex items-center gap-1.5 text-hi transition-colors duration-200 hover:text-accent"
+                              >
+                                <span>Read</span>
+                                <ArrowRight
+                                  className="h-3.5 w-3.5 transition-transform duration-200 group-hover/read:translate-x-[3px]"
+                                  aria-hidden="true"
+                                />
+                              </Link>
+                            </CardItem>
+                          </div>
+                        </article>
+                      </BentoCard>
+                    </CardBody>
+                  </TiltCard>
+                </Reveal>
               );
             })}
           </div>

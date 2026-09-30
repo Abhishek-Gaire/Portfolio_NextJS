@@ -94,7 +94,30 @@ export function PixelImage({
         "relative w-full select-none overflow-hidden rounded-tile border border-line bg-surface-2",
         className,
       )}
-      style={{ aspectRatio: `${width} / ${height}` }}
+      style={{
+        aspectRatio: `${width} / ${height}`,
+        /*
+         * Seam guard, and it is load-bearing.
+         *
+         * Adjacent clip-path polygons share an edge computed as a percentage,
+         * so the browser antialiases both sides of it and a sub-pixel strip of
+         * the container's own background shows through between cells. Measured
+         * by diffing a rendered mosaic against the same image drawn as a plain
+         * <img>: mean per-column difference 0.34, but 56 at the cell boundaries
+         * — spikes at x = 196, 589, 982, 1375 on a 1572px-wide 8-column grid,
+         * i.e. exact multiples of the 196.5px cell pitch. On a dark banner
+         * that reads as a faint grid drawn over the photograph.
+         *
+         * Painting the same source as the container's own background costs one
+         * cached request and closes the gap with a 1px sliver of the correct
+         * image rather than of bg-surface-2. Sized and positioned to match the
+         * cells' object-cover, so it lines up everywhere.
+         */
+        backgroundImage: `url(${JSON.stringify(src)})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
       {pieces.map((piece, index) => (
         <div

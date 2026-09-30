@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BentoCard } from "@/components/primitives/BentoCard";
+import { CardBody, CardItem } from "@/components/motion/CardItem";
+import { TiltCard } from "@/components/motion/TiltCard";
 import { Button } from "@/components/primitives/Button";
 import { MonoTag } from "@/components/primitives/MonoTag";
 import { Reveal } from "@/components/primitives/Reveal";
@@ -77,47 +79,60 @@ export default function FeaturedProjectsClient({
             const isReversed = index % 2 === 1;
 
             const media = (
-              <div
-                className={cn(
-                  "flex items-center justify-center bg-surface-2 p-5 sm:p-6",
-                  isReversed
-                    ? "border-t border-line lg:border-t-0 lg:border-l"
-                    : "border-t border-line lg:border-t-0 lg:border-r",
-                )}
-              >
-                <WindowChrome
-                  title={project.title}
-                  className="h-auto w-full max-w-125 overflow-hidden rounded-tile border border-line bg-code-bg"
+              <CardItem translateZ={100} className="flex">
+                <div
+                  className={cn(
+                    "flex w-full items-center justify-center bg-surface-2 p-5 sm:p-6",
+                    isReversed
+                      ? "border-t border-line lg:border-t-0 lg:border-l"
+                      : "border-t border-line lg:border-t-0 lg:border-r",
+                  )}
                 >
-                  <div className="aspect-16/10">
-                    <Image
-                      src={project.image_url?.trim() || FALLBACK_IMAGE}
-                      alt={project.title}
-                      width={1024}
-                      height={640}
-                      sizes="(min-width: 1024px) 590px, 100vw"
-                      unoptimized
-                      className="h-full w-full object-cover object-top"
-                    />
-                  </div>
-                </WindowChrome>
-              </div>
+                  <WindowChrome
+                    title={project.title}
+                    className="h-auto w-full max-w-125 overflow-hidden rounded-tile border border-line bg-code-bg"
+                  >
+                    <div className="aspect-16/10">
+                      <Image
+                        src={project.image_url?.trim() || FALLBACK_IMAGE}
+                        alt={project.title}
+                        width={1024}
+                        height={640}
+                        sizes="(min-width: 1024px) 590px, 100vw"
+                        unoptimized
+                        loading={index === 0 ? "eager" : "lazy"}
+                        className="h-full w-full object-cover object-top"
+                      />
+                    </div>
+                  </WindowChrome>
+                </div>
+              </CardItem>
             );
 
             const body = (
               <div className="flex flex-col p-6 sm:p-7">
-                {year ? <MonoTag className="mb-2.5 w-fit">{year}</MonoTag> : null}
+                <CardItem translateZ={50} className="mb-2.5 w-fit">
+                  {year ? <MonoTag>{year}</MonoTag> : null}
+                </CardItem>
 
-                <h3 className="text-[19px] font-semibold tracking-[-0.01em] text-hi">
+                <CardItem
+                  as="h3"
+                  translateZ={50}
+                  className="text-[19px] font-semibold tracking-[-0.01em] text-hi"
+                >
                   {project.title}
-                </h3>
+                </CardItem>
 
-                <p className="mt-3 mb-5 text-[14px] leading-[1.6] text-mid">
+                <CardItem
+                  as="p"
+                  translateZ={30}
+                  className="mt-3 mb-5 text-[14px] leading-[1.6] text-mid"
+                >
                   {project.description}
-                </p>
+                </CardItem>
 
                 {technologies.length > 0 && (
-                  <div className="mb-5 flex flex-wrap gap-1.5">
+                  <CardItem translateZ={20} className="mb-5 flex flex-wrap gap-1.5">
                     {technologies.slice(0, 3).map((tech, techIndex) => (
                       <MonoTag key={`${project.id}-${tech}-${techIndex}`}>
                         {tech}
@@ -126,10 +141,10 @@ export default function FeaturedProjectsClient({
                     {technologies.length > 3 && (
                       <MonoTag>+{technologies.length - 3} more</MonoTag>
                     )}
-                  </div>
+                  </CardItem>
                 )}
 
-                <div className="mt-auto flex flex-wrap items-center gap-2.5">
+                <CardItem translateZ={20} className="mt-auto flex flex-wrap items-center gap-2.5">
                   {/*
                     One CTA, and it is a link to the case study. The card used
                     to carry its own Live/Source pair and a name-keyed Download
@@ -150,27 +165,31 @@ export default function FeaturedProjectsClient({
                     <span>View project</span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
-                </div>
+                </CardItem>
               </div>
             );
 
             return (
               <Reveal key={project.id} delay={index * 80}>
-                <BentoCard interactive className="rounded-card">
-                  <div className="grid grid-cols-1 lg:grid-cols-2">
-                    {isReversed ? (
-                      <>
-                        {body}
-                        {media}
-                      </>
-                    ) : (
-                      <>
-                        {media}
-                        {body}
-                      </>
-                    )}
-                  </div>
-                </BentoCard>
+                <TiltCard wrapperClassName="h-full w-full" className="h-full w-full">
+                  <CardBody className="h-full w-full">
+                    <BentoCard interactive clip={false} className="h-full w-full">
+                      <div className="grid h-full grid-cols-1 lg:grid-cols-2">
+                        {isReversed ? (
+                          <>
+                            {body}
+                            {media}
+                          </>
+                        ) : (
+                          <>
+                            {media}
+                            {body}
+                          </>
+                        )}
+                      </div>
+                    </BentoCard>
+                  </CardBody>
+                </TiltCard>
               </Reveal>
             );
           })}

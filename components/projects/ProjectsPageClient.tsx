@@ -14,8 +14,11 @@ import {
 
 import { Github } from "@/components/icons";
 import { TiltCard } from "@/components/motion/TiltCard";
+import { CardBody, CardItem } from "@/components/motion/CardItem";
 import { BentoCard } from "@/components/primitives/BentoCard";
 import { MonoTag } from "@/components/primitives/MonoTag";
+import { LmsArchitecture } from "@/components/projects/LmsArchitecture";
+import { ProjectTagChips } from "@/components/projects/ProjectTagChips";
 import { Reveal } from "@/components/primitives/Reveal";
 import { getProjectDownloadUrl } from "@/lib/project-links";
 import { cn } from "@/lib/utils";
@@ -217,117 +220,199 @@ export default function ProjectsPageClient({
 
             return (
               <Reveal key={project.id} delay={index * 60} className="h-full">
-                <TiltCard
-                  depth={100}
-                  wrapperClassName="h-full w-full"
-                  className="h-full w-full"
-                >
-                  <BentoCard interactive className="h-full w-full">
-                    <div
-                      className={cn(
-                        "flex h-full gap-5 p-5",
-                        isList ? "flex-col sm:flex-row" : "flex-col",
-                      )}
-                    >
-                      <Link
-                        href={`/projects/${project.slug}`}
-                        aria-label={`View case study for ${project.title}`}
+                <TiltCard wrapperClassName="h-full w-full" className="h-full w-full">
+                  <CardBody className="h-full w-full">
+                    <BentoCard interactive clip={false} className="h-full w-full">
+                      <div
                         className={cn(
-                          "block shrink-0 overflow-hidden rounded-tile",
-                          isList ? "sm:w-[38%]" : "w-full",
+                          "flex h-full gap-5 p-5",
+                          isList ? "flex-col sm:flex-row" : "flex-col",
                         )}
                       >
-                        <Image
-                          src={project.image_url?.trim() || FALLBACK_IMAGE}
-                          alt={project.title}
-                          width={1024}
-                          height={640}
-                          sizes={
-                            isList
-                              ? "(min-width: 640px) 38vw, 100vw"
-                              : "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                          }
-                          unoptimized
+                        <CardItem
+                          translateZ={100}
                           className={cn(
-                            "w-full rounded-tile object-cover",
-                            isList ? "h-40 sm:h-full sm:min-h-45" : "h-48",
+                            "shrink-0 overflow-hidden rounded-tile",
+                            isList ? "sm:w-[38%]" : "w-full",
                           )}
-                        />
-                      </Link>
-
-                      <div className="flex min-w-0 flex-1 flex-col">
-                        <div className="mb-5 flex items-center justify-between gap-3">
-                          <h2 className="text-xl font-bold text-hi">
-                            <Link
-                              href={`/projects/${project.slug}`}
-                              className="text-left transition-colors duration-200 hover:text-accent"
-                            >
-                              {project.title}
-                            </Link>
-                          </h2>
-                          {project.completionDate ? (
-                            <MonoTag className="shrink-0">
-                              {new Date(project.completionDate).getFullYear()}
-                            </MonoTag>
-                          ) : null}
-                        </div>
-
-                        <p className="mt-2 line-clamp-3 max-w-sm text-sm text-mid">
-                          {project.description}
-                        </p>
-
-                        {Array.isArray(project.technologies) &&
-                        project.technologies.length > 0 ? (
-                          <div className="mt-4 flex flex-wrap gap-2">
-                            {project.technologies.map((tech, techIndex) => (
-                              <MonoTag
-                                key={`${project.id}-${tech}-${techIndex}`}
-                                accent
+                        >
+                          <Link
+                            href={`/projects/${project.slug}`}
+                            aria-label={`View case study for ${project.title}`}
+                            className="block w-full overflow-hidden rounded-tile"
+                          >
+                            {/*
+                              lms-microservices has no image_url, and the
+                              generic FALLBACK_IMAGE underneath it is a stock
+                              photo of a code editor, which sits under the title
+                              "LMS Microservices" as though it were a screenshot
+                              of this system. The diagram is drawn from the
+                              actual src/backend services instead, and being an
+                              SVG it stays legible at this width instead of
+                              decaying into a smudge the way a screenshot of
+                              seven service boxes would.
+                            */}
+                            {project.slug === "lms-microservices" ? (
+                              /*
+                                The wrapper carries the SAME fixed height the
+                                <Image> branch carries. An SVG sizes by its
+                                viewBox ratio, so letting it size itself gave this
+                                card a 150px visual band next to 192px on every
+                                other card, and the title sat 42px above its
+                                neighbours in the same grid row. The diagram
+                                letterboxes inside the band it is given, which
+                                reads as padding; the alternative read as a
+                                layout bug.
+                              */
+                              <div
+                                className={cn(
+                                  "w-full bg-surface-2",
+                                  isList
+                                    ? "h-40 sm:h-full sm:min-h-45"
+                                    : "h-48",
+                                )}
                               >
-                                {tech}
-                              </MonoTag>
-                            ))}
-                          </div>
-                        ) : null}
+                                <LmsArchitecture
+                                  variant="compact"
+                                  title="LMS microservices: one API gateway, seven services, five datastores"
+                                  className="h-full w-full"
+                                />
+                              </div>
+                            ) : (
+                              <Image
+                              src={project.image_url?.trim() || FALLBACK_IMAGE}
+                              alt={project.title}
+                              width={1024}
+                              height={640}
+                              sizes={
+                                isList
+                                  ? "(min-width: 640px) 38vw, 100vw"
+                                  : "(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                              }
+                              unoptimized
+                              /*
+                                Next.js defaults an <img> to loading="eager",
+                                so with no attribute here all ten card images
+                                were fetched the moment the page parsed --
+                                including seven that are below the fold. Several
+                                are 2500px-wide PNGs, so that is real bandwidth
+                                for images nobody is waiting on.
+                                /blogs already sets this (app/blogs/page.tsx,
+                                `index === 0 ? "eager" : "lazy"`), which is why it
+                                never raised the LCP advisory this page did.
+                                Eager covers the first visible row: three cards in
+                                the grid, one in the list.
+                              */
+                              loading={
+                                index < (isList ? 1 : 3) ? "eager" : "lazy"
+                              }
+                              className={cn(
+                                "w-full rounded-tile object-cover",
+                                isList ? "h-40 sm:h-full sm:min-h-45" : "h-48",
+                              )}
+                              />
+                            )}
+                          </Link>
+                        </CardItem>
 
-                        <div className="mt-6 flex items-center justify-between gap-3">
-                          {downloadUrl ? (
-                            <a
-                              href={downloadUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 rounded-control border border-accent bg-accent px-4 py-2 font-mono text-xs font-semibold text-[#08110f] transition-colors duration-200 hover:bg-[#5eead4]"
+                        <div className="flex min-w-0 flex-1 flex-col">
+                          <CardItem
+                            translateZ={50}
+                            className="mb-5 flex items-center justify-between gap-3"
+                          >
+                            <h2 className="text-xl font-bold text-hi">
+                              <Link
+                                href={`/projects/${project.slug}`}
+                                className="text-left transition-colors duration-200 hover:text-accent"
+                              >
+                                {project.title}
+                              </Link>
+                            </h2>
+                            {project.completionDate ? (
+                              <MonoTag className="shrink-0">
+                                {new Date(project.completionDate).getFullYear()}
+                              </MonoTag>
+                            ) : null}
+                          </CardItem>
+
+                          <CardItem
+                            as="p"
+                            translateZ={30}
+                            className="mt-2 line-clamp-3 max-w-sm text-sm text-mid"
+                          >
+                            {project.description}
+                          </CardItem>
+
+                          {/*
+                            Provenance, directly under the description and
+                            above the technology list. It sits there because it
+                            qualifies what the description is claiming -- this
+                            is client work, this is coursework -- so reading it
+                            after the blurb rather than after a row of
+                            framework names.
+                          */}
+                          {Array.isArray(project.tags) && project.tags.length > 0 ? (
+                            <CardItem translateZ={30} className="mt-3">
+                              <ProjectTagChips tags={project.tags} />
+                            </CardItem>
+                          ) : null}
+
+                          {Array.isArray(project.technologies) &&
+                          project.technologies.length > 0 ? (
+                            <CardItem
+                              translateZ={20}
+                              className="mt-4 flex flex-wrap gap-2"
                             >
-                              <Download size={14} /> Download
-                            </a>
-                          ) : (
-                            <div className="flex flex-wrap gap-2">
-                              {project.live_url ? (
-                                <a
-                                  href={project.live_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-2 rounded-control border border-accent-line px-4 py-2 font-mono text-xs font-semibold text-accent transition-colors duration-200 hover:bg-accent-soft"
-                                >
-                                  <ExternalLink size={14} /> Live
-                                </a>
-                              ) : null}
-                              {project.github_url ? (
-                                <a
-                                  href={project.github_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-2 rounded-control border border-line px-4 py-2 font-mono text-xs font-semibold text-hi transition-colors duration-200 hover:border-line-hi"
-                                >
-                                  <Github size={14} /> Code
-                                </a>
-                              ) : null}
-                            </div>
-                          )}
+                              {project.technologies.map((tech, techIndex) => (
+                                <MonoTag key={`${project.id}-${tech}-${techIndex}`} accent>
+                                  {tech}
+                                </MonoTag>
+                              ))}
+                            </CardItem>
+                          ) : null}
+
+                          <CardItem
+                            translateZ={20}
+                            className="mt-6 flex items-center justify-between gap-3"
+                          >
+                            {downloadUrl ? (
+                              <a
+                                href={downloadUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 rounded-control border border-accent bg-accent px-4 py-2 font-mono text-xs font-semibold text-[#08110f] transition-colors duration-200 hover:bg-[#5eead4]"
+                              >
+                                <Download size={14} /> Download
+                              </a>
+                            ) : (
+                              <div className="flex flex-wrap gap-2">
+                                {project.live_url ? (
+                                  <a
+                                    href={project.live_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 rounded-control border border-accent-line px-4 py-2 font-mono text-xs font-semibold text-accent transition-colors duration-200 hover:bg-accent-soft"
+                                  >
+                                    <ExternalLink size={14} /> Live
+                                  </a>
+                                ) : null}
+                                {project.github_url ? (
+                                  <a
+                                    href={project.github_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 rounded-control border border-line px-4 py-2 font-mono text-xs font-semibold text-hi transition-colors duration-200 hover:border-line-hi"
+                                  >
+                                    <Github size={14} /> Code
+                                  </a>
+                                ) : null}
+                              </div>
+                            )}
+                          </CardItem>
                         </div>
                       </div>
-                    </div>
-                  </BentoCard>
+                    </BentoCard>
+                  </CardBody>
                 </TiltCard>
               </Reveal>
             );

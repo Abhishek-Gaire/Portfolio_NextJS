@@ -1,11 +1,13 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Download, ExternalLink } from "lucide-react";
 
 import { Github } from "@/components/icons";
+import { FeaturedImage } from "@/components/motion/FeaturedImage";
 import { Breadcrumb } from "@/components/primitives/Breadcrumb";
 import { Button } from "@/components/primitives/Button";
 import { MonoTag } from "@/components/primitives/MonoTag";
+import { LmsArchitecture } from "@/components/projects/LmsArchitecture";
+import { ProjectTagChips } from "@/components/projects/ProjectTagChips";
 import { getProjectDownloadUrl } from "@/lib/project-links";
 import type { Project } from "../../types/project";
 
@@ -71,18 +73,65 @@ export default function ProjectDetail({ project }: { project: Project }) {
             {project.title}
           </h1>
 
-          {project.image_url?.trim() ? (
-            <div className="mt-8 overflow-hidden rounded-card border border-line">
-              <Image
-                src={project.image_url.trim()}
-                alt={project.title}
-                width={1600}
-                height={900}
-                sizes="(min-width: 1024px) 800px, 100vw"
-                unoptimized
-                className="h-auto w-full object-cover object-top"
-              />
+          {/*
+            Provenance and, for coursework, where it sat. Placed directly under
+            the title rather than down in the metadata sidebar: this is the claim
+            the page is making about itself, and it belongs where a reader meets
+            the project name first. `context` carries "6th semester - Minor
+            Project 2" and deliberately does not name the university.
+          */}
+          {(Array.isArray(project.tags) && project.tags.length > 0) ||
+          project.context ? (
+            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+              <ProjectTagChips tags={project.tags} />
+              {project.context ? (
+                <span className="font-mono text-[11px] text-low">
+                  {project.context}
+                </span>
+              ) : null}
             </div>
+          ) : null}
+
+          {/*
+            The visual slot under the title, and every case study has one.
+
+            A real image when there is one. This project has no image_url, so it
+            gets the architecture diagram instead -- and it goes HERE, in the
+            same position and the same frame as the cover on every other project,
+            rather than after the Solutions section where it was first put.
+
+            That earlier placement made the LMS page structurally different from
+            every other one: title, then straight into Overview, with the most
+            substantial thing about the project filed at the bottom. The argument
+            for it -- that a hero is where the reader decides whether to keep
+            reading -- cuts the other way. It is the best argument for putting a
+            diagram at the top, not the bottom.
+
+            The image branch is tested FIRST on purpose. If a screenshot is ever
+            added for this project it takes the hero automatically and the
+            diagram stops rendering here, with no edit to make.
+          */}
+          {project.image_url?.trim() ? (
+            <FeaturedImage
+              src={project.image_url.trim()}
+              alt={project.title}
+              slug={project.slug}
+              width={1600}
+              height={900}
+              sizes="(min-width: 1024px) 800px, 100vw"
+              priority
+              className="mt-8 overflow-hidden rounded-card border border-line"
+              imageClassName="h-auto w-full object-cover object-top"
+            />
+          ) : project.slug === "lms-microservices" ? (
+            <figure className="mt-8">
+              <LmsArchitecture className="rounded-card border border-line bg-surface p-4 sm:p-6" />
+              <figcaption className="mt-3 font-mono text-micro text-low">
+                Seven services behind one NestJS gateway. RabbitMQ carries
+                asynchronous work, gRPC carries typed request-response, and
+                Redis holds shared state.
+              </figcaption>
+            </figure>
           ) : null}
 
           <div className="mt-9 space-y-7">

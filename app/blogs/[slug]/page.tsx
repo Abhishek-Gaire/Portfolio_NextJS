@@ -9,6 +9,9 @@ import BlogContent from "../../../components/blog/BlogContent";
 import BlogTagContent from "../../../components/blog/BlogTagContent";
 import ShareButtons from "../../../components/blog/ShareButtons";
 import { BentoCard } from "@/components/primitives/BentoCard";
+import { FeaturedImage } from "@/components/motion/FeaturedImage";
+import { CardBody, CardItem } from "@/components/motion/CardItem";
+import { TiltCard } from "@/components/motion/TiltCard";
 import { SectionHead } from "@/components/primitives/SectionHead";
 import { getSupabaseServerClient } from "../../../lib/supabase/server";
 import type { BlogPost, Tag } from "../../../types/blog";
@@ -318,18 +321,17 @@ export default async function BlogDetailPage({
           </header>
 
           {displayImageUrl && (
-            <div className="mb-8 overflow-hidden rounded-card border border-line">
-              <Image
-                src={displayImageUrl}
-                alt={post.title}
-                width={1200}
-                height={400}
-                sizes="(min-width: 768px) 720px, 100vw"
-                unoptimized
-                priority
-                className="h-auto w-full object-cover"
-              />
-            </div>
+            <FeaturedImage
+              src={displayImageUrl}
+              alt={post.title}
+              slug={post.slug ?? post.id}
+              width={1200}
+              height={400}
+              sizes="(min-width: 768px) 720px, 100vw"
+              priority
+              className="mb-8 overflow-hidden rounded-card border border-line"
+              imageClassName="h-auto w-full object-cover"
+            />
           )}
 
           <BentoCard className="p-6 sm:p-8">
@@ -400,29 +402,48 @@ export default async function BlogDetailPage({
               />
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 {relatedPosts.map((related) => (
-                  <BentoCard key={related.id} interactive className="h-full">
-                    <Link
-                      href={`/blogs/${related.slug ?? related.id}`}
-                      className="group flex h-full flex-col"
-                    >
-                      {related.imageUrl && (
-                        <div className="relative h-32 shrink-0 border-b border-line">
-                          <Image
-                            src={related.imageUrl}
-                            alt={related.title}
-                            width={640}
-                            height={360}
-                            sizes="(min-width: 768px) 33vw, 100vw"
-                            unoptimized
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <h3 className="line-clamp-2 p-4 text-[14px] font-semibold leading-[1.45] text-hi transition-colors duration-200 group-hover:text-accent">
-                        {related.title}
-                      </h3>
-                    </Link>
-                  </BentoCard>
+                  <TiltCard
+                    key={related.id}
+                    wrapperClassName="h-full w-full"
+                    className="h-full w-full"
+                  >
+                    <CardBody className="h-full w-full">
+                      <BentoCard interactive clip={false} className="h-full w-full">
+                        <Link
+                          href={`/blogs/${related.slug ?? related.id}`}
+                          className="group flex h-full flex-col"
+                        >
+                          {related.imageUrl && (
+                            <CardItem translateZ={100}>
+                              <div className="relative h-32 shrink-0 overflow-hidden rounded-t-card border-b border-line">
+                                <Image
+                                  src={related.imageUrl}
+                                  alt={related.title}
+                                  width={640}
+                                  height={360}
+                                  sizes="(min-width: 768px) 33vw, 100vw"
+                                  unoptimized
+                                  /*
+                                    These sit below the whole article and the
+                                    share row, so they are never above the fold
+                                    on any viewport. Left at the implicit eager
+                                    default they were all fetched during initial
+                                    parse, on a route whose LCP element is the
+                                    cover image further up.
+                                  */
+                                  loading="lazy"
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                            </CardItem>
+                          )}
+                          <CardItem as="h3" translateZ={50} className="line-clamp-2 p-4 text-[14px] font-semibold leading-[1.45] text-hi transition-colors duration-200 group-hover:text-accent">
+                            {related.title}
+                          </CardItem>
+                        </Link>
+                      </BentoCard>
+                    </CardBody>
+                  </TiltCard>
                 ))}
               </div>
             </section>
