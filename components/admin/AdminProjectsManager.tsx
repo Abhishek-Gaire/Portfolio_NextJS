@@ -3,7 +3,7 @@
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { getSupabaseBrowserClient } from "../../lib/supabase/client";
-import type { Project } from "../../types/project";
+import { PROJECT_TAGS, type Project, type ProjectTag } from "../../types/project";
 
 type FormState = {
   title: string;
@@ -18,6 +18,8 @@ type FormState = {
   live_url: string;
   github_url: string;
   isFeatured: boolean;
+  tags: ProjectTag[];
+  context: string;
 };
 
 type SubmitState = "idle" | "saving" | "error";
@@ -35,6 +37,8 @@ const emptyForm: FormState = {
   live_url: "",
   github_url: "",
   isFeatured: false,
+  tags: [],
+  context: "",
 };
 
 const categories = ["Full Stack", "Backend", "Frontend", "Collaboration"];
@@ -126,6 +130,12 @@ export default function AdminProjectsManager({
       live_url: project.live_url ?? "",
       github_url: project.github_url ?? "",
       isFeatured: project.isFeatured === true,
+      tags: Array.isArray(project.tags)
+        ? project.tags.filter((t): t is ProjectTag =>
+            (PROJECT_TAGS as string[]).includes(t),
+          )
+        : [],
+      context: project.context ?? "",
     });
   };
 
@@ -179,6 +189,8 @@ export default function AdminProjectsManager({
       live_url: formState.live_url.trim() || null,
       github_url: formState.github_url.trim() || null,
       isFeatured: formState.isFeatured,
+      tags: formState.tags,
+      context: formState.context.trim() || null,
     };
 
     if (!payload.title || !payload.description) {
@@ -356,7 +368,74 @@ export default function AdminProjectsManager({
                     rejected.
                   </p>
                 )}
+                {/*
+                  Mirrors the Projects_featured_limit trigger, which refuses to
+                  feature anything tagged college. Warned here rather than
+                  thrown from Postgres, so the sentence arrives before the save
+                  rather than as an exception after it.
+                */}
+                {formState.isFeatured && formState.tags.includes("college") && (
+                  <p className="mt-1.5 text-xs text-amber-700">
+                    This project is tagged college, and coursework cannot be
+                    featured on the home page — saving this now would be rejected.
+                  </p>
+                )}
               </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <span className="block text-sm font-medium text-slate-900">
+              Provenance
+            </span>
+            <p className="mt-1 text-xs text-slate-500">
+              Where the work came from, as chips on the project card and detail
+              page. More than one can apply. Leave empty to claim nothing.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-4">
+              {PROJECT_TAGS.map((tag) => (
+                <label
+                  key={tag}
+                  className="flex items-center gap-2 text-sm text-slate-700"
+                >
+                  <input
+                    type="checkbox"
+                    checked={formState.tags.includes(tag)}
+                    onChange={(event) =>
+                      setFormState((prev) => ({
+                        ...prev,
+                        tags: event.target.checked
+                          ? [...prev.tags, tag]
+                          : prev.tags.filter((t) => t !== tag),
+                      }))
+                    }
+                    className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500"
+                  />
+                  {tag}
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-4">
+              <label
+                className="mb-1 block text-sm font-medium text-slate-700"
+                htmlFor="projectContext"
+              >
+                Coursework context
+              </label>
+              <input
+                id="projectContext"
+                type="text"
+                value={formState.context}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, context: event.target.value }))
+                }
+                placeholder="6th semester - Minor Project 2"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                Shown under the title on the detail page. Only for college work.
+              </p>
             </div>
           </div>
 
@@ -504,7 +583,34 @@ export default function AdminProjectsManager({
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-500">{project.category}</p>
+                <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs text-slate-500">{project.category}</span>
+                  {/*
+                    Provenance chips, in the admin's own light palette rather
+                    than the marketing tokens, so the CMS keeps reading as a CMS.
+                    Untagged rows show nothing at all, which is the point: an
+                    empty list claims nothing.
+                  */}
+                  {Array.isArray(project.tags)
+                    ? project.tags
+                        .filter((t): t is ProjectTag =>
+                            (PROJECT_TAGS as string[]).includes(t),
+                        )
+                        .map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-slate-300 px-1.5 py-0.5 text-[10px] text-slate-600"
+                          >
+                            {tag}
+                          </span>
+                        ))
+                    : null}
+                  {project.context ? (
+                    <span className="text-[10px] text-slate-500">
+                      {project.context}
+                    </span>
+                  ) : null}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button

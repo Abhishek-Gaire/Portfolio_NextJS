@@ -22,6 +22,14 @@ const projectSchema = z.object({
     .union([z.boolean(), z.literal("true"), z.literal("false")])
     .transform((value) => value === true || value === "true")
     .optional(),
+  // Mirrors the database CHECK constraint. Zod validates the request body; the
+  // CHECK is the guard for rows written by a direct table edit or by the admin's
+  // browser-direct path, neither of which passes through here.
+  tags: z
+    .array(z.enum(["client", "personal", "oss", "hobby", "college"]))
+    .max(5)
+    .optional(),
+  context: z.string().trim().max(120).nullable().optional(),
 });
 
 export async function POST(request: Request) {

@@ -34,7 +34,12 @@ async function fetchProjects() {
   const { data, error } = await supabase
     .from("Projects")
     .select("*")
-    .order("completionDate", { ascending: false });
+    // nullsLast is load-bearing, not tidiness. Postgres defaults a DESC sort to
+    // NULLS FIRST, so an undated row lands at the very top of /projects. The
+    // LMS row is inserted with a null completionDate until its real date is
+    // known -- see supabase/migrations/20260929000005_seed_lms_microservices.sql
+    // -- and without this it would open the page above his two client projects.
+    .order("completionDate", { ascending: false, nullsFirst: false });
 
   if (error) {
     throw new Error(error.message);
