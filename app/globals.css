@@ -194,7 +194,7 @@ body {
  *
  * These are the CSS half of the ported Remix primitives. Without them the
  * components are inert: `animationDelay` with no keyframes was the bug that
- * used to sit in Skills.tsx:87, LatestBlogsClient.tsx:75 and
+ * used to sit in Skills.tsx:87, an earlier LatestBlogsClient.tsx:75 and
  * ProjectsGrid.tsx:54, none of which ever animated. All three are now fixed —
  * Reveal supplies the animation and the delay instead. Any component that sets
  * an animation or an animationDelay still needs its keyframe declared here
