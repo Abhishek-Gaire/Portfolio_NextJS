@@ -2,11 +2,17 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
+import { Breadcrumb } from "@/components/primitives/Breadcrumb";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { notFound } from "next/navigation";
 import BlogContent from "../../../components/blog/BlogContent";
 import BlogTagContent from "../../../components/blog/BlogTagContent";
 import ShareButtons from "../../../components/blog/ShareButtons";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { FeaturedImage } from "@/components/motion/FeaturedImage";
+import { CardBody, CardItem } from "@/components/motion/CardItem";
+import { TiltCard } from "@/components/motion/TiltCard";
+import { SectionHead } from "@/components/primitives/SectionHead";
 import { getSupabaseServerClient } from "../../../lib/supabase/server";
 import type { BlogPost, Tag } from "../../../types/blog";
 import { estimateReadingTime, formatDate } from "../../../utils/dateUtils";
@@ -54,7 +60,7 @@ function normalizeTags(tags: unknown): Tag[] {
 
 function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-    value
+    value,
   );
 }
 
@@ -198,7 +204,9 @@ export async function generateMetadata({
       description,
       type: "article",
       url: canonicalPath,
-      images: post.imageUrl ? [{ url: post.imageUrl, alt: post.title }] : undefined,
+      images: post.imageUrl
+        ? [{ url: post.imageUrl, alt: post.title }]
+        : undefined,
       publishedTime: publishedAt,
       modifiedTime: updatedAt,
       authors: [author],
@@ -269,120 +277,179 @@ export default async function BlogDetailPage({
   };
 
   return (
-    <main className="min-h-screen bg-linear-to-br from-gray-900 via-black to-gray-900">
-      <article className="max-w-4xl mx-auto px-4 py-12 pt-25">
-        <script
-          type="application/ld+json"
-          nonce={nonce}
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingJsonLd) }}
-        />
-        <header className="mb-8">
+    <main className="min-h-screen py-16">
+      <div className="mx-auto max-w-shell px-6">
+        {/*
+          max-w-4xl here, max-w-3xl on the .prose inside it. The article is
+          headroom; the prose is the measure. They move together — see the
+          matching note on `.prose` in app/globals.css.
+        */}
+        <article className="mx-auto max-w-4xl">
+          <script
+            type="application/ld+json"
+            nonce={nonce}
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(blogPostingJsonLd),
+            }}
+          />
+          <Breadcrumb
+            items={[
+              { label: "Home", href: "/" },
+              { label: "Blogs", href: "/blogs" },
+              { label: post.title },
+            ]}
+          />
+
+          <header className="mb-8">
+            <p className="mb-2.5 font-mono text-[13px] text-accent">WRITING</p>
+            <h1 className="mb-4 text-display font-bold text-hi">
+              {post.title}
+            </h1>
+            <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-micro text-low">
+              <span className="text-mid">{author}</span>
+              <span aria-hidden="true">•</span>
+              <time dateTime={post.created_at}>
+                {formatDate(post.created_at)}
+              </time>
+              <span aria-hidden="true">•</span>
+              <span>{readingTime} min read</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <BlogTagContent post={post} />
+            </div>
+          </header>
+
           {displayImageUrl && (
-            <Image
+            <FeaturedImage
               src={displayImageUrl}
               alt={post.title}
+              slug={post.slug ?? post.id}
               width={1200}
               height={400}
-              sizes="100vw"
-              unoptimized
+              sizes="(min-width: 768px) 720px, 100vw"
               priority
-              className="w-full h-auto object-cover rounded-lg mt-6 mb-6"
+              className="mb-8 overflow-hidden rounded-card border border-line"
+              imageClassName="h-auto w-full object-cover"
             />
           )}
-          <h1 className="text-4xl font-bold text-white-900 mb-4">
-            {post.title}
-          </h1>
-          <div className="flex items-center space-x-4 text-white-600 mb-4">
-            <div className="flex items-center">
-              <span>{author}</span>
-            </div>
-            <span>•</span>
-            <time dateTime={post.created_at}>
-              {formatDate(post.created_at)}
-            </time>
-            <span>•</span>
-            <span>{readingTime} min read</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <BlogTagContent post={post} />
-          </div>
-        </header>
 
-        {safeContent ? (
-          <BlogContent content={safeContent} />
-        ) : (
-          <p className="mt-8 rounded-lg border border-dashed border-gray-300 bg-white p-6 text-gray-600">
-            Blog content is unavailable right now. Please check back soon.
-          </p>
-        )}
-
-        <ShareButtons url={canonicalPath} title={post.title} description={excerpt} />
-
-        {(prev || next) && (
-          <nav className="flex justify-between items-center my-8 border-gray-200 pt-8">
-            {prev ? (
-              <Link
-                href={`/blogs/${prev.slug ?? prev.id}`}
-                className="flex items-center text-gray-600 hover:text-blue-100"
-              >
-                <ChevronLeft className="w-5 h-5 mr-2" />
-                <div>
-                  <div className="text-sm text-gray-500">Previous</div>
-                  <div className="font-medium">{prev.title}</div>
-                </div>
-              </Link>
+          <BentoCard className="p-6 sm:p-8">
+            {safeContent ? (
+              <BlogContent content={safeContent} />
             ) : (
-              <div />
+              <p className="rounded-control border border-dashed border-line px-5 py-6 text-[14px] text-mid">
+                Blog content is unavailable right now. Please check back soon.
+              </p>
             )}
-            {next ? (
-              <Link
-                href={`/blogs/${next.slug ?? next.id}`}
-                className="flex items-center text-right text-gray-600 hover:text-blue-500"
-              >
-                <div>
-                  <div className="text-sm text-gray-500">Next</div>
-                  <div className="font-medium">{next.title}</div>
-                </div>
-                <ChevronRight className="w-5 h-5 ml-2" />
-              </Link>
-            ) : (
-              <div />
-            )}
-          </nav>
-        )}
+          </BentoCard>
 
-        {relatedPosts.length > 0 && (
-          <section className="mt-12 border-t border-gray-200 pt-8">
-            <h2 className="text-2xl font-bold mb-6">Related Posts</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {relatedPosts.map((related) => (
+          <ShareButtons
+            url={canonicalPath}
+            title={post.title}
+            description={excerpt}
+          />
+
+          {(prev || next) && (
+            <nav className="my-8 flex items-stretch justify-between gap-4 border-t border-line pt-8">
+              {prev ? (
                 <Link
-                  key={related.id}
-                  href={`/blogs/${related.slug ?? related.id}`}
-                  className="group"
+                  href={`/blogs/${prev.slug ?? prev.id}`}
+                  className="group/prev flex max-w-[45%] items-center gap-2.5 text-low transition-colors duration-200 hover:text-accent"
                 >
-                  {related.imageUrl && (
-                    <Image
-                      src={related.imageUrl}
-                      alt={related.title}
-                      width={640}
-                      height={360}
-                      sizes="(min-width: 768px) 33vw, 100vw"
-                      unoptimized
-                      className="w-full h-48 object-cover rounded-lg mb-4"
-                    />
-                  )}
-                  <h3 className="font-semibold text-lg group-hover:text-indigo-600 transition-colors">
-                    {related.title}
-                  </h3>
+                  <ChevronLeft
+                    className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover/prev:-translate-x-[3px]"
+                    aria-hidden="true"
+                  />
+                  <span className="min-w-0">
+                    <span className="block font-mono text-micro">Previous</span>
+                    <span className="block truncate text-[14px] font-semibold text-hi">
+                      {prev.title}
+                    </span>
+                  </span>
                 </Link>
-              ))}
-            </div>
-          </section>
-        )}
+              ) : (
+                <div />
+              )}
+              {next ? (
+                <Link
+                  href={`/blogs/${next.slug ?? next.id}`}
+                  className="group/next flex max-w-[45%] items-center gap-2.5 text-right text-low transition-colors duration-200 hover:text-accent"
+                >
+                  <span className="min-w-0">
+                    <span className="block font-mono text-micro">Next</span>
+                    <span className="block truncate text-[14px] font-semibold text-hi">
+                      {next.title}
+                    </span>
+                  </span>
+                  <ChevronRight
+                    className="h-4 w-4 shrink-0 transition-transform duration-200 group-hover/next:translate-x-[3px]"
+                    aria-hidden="true"
+                  />
+                </Link>
+              ) : (
+                <div />
+              )}
+            </nav>
+          )}
 
-      </article>
+          {relatedPosts.length > 0 && (
+            <section className="mt-12 border-t border-line pt-8">
+              <SectionHead
+                eyebrow="KEEP READING"
+                title="Related posts"
+                className="mb-6"
+              />
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                {relatedPosts.map((related) => (
+                  <TiltCard
+                    key={related.id}
+                    wrapperClassName="h-full w-full"
+                    className="h-full w-full"
+                  >
+                    <CardBody className="h-full w-full">
+                      <BentoCard interactive clip={false} className="h-full w-full">
+                        <Link
+                          href={`/blogs/${related.slug ?? related.id}`}
+                          className="group flex h-full flex-col"
+                        >
+                          {related.imageUrl && (
+                            <CardItem translateZ={100}>
+                              <div className="relative h-32 shrink-0 overflow-hidden rounded-t-card border-b border-line">
+                                <Image
+                                  src={related.imageUrl}
+                                  alt={related.title}
+                                  width={640}
+                                  height={360}
+                                  sizes="(min-width: 768px) 33vw, 100vw"
+                                  unoptimized
+                                  /*
+                                    These sit below the whole article and the
+                                    share row, so they are never above the fold
+                                    on any viewport. Left at the implicit eager
+                                    default they were all fetched during initial
+                                    parse, on a route whose LCP element is the
+                                    cover image further up.
+                                  */
+                                  loading="lazy"
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                            </CardItem>
+                          )}
+                          <CardItem as="h3" translateZ={50} className="line-clamp-2 p-4 text-[14px] font-semibold leading-[1.45] text-hi transition-colors duration-200 group-hover:text-accent">
+                            {related.title}
+                          </CardItem>
+                        </Link>
+                      </BentoCard>
+                    </CardBody>
+                  </TiltCard>
+                ))}
+              </div>
+            </section>
+          )}
+        </article>
+      </div>
     </main>
   );
 }

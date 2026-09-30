@@ -7,20 +7,15 @@ import "react-toastify/dist/ReactToastify.css";
 import AppShell from "../components/AppShell";
 import { isTypeshalaHost } from "../lib/site-urls";
 
-const mulish = localFont({
+const spaceGrotesk = localFont({
   src: [
     {
-      path: "../public/fonts/Mulish-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/Mulish-SemiBold.woff2",
-      weight: "600",
+      path: "../public/fonts/SpaceGrotesk-Variable.woff2",
+      weight: "300 700",
       style: "normal",
     },
   ],
-  variable: "--font-mulish",
+  variable: "--font-space-grotesk",
   display: "swap",
 });
 
@@ -36,35 +31,13 @@ const ibmPlexMono = localFont({
       weight: "500",
       style: "normal",
     },
+    {
+      path: "../public/fonts/IBMPlexMono-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
   ],
   variable: "--font-ibm-mono",
-  display: "swap",
-});
-
-const fraunces = localFont({
-  src: [
-    {
-      path: "../public/fonts/Fraunces-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/Fraunces-Italic.woff2",
-      weight: "400",
-      style: "italic",
-    },
-    {
-      path: "../public/fonts/Fraunces-Bold.woff2",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/Fraunces-BoldItalic.woff2",
-      weight: "700",
-      style: "italic",
-    },
-  ],
-  variable: "--font-fraunces",
   display: "swap",
 });
 
@@ -147,9 +120,9 @@ export default async function RootLayout({
       nonce={nonce}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${mulish.variable} ${ibmPlexMono.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">
+      <body className="min-h-full flex flex-col bg-bg text-hi">
         <script
           type="application/ld+json"
           nonce={nonce}

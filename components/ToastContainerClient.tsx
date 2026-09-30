@@ -11,7 +11,7 @@ export default function ToastContainerClient() {
       newestOnTop={false}
       closeOnClick
       pauseOnHover
-      theme="light"
+      theme="dark"
     />
   );
 }

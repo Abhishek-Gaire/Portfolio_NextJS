@@ -10,11 +10,21 @@ function normalizeView(value: string | null | undefined): ViewMode {
   return value === "list" ? "list" : "grid";
 }
 
+/*
+ * localStorage is a fallback, never the source of truth. The whole component
+ * is built so the server always renders from getServerSnapshot() === null, the
+ * URL param wins on the first client pass, and the stored preference is only
+ * consulted when the URL is silent. Anything that makes getSnapshot return a
+ * value while getServerSnapshot returns null produces a hydration mismatch.
+ */
 function subscribe(callback: () => void) {
   if (typeof window === "undefined") {
     return () => undefined;
   }
 
+  // The native storage event only fires in *other* tabs, so a write in this tab
+  // is picked up via router navigation instead. Filtering on the key keeps
+  // unrelated localStorage writes from re-rendering this component.
   const handler = (event: StorageEvent) => {
     if (event.key === "blogViewPreference") {
       callback();
@@ -41,11 +51,18 @@ export default function BlogsViewToggle() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const storedView = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const storedView = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot,
+  );
   const viewParam = searchParams.get("view");
   const currentView = normalizeView(viewParam ?? storedView ?? "grid");
   const searchParamsString = searchParams.toString();
 
+  // Depends on searchParamsString, the primitive, and not on the
+  // ReadonlyURLSearchParams object: that object is a new identity on every
+  // render, which would re-run this effect on every render.
   useEffect(() => {
     if (viewParam) {
       const normalized = normalizeView(viewParam);
@@ -56,6 +73,8 @@ export default function BlogsViewToggle() {
     if (storedView) {
       const params = new URLSearchParams(searchParamsString);
       params.set("view", storedView);
+      // replace, not push: restoring a stored preference is not a navigation
+      // the user asked for, so it must not add a back-button entry.
       router.replace(`${pathname}?${params.toString()}`);
     }
   }, [pathname, router, searchParamsString, storedView, viewParam]);
@@ -72,29 +91,32 @@ export default function BlogsViewToggle() {
     router.push(buildHref(nextView));
   };
 
+  const buttonClass = (active: boolean) =>
+    `flex h-10 w-10 items-center justify-center rounded-control border transition-colors duration-200 ${
+      active
+        ? "border-accent-line bg-accent-soft text-accent"
+        : "border-line text-low hover:border-line-hi hover:text-hi"
+    }`;
+
   return (
-    <div className="flex items-center space-x-3">
+    <div className="flex items-center gap-2">
       <button
         type="button"
         onClick={() => handleViewChange("grid")}
-        className={`p-3 rounded-xl transition-all duration-300 ${currentView === "grid"
-          ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-          : "text-gray-400 hover:text-white hover:bg-gray-800/50 border border-gray-700/50"
-          }`}
+        className={buttonClass(currentView === "grid")}
         aria-label="Grid view"
+        aria-pressed={currentView === "grid"}
       >
-        <Grid size={20} />
+        <Grid size={18} />
       </button>
       <button
         type="button"
         onClick={() => handleViewChange("list")}
-        className={`p-3 rounded-xl transition-all duration-300 ${currentView === "list"
-          ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-          : "text-gray-400 hover:text-white hover:bg-gray-800/50 border border-gray-700/50"
-          }`}
+        className={buttonClass(currentView === "list")}
         aria-label="List view"
+        aria-pressed={currentView === "list"}
       >
-        <List size={20} />
+        <List size={18} />
       </button>
     </div>
   );

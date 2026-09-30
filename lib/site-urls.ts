@@ -34,3 +34,12 @@ export function isTypeshalaHost(host: string | null | undefined): boolean {
     hostname.startsWith("typeshala.")
   );
 }
+
+/**
+ * The one place the contact address is written down.
+ *
+ * It used to be a literal duplicated across the home contact card and the
+ * contact page, which is exactly the arrangement that lets the two drift
+ * apart. Anything that renders a mailto or displays the address imports this.
+ */
+export const CONTACT_EMAIL: string = "abhishekgaire@protonmail.com";

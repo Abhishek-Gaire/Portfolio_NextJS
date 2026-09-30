@@ -1,125 +1,283 @@
-'use client';
+"use client";
 
-import { Monitor, Smartphone, Box } from 'lucide-react';
-import { GitLabIcon, Github } from '@/components/icons';
-import { DownloadGrid } from '@/components/typeshala/DownloadCards';
-import { useDetectedOS } from '@/components/typeshala/useDetectedOS';
-import { ReleaseNotes, PreviousRelease } from '@/components/typeshala/ReleaseNotes';
-import { TypeshalaTopNav, TypeshalaFooter } from '@/components/typeshala/TypeshalaChrome';
-import { PLATFORM_DOWNLOADS } from '@/types/typeshala';
-import type { TypeshalaPageData } from './_lib/release';
+import {
+  BarChart3,
+  BookOpen,
+  Box,
+  Gamepad2,
+  Globe,
+  HardDrive,
+  Keyboard,
+  Monitor,
+  Palette,
+  Smartphone,
+  Wrench,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-export default function TypeshalaPageClient({ data }: { data: TypeshalaPageData }) {
-  const { latestRelease, previousReleases, repoUrl, githubRepoUrl, issuesUrl, releasesUnavailable, releasesRateLimited } = data;
+import { GitLabIcon, Github } from "@/components/icons";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { Button } from "@/components/primitives/Button";
+import { Eyebrow } from "@/components/primitives/Eyebrow";
+import { StackOrbit } from "@/components/primitives/StackOrbit";
+import { MonoTag } from "@/components/primitives/MonoTag";
+import { Reveal } from "@/components/primitives/Reveal";
+import { SectionHead } from "@/components/primitives/SectionHead";
+import { DownloadGrid } from "@/components/typeshala/DownloadCards";
+import { useDetectedOS } from "@/components/typeshala/useDetectedOS";
+import {
+  ReleaseNotes,
+  PreviousRelease,
+} from "@/components/typeshala/ReleaseNotes";
+import {
+  TypeshalaTopNav,
+  TypeshalaFooter,
+} from "@/components/typeshala/TypeshalaChrome";
+import { PLATFORM_DOWNLOADS } from "@/types/typeshala";
+import type { TypeshalaPageData } from "./_lib/release";
 
-  const desktopPlatforms = PLATFORM_DOWNLOADS.filter(p =>
-    ['macos-arm64', 'macos-x64', 'windows-exe', 'windows-msi', 'linux-appimage', 'linux-deb', 'linux-rpm'].includes(p.platform)
+type Feature = {
+  icon: LucideIcon;
+  title: string;
+  desc: string;
+};
+
+const FEATURES: Feature[] = [
+  {
+    icon: Globe,
+    title: "Bilingual Support",
+    desc: "English and Nepali UI with full i18n support",
+  },
+  {
+    icon: Keyboard,
+    title: "Multiple Layouts",
+    desc: "English QWERTY, Nepali Romanized, and Traditional Preeti",
+  },
+  {
+    icon: BookOpen,
+    title: "Structured Lessons",
+    desc: "Progressive typing drills with accuracy and WPM tracking",
+  },
+  {
+    icon: BarChart3,
+    title: "Progress Stats",
+    desc: "Detailed trends, heatmaps, and personal bests",
+  },
+  {
+    icon: Palette,
+    title: "Themes",
+    desc: "Light, dark, and custom color schemes",
+  },
+  {
+    icon: Gamepad2,
+    title: "Ramayana Game",
+    desc: "Bonus typing game based on the epic",
+  },
+  {
+    icon: HardDrive,
+    title: "Local-First",
+    desc: "All data stored on-device via the Tauri store plugin",
+  },
+  {
+    icon: Wrench,
+    title: "Cross-Platform",
+    desc: "Native apps for macOS, Windows, and Linux",
+  },
+  {
+    icon: Smartphone,
+    title: "Android Support",
+    desc: "Mobile version with touch-optimized lessons",
+  },
+];
+
+/*
+ * Verified against the real app rather than from memory. `Zustand` was listed
+ * here and is a false claim: it is not in the app's package.json, not in its
+ * lockfile, and not imported anywhere in src/. The frontend has no external
+ * state library at all — persistence runs through Tauri commands into Rust
+ * (`src/infrastructure/tauriApi.ts` -> `invoke`), backed by
+ * `tauri-plugin-store`, with the shared shapes serialised by serde. So Serde
+ * replaces it, which is both true and the thing that actually does the job
+ * Zustand was credited with.
+ *
+ * Check the rest against ~/Desktop/OpenSource/Typeshala before changing either
+ * list — the other five are all real dependencies.
+ */
+const TECH_STACK_OUTER = ["Tauri v2", "React 19", "TypeScript", "Vite", "Rust"];
+
+const TECH_STACK_INNER = ["Tailwind CSS", "Serde", "Vitest"];
+
+export default function TypeshalaPageClient({
+  data,
+}: {
+  data: TypeshalaPageData;
+}) {
+  const {
+    latestRelease,
+    previousReleases,
+    repoUrl,
+    githubRepoUrl,
+    issuesUrl,
+    releasesUnavailable,
+    releasesRateLimited,
+  } = data;
+
+  const desktopPlatforms = PLATFORM_DOWNLOADS.filter((p) =>
+    [
+      "macos-arm64",
+      "macos-x64",
+      "windows-exe",
+      "windows-msi",
+      "linux-appimage",
+      "linux-deb",
+      "linux-rpm",
+    ].includes(p.platform),
   );
 
-  const mobilePlatforms = PLATFORM_DOWNLOADS.filter(p =>
-    ['android', 'fdroid'].includes(p.platform)
+  const mobilePlatforms = PLATFORM_DOWNLOADS.filter((p) =>
+    ["android", "fdroid"].includes(p.platform),
   );
 
   const detectedOS = useDetectedOS();
   // Mobile visitors see the Mobile section first — their download at top.
-  const mobileFirst = detectedOS === 'android' || detectedOS === 'ios';
+  const mobileFirst = detectedOS === "android" || detectedOS === "ios";
   const platformAssets = latestRelease?.platformAssets ?? {};
 
   const desktopSection = (
     <div className="mb-12">
-      <h3 className="text-lg font-semibold text-gray-300 mb-6 flex items-center space-x-2">
-        <Monitor className="w-5 h-5 text-blue-400" />
+      <Eyebrow as="h3" className="mb-5 flex items-center gap-2">
+        <Monitor className="h-4 w-4" />
         <span>Desktop</span>
-      </h3>
-      <DownloadGrid
-        platforms={desktopPlatforms}
-        assets={platformAssets}
-      />
+      </Eyebrow>
+      <DownloadGrid platforms={desktopPlatforms} assets={platformAssets} />
     </div>
   );
 
   const mobileSection = (
     <div className="mb-12">
-      <h3 className="text-lg font-semibold text-gray-300 mb-6 flex items-center space-x-2">
-        <Smartphone className="w-5 h-5 text-green-400" />
+      <Eyebrow as="h3" className="mb-5 flex items-center gap-2">
+        <Smartphone className="h-4 w-4" />
         <span>Mobile</span>
-      </h3>
-      <DownloadGrid
-        platforms={mobilePlatforms}
-        assets={platformAssets}
-      />
+      </Eyebrow>
+      <DownloadGrid platforms={mobilePlatforms} assets={platformAssets} />
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    // No page background: the body already paints --color-bg plus the two
+    // teal orbs, and an opaque wrapper would cover them.
+    <div className="min-h-screen text-hi">
       <TypeshalaTopNav />
+
       <main>
-      <div className="relative">
-        <div className="absolute inset-0 bg-linear-to-br from-blue-500/10 via-transparent to-purple-500/10" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-blue-500/5 via-transparent to-transparent" />
+        {/*
+          The stack orbit sits beside the title block rather than at the foot of
+          the page. It was the last section, which meant it rendered below every
+          release note, the download cards and the feature grid — a diagram
+          nobody reaches, since the page is long and the useful links are all
+          above it. Beside the h1 it is the first thing after the title and it
+          fills the space the single-column layout was leaving empty.
 
-        <div className="relative container mx-auto px-6 py-16 lg:py-24">
+          The right column is a FIXED 26rem track, not `auto` and not a
+          percentage. `auto` collapses: the orbit badges are absolutely
+          positioned, so they are out of flow and contribute nothing to the
+          track's intrinsic width, and the column shrinks to the 42px of the
+          "core" label while the badges escape the section. A 50% track clips
+          the ring on narrower desktops. The ring needs 170px of radius plus a
+          56px badge on each side, so 416px is the floor and the left column is
+          the one that gives way.
+        */}
+        <section className="pt-16 pb-16">
+          <div className="mx-auto max-w-shell px-6">
+            <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-16">
+              <div className="max-w-[46rem]">
+                <span className="inline-flex w-fit items-center gap-1.75 rounded-full border border-accent-line bg-accent-soft py-1.5 pl-2 pr-2.5 font-mono text-micro text-accent">
+                  <span className="animate-pulse-ring h-1.5 w-1.5 rounded-full bg-accent" />
+                  Available for download
+                </span>
 
-          <section className="text-center max-w-4xl mx-auto mb-16">
-            <div className="inline-flex items-center space-x-2 bg-blue-500/20 border border-blue-500/30 rounded-full px-4 py-2 mb-6">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-blue-400 text-sm font-medium">Available for Download</span>
-            </div>
+                <h1 className="mt-5 mb-3.5 text-display font-bold text-hi">
+                  Typeshala
+                </h1>
 
-            <h1 className="text-4xl lg:text-6xl font-bold mb-6">
-              <span className="bg-linear-to-r from-blue-400 via-white to-purple-400 bg-clip-text text-transparent">
-                Typeshala
-              </span>
-            </h1>
+                <p className="mb-6 max-w-measure-narrow text-mid text-lede">
+                  A bilingual (English / Nepali) typing tutor desktop app with
+                  structured lessons, progress stats, themes, and a bonus
+                  Ramayana game.
+                </p>
 
-            <p className="text-xl lg:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              A bilingual (English / Nepali) typing tutor desktop app with structured lessons,
-              progress stats, themes, and a bonus Ramayana game.
-            </p>
-
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              <a
-                href={repoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
-              >
-                <GitLabIcon className="w-5 h-5" />
-                <span>View Source on GitLab</span>
-              </a>
-              <a
-                href={issuesUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-2 border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white font-semibold px-6 py-3 rounded-xl transition-colors"
-              >
-                <Box className="w-5 h-5" />
-                <span>Report Issue</span>
-              </a>
-            </div>
-          </section>
-
-          {latestRelease && (
-            <section className="mb-16">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h2 className="text-2xl lg:text-3xl font-bold">
-                    Latest Release
-                    <span className="ml-3 font-mono text-blue-400">v{latestRelease.version}</span>
-                  </h2>
-                  <p className="text-gray-400 mt-1">Released {latestRelease.publishedAt}</p>
+                <div className="flex flex-wrap gap-2.5">
+                  <Button
+                    as="a"
+                    href={repoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    variant="primary"
+                  >
+                    <GitLabIcon className="h-4 w-4" />
+                    <span>View Source on GitLab</span>
+                  </Button>
+                  <Button
+                    as="a"
+                    href={issuesUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Box className="h-4 w-4" />
+                    <span>Report Issue</span>
+                  </Button>
                 </div>
-                <a
-                  href={latestRelease.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-blue-400 hover:text-blue-300 flex items-center space-x-1"
-                >
-                  <Github className="w-4 h-4" />
-                  <span>View Release</span>
-                </a>
               </div>
+
+              <div className="w-full lg:w-104">
+                {/*
+                  Structure copied from the remix reference at
+                  src/routes/index.tsx:148-175. The parent's flex centring is
+                  load-bearing: the orbit children are absolutely positioned with
+                  no inset offsets, so their static position is what the flexbox
+                  centres, and the keyframes then rotate each one about it.
+
+                  One deliberate deviation. The reference hides the whole diagram
+                  below md (`hidden md:flex`), which is the wrong trade for a
+                  desktop app people discover on their phones, so the geometry is
+                  kept at the reference values and scaled down with a transform on
+                  narrow viewports instead of being removed. radius/iconSize are
+                  JS props, not CSS, so this is the only way to shrink them
+                  responsively.
+
+                  No <Reveal> here, deliberately. It is a scroll-intersection
+                  effect, and this is above the fold — the observer would fire on
+                  the first frame and the fade would just be a flash.
+                */}
+                <StackOrbit outer={TECH_STACK_OUTER} inner={TECH_STACK_INNER} />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {latestRelease ? (
+          <section className="py-16">
+            <div className="mx-auto max-w-shell px-6">
+              <Reveal>
+                <SectionHead
+                  eyebrow="LATEST RELEASE"
+                  title="Latest release"
+                  lede={`Published ${latestRelease.publishedAt}`}
+                >
+                  <div className="mt-3 flex flex-wrap items-center gap-2.5">
+                    <MonoTag accent>v{latestRelease.version}</MonoTag>
+                    <Button
+                      as="a"
+                      href={latestRelease.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Github className="h-4 w-4" />
+                      <span>View release</span>
+                    </Button>
+                  </div>
+                </SectionHead>
+              </Reveal>
 
               {mobileFirst ? (
                 <>
@@ -142,14 +300,23 @@ export default function TypeshalaPageClient({ data }: { data: TypeshalaPageData 
                 isPrerelease={latestRelease.isPrerelease}
                 isDraft={latestRelease.isDraft}
               />
-            </section>
-          )}
+            </div>
+          </section>
+        ) : null}
 
-          {previousReleases.length > 0 && (
-            <section className="mb-16">
-              <h2 className="text-2xl lg:text-3xl font-bold mb-8">Previous Releases</h2>
-              <div className="space-y-4">
-                {previousReleases.map(release => (
+        {previousReleases.length > 0 ? (
+          <section className="py-16">
+            <div className="mx-auto max-w-shell px-6">
+              <Reveal>
+                <SectionHead
+                  eyebrow="RELEASE HISTORY"
+                  title="Previous releases"
+                  lede="Earlier builds and the platform downloads they shipped with."
+                />
+              </Reveal>
+
+              <div className="flex flex-col gap-3">
+                {previousReleases.map((release) => (
                   <PreviousRelease
                     key={release!.version}
                     version={release!.version}
@@ -163,102 +330,135 @@ export default function TypeshalaPageClient({ data }: { data: TypeshalaPageData 
                 ))}
               </div>
 
-              <div className="text-center mt-8">
-                <a
-                href={`${githubRepoUrl}/releases`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 font-medium"
-              >
-                <span>View all releases on GitHub</span>
-                <Github className="w-4 h-4" />
-                </a>
-              </div>
-            </section>
-          )}
-
-          {!latestRelease && previousReleases.length === 0 && releasesUnavailable && (
-            <section className="text-center py-16">
-              <div className="inline-flex items-center space-x-2 bg-blue-500/20 border border-blue-500/30 rounded-full px-4 py-2 mb-6">
-                <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                <span className="text-blue-400 text-sm font-medium">Temporarily Unavailable</span>
-              </div>
-              <h2 className="text-2xl font-bold mb-4">Couldn&apos;t load release info</h2>
-              <p className="text-gray-400 mb-8 max-w-md mx-auto">
-                {releasesRateLimited
-                  ? 'GitHub API rate limit reached. Please try again in a few minutes — or check releases directly on GitHub.'
-                  : 'Could not reach the GitHub API. Check releases directly on GitHub.'}
-              </p>
-              <a
-                href={`${githubRepoUrl}/releases`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
-              >
-                <Github className="w-5 h-5" />
-                <span>View Releases on GitHub</span>
-              </a>
-            </section>
-          )}
-
-          {!latestRelease && previousReleases.length === 0 && !releasesUnavailable && (
-            <section className="text-center py-16">
-              <div className="inline-flex items-center space-x-2 bg-yellow-500/20 border border-yellow-500/30 rounded-full px-4 py-2 mb-6">
-                <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-                <span className="text-yellow-400 text-sm font-medium">No Releases Yet</span>
-              </div>
-              <h2 className="text-2xl font-bold mb-4">No public releases published</h2>
-              <p className="text-gray-400 mb-8 max-w-md mx-auto">
-                The Typeshala project hasn&apos;t published any releases yet. Check the GitLab repository for development progress.
-              </p>
-              <a
-                href={repoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
-              >
-                <GitLabIcon className="w-5 h-5" />
-                <span>View Repository</span>
-              </a>
-            </section>
-          )}
-
-          <section className="mb-16">
-            <h2 className="text-2xl lg:text-3xl font-bold text-center mb-12">Features</h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                { icon: '🌐', title: 'Bilingual Support', desc: 'English and Nepali UI with full i18n support' },
-                { icon: '⌨️', title: 'Multiple Layouts', desc: 'English QWERTY, Nepali Romanized, and Traditional Preeti' },
-                { icon: '📚', title: 'Structured Lessons', desc: 'Progressive typing drills with accuracy and WPM tracking' },
-                { icon: '📊', title: 'Progress Stats', desc: 'Detailed trends, heatmaps, and personal bests' },
-                { icon: '🎨', title: 'Themes', desc: 'Light, dark, and custom color schemes' },
-                { icon: '🎮', title: 'Ramayana Game', desc: 'Bonus typing game based on the epic' },
-                { icon: '💾', title: 'Local-First', desc: 'All data stored on-device via Tauri store plugin' },
-                { icon: '🔧', title: 'Cross-Platform', desc: 'Native apps for macOS, Windows, and Linux' },
-                { icon: '📱', title: 'Android Support', desc: 'Mobile version with touch-optimized lessons' },
-              ].map((feature, i) => (
-                <div key={i} className="bg-gray-800/50 border border-gray-700 rounded-2xl p-6 hover:border-blue-500/50 transition-colors">
-                  <div className="text-3xl mb-3">{feature.icon}</div>
-                  <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-gray-400 text-sm">{feature.desc}</p>
-                </div>
-              ))}
+              <Reveal delay={120} className="mt-8 flex justify-center">
+                <Button
+                  as="a"
+                  href={`${githubRepoUrl}/releases`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span>View all releases on GitHub</span>
+                  <Github className="h-4 w-4" />
+                </Button>
+              </Reveal>
             </div>
           </section>
+        ) : null}
 
-          <section className="mb-16">
-            <h2 className="text-2xl lg:text-3xl font-bold text-center mb-8">Built With</h2>
-            <div className="flex flex-wrap justify-center gap-3">
-              {['Tauri v2', 'React 19', 'TypeScript', 'Vite', 'Tailwind CSS', 'Rust', 'Zustand', 'Vitest'].map(tech => (
-                <span key={tech} className="px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-full text-sm font-medium text-gray-300">
-                  {tech}
+        {/*
+          The three conditions on each fallback below are load-bearing. Only
+          releasesUnavailable separates "the API failed" from "there is
+          genuinely nothing published": release.ts treats a GitHub 404 as
+          success-with-fallback, so an empty release list with no failure flag
+          really does mean the repo has no public releases. releasesRateLimited
+          then only changes the copy, never the condition set.
+        */}
+        {!latestRelease &&
+        previousReleases.length === 0 &&
+        releasesUnavailable ? (
+          <section className="py-16">
+            <div className="mx-auto max-w-shell px-6">
+              <BentoCard className="mx-auto max-w-[44rem] rounded-hero p-7 text-center sm:p-9">
+                <span className="inline-flex items-center gap-1.75 rounded-full border border-[rgba(167,139,250,0.32)] bg-[rgba(167,139,250,0.1)] py-1.5 pl-2 pr-2.5 font-mono text-micro text-violet">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-violet" />
+                  {releasesRateLimited
+                    ? "GitHub API rate limited"
+                    : "Release info unavailable"}
                 </span>
-              ))}
+
+                <h2 className="mt-5 mb-3 text-title font-bold text-hi">
+                  {releasesRateLimited
+                    ? "GitHub API rate limit reached"
+                    : "Couldn't load release info"}
+                </h2>
+
+                <p className="mx-auto mb-7 max-w-measure text-mid text-lede">
+                  {releasesRateLimited
+                    ? "GitHub API rate limit reached. Please try again in a few minutes — or check releases directly on GitHub."
+                    : "Could not reach the GitHub API. Check releases directly on GitHub."}
+                </p>
+
+                <Button
+                  as="a"
+                  href={`${githubRepoUrl}/releases`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="primary"
+                >
+                  <Github className="h-4 w-4" />
+                  <span>View Releases on GitHub</span>
+                </Button>
+              </BentoCard>
             </div>
           </section>
-        </div>
-      </div>
+        ) : null}
+
+        {!latestRelease &&
+        previousReleases.length === 0 &&
+        !releasesUnavailable ? (
+          <section className="py-16">
+            <div className="mx-auto max-w-shell px-6">
+              <BentoCard className="mx-auto max-w-[44rem] rounded-hero p-7 text-center sm:p-9">
+                <span className="inline-flex items-center gap-1.75 rounded-full border border-[rgba(240,180,41,0.35)] bg-[rgba(240,180,41,0.1)] py-1.5 pl-2 pr-2.5 font-mono text-micro text-amber">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
+                  No releases yet
+                </span>
+
+                <h2 className="mt-5 mb-3 text-title font-bold text-hi">
+                  No public releases published
+                </h2>
+
+                <p className="mx-auto mb-7 max-w-measure text-mid text-lede">
+                  The Typeshala project hasn&apos;t published any releases yet.
+                  Check the GitLab repository for development progress.
+                </p>
+
+                <Button
+                  as="a"
+                  href={repoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="primary"
+                >
+                  <GitLabIcon className="h-4 w-4" />
+                  <span>View Repository</span>
+                </Button>
+              </BentoCard>
+            </div>
+          </section>
+        ) : null}
+
+        <section className="py-16">
+          <div className="mx-auto max-w-shell px-6">
+            <Reveal>
+              <SectionHead
+                eyebrow="WHAT IT DOES"
+                title="Features"
+                lede="Everything that ships in the Typeshala desktop build."
+              />
+            </Reveal>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {FEATURES.map(({ icon: Icon, title, desc }, index) => (
+                <Reveal key={title} delay={index * 50} className="h-full">
+                  <BentoCard interactive className="h-full p-5">
+                    <span className="mb-3.5 flex h-9.5 w-9.5 items-center justify-center rounded-control border border-accent-line bg-accent-soft text-accent">
+                      <Icon size={17} />
+                    </span>
+                    <h3 className="text-[15px] font-semibold text-hi">
+                      {title}
+                    </h3>
+                    <p className="mt-1.5 text-[13px] leading-[1.55] text-mid">
+                      {desc}
+                    </p>
+                  </BentoCard>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
+
       <TypeshalaFooter issuesUrl={issuesUrl} />
     </div>
   );

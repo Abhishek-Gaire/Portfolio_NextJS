@@ -14,6 +14,22 @@ const projectSchema = z.object({
   solutions: z.string().trim().max(5000).optional(),
   live_url: z.string().trim().max(2048).nullable().optional(),
   github_url: z.string().trim().max(2048).nullable().optional(),
+  // Coerced from truthy input rather than a strict z.boolean(): the admin form
+  // posts JSON, so a checkbox sends either a real boolean or nothing, and a
+  // strict boolean would 400 the whole insert over a missing optional key.
+  // The 2-project cap itself is enforced by a database trigger, not here.
+  isFeatured: z
+    .union([z.boolean(), z.literal("true"), z.literal("false")])
+    .transform((value) => value === true || value === "true")
+    .optional(),
+  // Mirrors the database CHECK constraint. Zod validates the request body; the
+  // CHECK is the guard for rows written by a direct table edit or by the admin's
+  // browser-direct path, neither of which passes through here.
+  tags: z
+    .array(z.enum(["client", "personal", "oss", "hobby", "college"]))
+    .max(5)
+    .optional(),
+  context: z.string().trim().max(120).nullable().optional(),
 });
 
 export async function POST(request: Request) {

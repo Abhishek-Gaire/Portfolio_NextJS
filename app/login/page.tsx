@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import LoginForm from "../../components/auth/LoginForm";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { Eyebrow } from "@/components/primitives/Eyebrow";
 import { getSupabaseServerAuthClient } from "../../lib/supabase/server-auth";
 
 export const metadata: Metadata = {
@@ -27,17 +29,18 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-20">
-      <section className="container mx-auto px-4 py-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Login</h1>
-        <p className="text-gray-600 mb-8">
-          Sign in to access the admin dashboard.
-        </p>
+    <main className="min-h-screen px-6 py-20">
+      <div className="mx-auto w-full max-w-110">
+        <BentoCard className="p-7 sm:p-8">
+          <Eyebrow>SECURE AREA</Eyebrow>
+          <h1 className="text-title font-bold text-hi">Login</h1>
+          <p className="mt-2.5 mb-7 text-[15px] text-mid">
+            Sign in to access the admin dashboard.
+          </p>
 
-        <div className="max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <LoginForm />
-        </div>
-      </section>
+        </BentoCard>
+      </div>
     </main>
   );
 }

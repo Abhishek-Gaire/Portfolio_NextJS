@@ -3,7 +3,7 @@
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { getSupabaseBrowserClient } from "../../lib/supabase/client";
-import type { Project } from "../../types/project";
+import { PROJECT_TAGS, type Project, type ProjectTag } from "../../types/project";
 
 type FormState = {
   title: string;
@@ -17,6 +17,9 @@ type FormState = {
   solutions: string;
   live_url: string;
   github_url: string;
+  isFeatured: boolean;
+  tags: ProjectTag[];
+  context: string;
 };
 
 type SubmitState = "idle" | "saving" | "error";
@@ -33,9 +36,18 @@ const emptyForm: FormState = {
   solutions: "",
   live_url: "",
   github_url: "",
+  isFeatured: false,
+  tags: [],
+  context: "",
 };
 
-const categories = ["Full Stack", "Backend", "Collaboration"];
+const categories = ["Full Stack", "Backend", "Frontend", "Collaboration"];
+
+/**
+ * The database rejects a third featured row with a trigger, so the checkbox
+ * needs to say so before the user hits Save rather than after.
+ */
+const FEATURED_LIMIT = 2;
 
 function normalizeTechnologies(input: string): string[] {
   return input
@@ -67,6 +79,19 @@ export default function AdminProjectsManager({
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
 
   const supabase = useMemo(() => getSupabaseBrowserClient(), []);
+
+  // Featured rows excluding the one currently open in the form, so the counter
+  // answers "how many would be featured if I saved this?" rather than "how many
+  // already are".
+  const featuredCount = useMemo(
+    () =>
+      projects.filter(
+        (project) => project.isFeatured === true && project.id !== editingProjectId
+      ).length,
+    [projects, editingProjectId]
+  );
+
+  const atFeaturedLimit = featuredCount >= FEATURED_LIMIT;
 
   const fetchProjects = async () => {
     setIsLoading(true);
@@ -104,6 +129,13 @@ export default function AdminProjectsManager({
       solutions: project.solutions ?? "",
       live_url: project.live_url ?? "",
       github_url: project.github_url ?? "",
+      isFeatured: project.isFeatured === true,
+      tags: Array.isArray(project.tags)
+        ? project.tags.filter((t): t is ProjectTag =>
+            (PROJECT_TAGS as string[]).includes(t),
+          )
+        : [],
+      context: project.context ?? "",
     });
   };
 
@@ -132,6 +164,18 @@ export default function AdminProjectsManager({
     setSubmitState("saving");
     setErrorMessage("");
 
+    // Checked before the write, so the user gets a sentence instead of a
+    // Postgres exception. The trigger is still there for direct table writes.
+    if (formState.isFeatured && editingProjectId === null) {
+      if (featuredCount >= FEATURED_LIMIT) {
+        setSubmitState("error");
+        setErrorMessage(
+          `Only ${FEATURED_LIMIT} projects can be featured on the home page. Unfeature one first.`
+        );
+        return;
+      }
+    }
+
     const payload = {
       title: formState.title.trim(),
       description: formState.description.trim(),
@@ -144,6 +188,9 @@ export default function AdminProjectsManager({
       solutions: formState.solutions.trim(),
       live_url: formState.live_url.trim() || null,
       github_url: formState.github_url.trim() || null,
+      isFeatured: formState.isFeatured,
+      tags: formState.tags,
+      context: formState.context.trim() || null,
     };
 
     if (!payload.title || !payload.description) {
@@ -292,6 +339,106 @@ export default function AdminProjectsManager({
             </div>
           </div>
 
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <div className="flex items-start gap-3">
+              <input
+                id="isFeatured"
+                type="checkbox"
+                checked={formState.isFeatured}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, isFeatured: event.target.checked }))
+                }
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500"
+              />
+              <div>
+                <label
+                  className="block text-sm font-medium text-slate-900"
+                  htmlFor="isFeatured"
+                >
+                  Feature on the home page
+                </label>
+                <p className="mt-1 text-xs text-slate-500">
+                  {featuredCount} of {FEATURED_LIMIT} featured slots in use. The home
+                  page shows the newest {FEATURED_LIMIT} flagged projects; everything
+                  else still appears on the projects page.
+                </p>
+                {formState.isFeatured && atFeaturedLimit && (
+                  <p className="mt-1.5 text-xs text-amber-700">
+                    Unfeature another project first — saving this now would be
+                    rejected.
+                  </p>
+                )}
+                {/*
+                  Mirrors the Projects_featured_limit trigger, which refuses to
+                  feature anything tagged college. Warned here rather than
+                  thrown from Postgres, so the sentence arrives before the save
+                  rather than as an exception after it.
+                */}
+                {formState.isFeatured && formState.tags.includes("college") && (
+                  <p className="mt-1.5 text-xs text-amber-700">
+                    This project is tagged college, and coursework cannot be
+                    featured on the home page — saving this now would be rejected.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <span className="block text-sm font-medium text-slate-900">
+              Provenance
+            </span>
+            <p className="mt-1 text-xs text-slate-500">
+              Where the work came from, as chips on the project card and detail
+              page. More than one can apply. Leave empty to claim nothing.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-4">
+              {PROJECT_TAGS.map((tag) => (
+                <label
+                  key={tag}
+                  className="flex items-center gap-2 text-sm text-slate-700"
+                >
+                  <input
+                    type="checkbox"
+                    checked={formState.tags.includes(tag)}
+                    onChange={(event) =>
+                      setFormState((prev) => ({
+                        ...prev,
+                        tags: event.target.checked
+                          ? [...prev.tags, tag]
+                          : prev.tags.filter((t) => t !== tag),
+                      }))
+                    }
+                    className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500"
+                  />
+                  {tag}
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-4">
+              <label
+                className="mb-1 block text-sm font-medium text-slate-700"
+                htmlFor="projectContext"
+              >
+                Coursework context
+              </label>
+              <input
+                id="projectContext"
+                type="text"
+                value={formState.context}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, context: event.target.value }))
+                }
+                placeholder="6th semester - Minor Project 2"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                Shown under the title on the detail page. Only for college work.
+              </p>
+            </div>
+          </div>
+
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="imageUrl">
               Project Image URL
@@ -426,10 +573,44 @@ export default function AdminProjectsManager({
               className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between"
             >
               <div>
-                <h3 className="text-base font-semibold text-slate-900">
-                  {project.title}
-                </h3>
-                <p className="text-xs text-slate-500">{project.category}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-base font-semibold text-slate-900">
+                    {project.title}
+                  </h3>
+                  {project.isFeatured === true && (
+                    <span className="rounded-full bg-slate-900 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white">
+                      Featured
+                    </span>
+                  )}
+                </div>
+                <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs text-slate-500">{project.category}</span>
+                  {/*
+                    Provenance chips, in the admin's own light palette rather
+                    than the marketing tokens, so the CMS keeps reading as a CMS.
+                    Untagged rows show nothing at all, which is the point: an
+                    empty list claims nothing.
+                  */}
+                  {Array.isArray(project.tags)
+                    ? project.tags
+                        .filter((t): t is ProjectTag =>
+                            (PROJECT_TAGS as string[]).includes(t),
+                        )
+                        .map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-slate-300 px-1.5 py-0.5 text-[10px] text-slate-600"
+                          >
+                            {tag}
+                          </span>
+                        ))
+                    : null}
+                  {project.context ? (
+                    <span className="text-[10px] text-slate-500">
+                      {project.context}
+                    </span>
+                  ) : null}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <button

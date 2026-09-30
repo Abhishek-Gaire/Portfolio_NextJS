@@ -1,10 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Send, User, Mail, MessageSquare } from "lucide-react";
 import DOMPurify from "dompurify";
 import { useState } from "react";
 import { toast } from "react-toastify";
+
+import { Button } from "@/components/primitives/Button";
 
 type FormState = {
   name: string;
@@ -62,78 +63,99 @@ export default function ContactForm() {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10"
-    >
-      <div className="mb-8">
-        <h3 className="text-2xl font-bold text-white mb-2">
+    <div>
+      <div className="mb-6 border-b border-line pb-5">
+        <h3 className="mb-1.5 text-[15px] font-semibold text-hi">
           Send me a message
         </h3>
-        <p className="text-gray-400">
+        <p className="text-caption text-mid">
           I&apos;ll get back to you as soon as possible
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="relative">
-          <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Your Name"
-            required
-            className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-          />
+        <div>
+          <label
+            htmlFor="contact-name"
+            className="mb-1.5 block font-mono text-[11px] text-mid"
+          >
+            Your Name
+          </label>
+          <div className="relative">
+            <input
+              id="contact-name"
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Your Name"
+              required
+              className="peer w-full rounded-control border border-line bg-surface-2 py-3 pl-10 pr-3.5 text-[14px] text-hi transition-colors duration-200 placeholder:text-low focus:border-accent-line"
+            />
+            <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-low peer-focus:text-accent" />
+          </div>
         </div>
 
-        <div className="relative">
-          <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Your Email"
-            required
-            className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-          />
+        <div>
+          <label
+            htmlFor="contact-email"
+            className="mb-1.5 block font-mono text-[11px] text-mid"
+          >
+            Your Email
+          </label>
+          <div className="relative">
+            <input
+              id="contact-email"
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Your Email"
+              required
+              className="peer w-full rounded-control border border-line bg-surface-2 py-3 pl-10 pr-3.5 text-[14px] text-hi transition-colors duration-200 placeholder:text-low focus:border-accent-line"
+            />
+            <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-low peer-focus:text-accent" />
+          </div>
         </div>
 
-        <div className="relative">
-          <MessageSquare className="absolute left-4 top-6 text-gray-400 w-5 h-5" />
-          <textarea
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            placeholder="Your Message"
-            required
-            rows={6}
-            className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 resize-none"
-          />
+        <div>
+          <label
+            htmlFor="contact-message"
+            className="mb-1.5 block font-mono text-[11px] text-mid"
+          >
+            Your Message
+          </label>
+          <div className="relative">
+            <textarea
+              id="contact-message"
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
+              placeholder="Your Message"
+              required
+              rows={6}
+              className="peer min-h-33 w-full resize-none rounded-control border border-line bg-surface-2 py-3 pl-10 pr-3.5 text-[14px] text-hi transition-colors duration-200 placeholder:text-low focus:border-accent-line"
+            />
+            <MessageSquare className="pointer-events-none absolute left-3.5 top-4 h-4 w-4 text-low peer-focus:text-accent" />
+          </div>
         </div>
 
-        <motion.button
+        <Button
           type="submit"
+          variant="primary"
           disabled={isSubmitting}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full justify-center py-3.5 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? (
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            <span className="h-4 w-4 animate-spin rounded-full border-b-2 border-current" />
           ) : (
             <>
-              <Send className="w-5 h-5" />
+              <Send className="h-4 w-4" />
               <span>Send Message</span>
             </>
           )}
-        </motion.button>
+        </Button>
       </form>
-    </motion.div>
+    </div>
   );
 }

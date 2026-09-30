@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
-import Link from "next/link";
+import { Breadcrumb } from "@/components/primitives/Breadcrumb";
 import ProjectsPageClient from "../../components/projects/ProjectsPageClient";
 import { getSupabaseServerClient } from "../../lib/supabase/server";
 import type { Project } from "../../types/project";
@@ -34,7 +34,12 @@ async function fetchProjects() {
   const { data, error } = await supabase
     .from("Projects")
     .select("*")
-    .order("completionDate", { ascending: false });
+    // nullsLast is load-bearing, not tidiness. Postgres defaults a DESC sort to
+    // NULLS FIRST, so an undated row lands at the very top of /projects. The
+    // LMS row is inserted with a null completionDate until its real date is
+    // known -- see supabase/migrations/20260929000005_seed_lms_microservices.sql
+    // -- and without this it would open the page above his two client projects.
+    .order("completionDate", { ascending: false, nullsFirst: false });
 
   if (error) {
     throw new Error(error.message);
@@ -70,26 +75,21 @@ export default async function ProjectsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-black pt-20">
+    <main className="min-h-screen">
       <script
         type="application/ld+json"
         nonce={nonce}
         suppressHydrationWarning
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <section className="container mx-auto px-6 py-16">
-        <nav className="flex items-center mb-12 text-gray-400 text-sm">
-          <Link
-            href="/"
-            className="hover:text-white transition-colors hover:translate-x-1 duration-300"
-          >
-            Home
-          </Link>
-          <span className="mx-3 text-gray-600">/</span>
-          <span className="text-white">Projects</span>
-        </nav>
+      <section className="py-16">
+        <div className="mx-auto max-w-shell px-6">
+          <Breadcrumb
+            items={[{ label: "Home", href: "/" }, { label: "Projects" }]}
+          />
 
-        <ProjectsPageClient projects={projects} />
+          <ProjectsPageClient projects={projects} />
+        </div>
       </section>
     </main>
   );

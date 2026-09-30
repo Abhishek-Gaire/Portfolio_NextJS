@@ -1,4 +1,5 @@
 import { Tag as TagIcon } from "lucide-react";
+import { MonoTag } from "@/components/primitives/MonoTag";
 import type { BlogPost, Tag } from "../../types/blog";
 
 interface BlogTagContentProps {
@@ -41,13 +42,10 @@ export default function BlogTagContent({ post }: BlogTagContentProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {parsedTags.map((tag) => (
-        <span
-          key={tag.id}
-          className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm"
-        >
-          <TagIcon size={12} className="mr-1" />
+        <MonoTag key={tag.id} accent className="inline-flex items-center gap-1">
+          <TagIcon size={12} aria-hidden="true" />
           {tag.name}
-        </span>
+        </MonoTag>
       ))}
     </div>
   );

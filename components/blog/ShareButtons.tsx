@@ -16,8 +16,6 @@ export default function ShareButtons({
   title,
   description = "",
 }: ShareButtonsProps) {
-
-
   const shareLinks = useMemo(() => {
     const encodedUrl = encodeURIComponent(url);
     const encodedTitle = encodeURIComponent(title);
@@ -40,43 +38,45 @@ export default function ShareButtons({
   };
 
   return (
-    <div className="flex items-center space-x-4 my-8 border-t border-b border-gray-200 py-6">
-      <span className="text-gray-600">Share:</span>
-      <a
-        href={shareLinks.twitter}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="p-2 text-gray-600 hover:text-blue-500 transition-colors"
-        aria-label="Share on Twitter"
-      >
-        <Twitter className="h-5 w-5" />
-      </a>
-      <a
-        href={shareLinks.facebook}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="p-2 text-gray-600 hover:text-blue-800 transition-colors"
-        aria-label="Share on Facebook"
-      >
-        <Facebook className="h-5 w-5" />
-      </a>
-      <a
-        href={shareLinks.linkedin}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
-        aria-label="Share on LinkedIn"
-      >
-        <Linkedin className="h-5 w-5" />
-      </a>
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="p-2 text-gray-600 hover:text-blue-700 transition-colors"
-        aria-label="Copy link"
-      >
-        <LinkIcon className="h-5 w-5" />
-      </button>
+    <div className="my-8 flex flex-wrap items-center gap-3 border-y border-line py-5">
+      <span className="font-mono text-micro text-low">SHARE</span>
+      <div className="flex flex-wrap items-center gap-2.5">
+        <a
+          href={shareLinks.twitter}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex h-10 w-10 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 hover:border-line-hi hover:text-accent"
+          aria-label="Share on Twitter"
+        >
+          <Twitter className="h-5 w-5" />
+        </a>
+        <a
+          href={shareLinks.facebook}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex h-10 w-10 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 hover:border-line-hi hover:text-accent"
+          aria-label="Share on Facebook"
+        >
+          <Facebook className="h-5 w-5" />
+        </a>
+        <a
+          href={shareLinks.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex h-10 w-10 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 hover:border-line-hi hover:text-accent"
+          aria-label="Share on LinkedIn"
+        >
+          <Linkedin className="h-5 w-5" />
+        </a>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="flex h-10 w-10 items-center justify-center rounded-control border border-line text-low transition-colors duration-200 hover:border-line-hi hover:text-accent"
+          aria-label="Copy link"
+        >
+          <LinkIcon className="h-5 w-5" />
+        </button>
+      </div>
     </div>
   );
 }

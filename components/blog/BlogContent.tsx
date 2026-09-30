@@ -8,9 +8,5 @@ interface BlogContentProps {
 export default function BlogContent({ content }: BlogContentProps) {
   const sanitized = sanitizeContent(content);
 
-  return (
-    <div className="prose prose-lg max-w-none mb-12">
-      {parse(sanitized)}
-    </div>
-  );
+  return <div className="prose prose-lg max-w-none">{parse(sanitized)}</div>;
 }
