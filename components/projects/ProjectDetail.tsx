@@ -6,6 +6,8 @@ import { FeaturedImage } from "@/components/motion/FeaturedImage";
 import { Breadcrumb } from "@/components/primitives/Breadcrumb";
 import { Button } from "@/components/primitives/Button";
 import { MonoTag } from "@/components/primitives/MonoTag";
+import { Reveal } from "@/components/primitives/Reveal";
+import { StackOrbit, splitForOrbit } from "@/components/primitives/StackOrbit";
 import { LmsArchitecture } from "@/components/projects/LmsArchitecture";
 import { ProjectTagChips } from "@/components/projects/ProjectTagChips";
 import { getProjectDownloadUrl } from "@/lib/project-links";
@@ -167,6 +169,53 @@ export default function ProjectDetail({ project }: { project: Project }) {
               </section>
             ) : null}
           </div>
+
+          {/*
+            The stack orbit, in the MAIN column.
+
+            It was going in the sidebar, where Stack already lives. It cannot go
+            there: the outer ring needs 170px radius plus a 56px badge, so 396px
+            of width, and the sidebar is 18rem = 288px. Scaling to fit means
+            288/396 = 0.73, which turns the 11px badge labels into 8px. The two
+            existing sites get away with the same geometry only because both
+            render at h-[420px] in the full 1180px shell.
+
+            Here it gets roughly 800px at the shell width, so the reference
+            geometry is used unchanged with no scale transform at all.
+
+            Headline is "Built with" rather than "Stack" so it does not repeat
+            the sidebar heading two hundred pixels away. And the sidebar list
+            is deliberately left alone: the orbit is a visual sample of at most
+            nine badges, capped by splitForOrbit, while the sidebar still carries
+            every technology as selectable text. Nothing here replaces it.
+          */}
+          {technologies.length > 0
+            ? (() => {
+                const orbit = splitForOrbit(technologies);
+                const shown = orbit.outer.length + orbit.inner.length;
+                return (
+                  <Reveal>
+                    <section className="mt-12">
+                      <h2 className={LABEL_CLASS}>Built with</h2>
+                      <StackOrbit {...orbit} className="mt-2" />
+                      {/*
+                        Only says something when the orbit had to drop
+                        something. The count is derived from what actually
+                        rendered rather than written out, because the cap lives
+                        in splitForOrbit and a hardcoded "nine" would go stale
+                        the moment that default changed -- and would be wrong on
+                        every project with fewer technologies than the cap.
+                      */}
+                      <p className="text-center font-mono text-micro text-low">
+                        {shown < technologies.length
+                          ? `${technologies.length} in this project · ${shown} on the orbit, the rest listed alongside`
+                          : `${technologies.length} in this project`}
+                      </p>
+                    </section>
+                  </Reveal>
+                );
+              })()
+            : null}
 
           <div className="mt-10 flex flex-wrap items-center gap-2.5 border-t border-line pt-8">
             {/*

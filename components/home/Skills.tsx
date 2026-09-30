@@ -1,5 +1,5 @@
-import { OrbitingCircles } from "@/components/motion/OrbitingCircles";
 import { Reveal } from "@/components/primitives/Reveal";
+import { StackOrbit } from "@/components/primitives/StackOrbit";
 import { SectionHead } from "@/components/primitives/SectionHead";
 import { SkillsTerminal, type SkillDirectory } from "./SkillsTerminal";
 
@@ -42,7 +42,9 @@ const directories: SkillDirectory[] = TREE_DIRECTORIES.map(
 /*
  * A curated subset of `skills` above, spanning all four categories, for the
  * orbit rings. The terminal below stays the exhaustive list; these are the
- * headline names. If one is removed from `skills`, update it here too.
+ * headline names. If one is removed from `skills`, update it here too --
+ * which is now the only place that list is hand-maintained, since StackOrbit
+ * took the markup this used to duplicate.
  */
 const ORBIT_OUTER = [
   skills.frontend[0],
@@ -73,29 +75,7 @@ export default function Skills() {
           positioned with no inset offsets, so the flexbox is what places them.
         */}
         <Reveal>
-          <div className="relative mx-auto flex h-[420px] w-full origin-center items-center justify-center max-md:scale-[0.72] [&:hover_*]:[animation-play-state:paused]">
-            <span className="font-mono text-xs text-low">core</span>
-            <OrbitingCircles radius={170} duration={40} iconSize={56} speed={0.6}>
-              {ORBIT_OUTER.map((tech) => (
-                <span
-                  key={tech}
-                  className="flex size-14 items-center justify-center rounded-full border border-line bg-surface-2 px-1.5 text-center font-mono text-[11px] leading-tight text-hi"
-                >
-                  {tech}
-                </span>
-              ))}
-            </OrbitingCircles>
-            <OrbitingCircles radius={100} duration={32} iconSize={44} speed={0.6} reverse>
-              {ORBIT_INNER.map((tech) => (
-                <span
-                  key={tech}
-                  className="flex size-11 items-center justify-center rounded-full border border-line bg-surface-2 px-1 text-center font-mono text-[10px] leading-tight text-mid"
-                >
-                  {tech}
-                </span>
-              ))}
-            </OrbitingCircles>
-          </div>
+          <StackOrbit outer={ORBIT_OUTER} inner={ORBIT_INNER} />
         </Reveal>
 
         <Reveal>

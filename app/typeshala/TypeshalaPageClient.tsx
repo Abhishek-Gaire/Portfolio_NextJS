@@ -19,10 +19,10 @@ import { GitLabIcon, Github } from "@/components/icons";
 import { BentoCard } from "@/components/primitives/BentoCard";
 import { Button } from "@/components/primitives/Button";
 import { Eyebrow } from "@/components/primitives/Eyebrow";
+import { StackOrbit } from "@/components/primitives/StackOrbit";
 import { MonoTag } from "@/components/primitives/MonoTag";
 import { Reveal } from "@/components/primitives/Reveal";
 import { SectionHead } from "@/components/primitives/SectionHead";
-import { OrbitingCircles } from "@/components/motion/OrbitingCircles";
 import { DownloadGrid } from "@/components/typeshala/DownloadCards";
 import { useDetectedOS } from "@/components/typeshala/useDetectedOS";
 import {
@@ -249,40 +249,7 @@ export default function TypeshalaPageClient({
                   effect, and this is above the fold — the observer would fire on
                   the first frame and the fade would just be a flash.
                 */}
-                <div className="relative mx-auto flex h-[420px] w-full origin-center items-center justify-center max-md:scale-[0.72] [&:hover_*]:[animation-play-state:paused]">
-                  <span className="font-mono text-xs text-low">core</span>
-                  <OrbitingCircles
-                    radius={170}
-                    duration={40}
-                    iconSize={56}
-                    speed={0.6}
-                  >
-                    {TECH_STACK_OUTER.map((tech) => (
-                      <span
-                        key={tech}
-                        className="flex size-14 items-center justify-center rounded-full border border-line bg-surface-2 px-1.5 text-center font-mono text-[11px] leading-tight text-hi"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </OrbitingCircles>
-                  <OrbitingCircles
-                    radius={100}
-                    duration={32}
-                    iconSize={44}
-                    speed={0.6}
-                    reverse
-                  >
-                    {TECH_STACK_INNER.map((tech) => (
-                      <span
-                        key={tech}
-                        className="flex size-11 items-center justify-center rounded-full border border-line bg-surface-2 px-1 text-center font-mono text-[10px] leading-tight text-mid"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </OrbitingCircles>
-                </div>
+                <StackOrbit outer={TECH_STACK_OUTER} inner={TECH_STACK_INNER} />
               </div>
             </div>
           </div>
