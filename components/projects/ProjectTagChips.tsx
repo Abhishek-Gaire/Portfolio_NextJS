@@ -1,10 +1,22 @@
+import { FlagBadge } from "@/components/primitives/FlagBadge";
 import { MonoTag } from "@/components/primitives/MonoTag";
 import { cn } from "@/lib/utils";
-import { PROJECT_TAGS, type ProjectTag } from "../../types/project";
+import {
+  PROJECT_TAGS,
+  PROJECT_TAG_LABELS,
+  type ProjectTag,
+} from "../../types/project";
 
 type ProjectTagChipsProps = {
   tags?: ProjectTag[] | string[] | null;
   className?: string;
+  /**
+   * `tag` is the dense mono pill. `flag` is the larger badge with the leading
+   * colour bar, which needs the vertical room a project header has and a list
+   * row does not. Opt-in rather than switched globally so the /projects rows
+   * keep their current density; see the note on FlagBadge.
+   */
+  variant?: "tag" | "flag";
 };
 
 /**
@@ -25,6 +37,7 @@ const ACCENTED: ProjectTag[] = ["client"];
 export function ProjectTagChips({
   tags,
   className,
+  variant = "tag",
 }: ProjectTagChipsProps) {
   if (!Array.isArray(tags)) return null;
 
@@ -36,14 +49,30 @@ export function ProjectTagChips({
   // Order follows PROJECT_TAGS rather than the array's own order, so two rows
   // with the same tags always render in the same sequence.
   const ordered = PROJECT_TAGS.filter((t) => known.includes(t));
+  const asFlag = variant === "flag";
 
   return (
-    <span className={cn("flex flex-wrap items-center gap-1.5", className)}>
-      {ordered.map((tag) => (
-        <MonoTag key={tag} accent={ACCENTED.includes(tag)}>
-          {tag}
-        </MonoTag>
-      ))}
+    <span
+      className={cn(
+        "flex flex-wrap items-center",
+        asFlag ? "gap-2" : "gap-1.5",
+        className,
+      )}
+    >
+      {ordered.map((tag) =>
+        asFlag ? (
+          <FlagBadge
+            key={tag}
+            tone={ACCENTED.includes(tag) ? "accent" : "neutral"}
+          >
+            {PROJECT_TAG_LABELS[tag]}
+          </FlagBadge>
+        ) : (
+          <MonoTag key={tag} accent={ACCENTED.includes(tag)}>
+            {PROJECT_TAG_LABELS[tag]}
+          </MonoTag>
+        ),
+      )}
     </span>
   );
 }

@@ -3,7 +3,7 @@
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { getSupabaseBrowserClient } from "../../lib/supabase/client";
-import { PROJECT_TAGS, type Project, type ProjectTag } from "../../types/project";
+import { PROJECT_TAGS, PROJECT_TAG_LABELS, type Project, type ProjectTag } from "../../types/project";
 
 type FormState = {
   title: string;
@@ -411,7 +411,7 @@ export default function AdminProjectsManager({
                     }
                     className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-2 focus:ring-blue-500"
                   />
-                  {tag}
+                  {PROJECT_TAG_LABELS[tag]}
                 </label>
               ))}
             </div>
@@ -601,7 +601,7 @@ export default function AdminProjectsManager({
                             key={tag}
                             className="rounded-full border border-slate-300 px-1.5 py-0.5 text-[10px] text-slate-600"
                           >
-                            {tag}
+                            {PROJECT_TAG_LABELS[tag]}
                           </span>
                         ))
                     : null}

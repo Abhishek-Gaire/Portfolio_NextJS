@@ -5,6 +5,7 @@ import { Github } from "@/components/icons";
 import { FeaturedImage } from "@/components/motion/FeaturedImage";
 import { Breadcrumb } from "@/components/primitives/Breadcrumb";
 import { Button } from "@/components/primitives/Button";
+import { FlagBadge } from "@/components/primitives/FlagBadge";
 import { MonoTag } from "@/components/primitives/MonoTag";
 import { Reveal } from "@/components/primitives/Reveal";
 import { StackOrbit, splitForOrbit } from "@/components/primitives/StackOrbit";
@@ -66,9 +67,15 @@ export default function ProjectDetail({ project }: { project: Project }) {
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_18rem] lg:gap-14">
         <div className="min-w-0">
+          {/*
+            Year stays neutral, category takes the accent: the year is a
+            timestamp and needs no attention, the category is the one claim in
+            this row that says what the project *is*. Same split the F1-style
+            reference used, expressed in the site's own teal.
+          */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {year ? <MonoTag>{year}</MonoTag> : null}
-            <MonoTag>{project.category}</MonoTag>
+            {year ? <FlagBadge>{year}</FlagBadge> : null}
+            <FlagBadge tone="accent">{project.category}</FlagBadge>
           </div>
 
           <h1 className="mt-5 text-title font-bold tracking-[-0.02em] text-balance text-hi">
@@ -85,9 +92,18 @@ export default function ProjectDetail({ project }: { project: Project }) {
           {(Array.isArray(project.tags) && project.tags.length > 0) ||
           project.context ? (
             <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
-              <ProjectTagChips tags={project.tags} />
+              <ProjectTagChips tags={project.tags} variant="flag" />
               {project.context ? (
-                <span className="font-mono text-[11px] text-low">
+                /*
+                  first-letter, not a transform on the string. `context` is
+                  free text typed into the admin ("6th semester - Minor Project
+                  2"), so it arrives however the author typed it. Capitalising
+                  the stored value would have meant a data migration to fix
+                  something CSS can fix; and `capitalize` on the whole string
+                  would shout "MINOR PROJECT 2". The digit case is why this is
+                  a first-letter rule and not a map.
+                */
+                <span className="font-mono text-[11px] text-low first-letter:uppercase">
                   {project.context}
                 </span>
               ) : null}
@@ -146,7 +162,8 @@ export default function ProjectDetail({ project }: { project: Project }) {
 
             <section>
               <h2 className={LABEL_CLASS}>Role</h2>
-              <p className="text-[15px] leading-[1.7] text-mid">
+              {/* Same first-letter rule as the context line above it. */}
+              <p className="text-[15px] leading-[1.7] text-mid first-letter:uppercase">
                 {project.role}
               </p>
             </section>

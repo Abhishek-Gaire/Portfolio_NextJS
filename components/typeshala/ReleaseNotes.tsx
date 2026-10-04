@@ -99,17 +99,22 @@ export function ReleaseNotes({
         isDraft={isDraft}
       />
 
-      <div className="prose prose-sm max-w-none">
-        <div className="whitespace-pre-wrap font-mono text-caption leading-[1.9] text-mid">
-          {expanded || !hasMore ? (
-            body
-          ) : (
-            <>
-              {previewLines.join("\n")}
-              <span className="text-low">...</span>
-            </>
-          )}
-        </div>
+      {/*
+        No `prose` here. The typography plugin contributes nothing to a
+        whitespace-pre-wrap mono block (its children carry their own colour,
+        size and leading), and its root rule in globals.css is unlayered, so it
+        outranks the `max-w-none` utility and pinned the release body to 768px
+        inside a ~1130px card. See the note on `.prose` there.
+      */}
+      <div className="whitespace-pre-wrap font-mono text-caption leading-[1.9] text-mid">
+        {expanded || !hasMore ? (
+          body
+        ) : (
+          <>
+            {previewLines.join("\n")}
+            <span className="text-low">...</span>
+          </>
+        )}
       </div>
 
       {hasMore ? (
@@ -168,7 +173,14 @@ export function PreviousRelease({
     <details className="group/details overflow-hidden rounded-card border border-line bg-surface transition-colors duration-300 open:bg-surface-2">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-control border border-accent-line bg-accent-soft font-mono text-caption font-semibold text-accent">
+          {/*
+            w-10 alone cannot hold a version: `v1.0.0` in text-caption mono is
+            ~44px, so it overflowed the 40px box and hung outside the border on
+            both sides. Width is content-driven with a 40px floor, so short tags
+            stay square and long ones (1.0.0-rc.1) grow into a pill instead of
+            bleeding over the border.
+          */}
+          <span className="flex h-10 min-w-10 shrink-0 items-center justify-center whitespace-nowrap rounded-control border border-accent-line bg-accent-soft px-2 font-mono text-caption font-semibold text-accent">
             v{version}
           </span>
           <div className="min-w-0">
@@ -186,9 +198,25 @@ export function PreviousRelease({
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2.5">
+        {/*
+          flex-1, not shrink-0. A percentage max-width on a flex item inside a
+          shrink-to-fit parent is circular: intrinsic sizing treats the
+          percentage as `none`, so the group was sized to the *untruncated*
+          platform string, the chip truncated against that oversized box, and
+          the leftover sat empty inside the group. That is what kept the
+          chevron ~300px short of the card edge. With basis 0 the group takes
+          the free space instead and justify-end parks chip + chevron on the
+          right edge.
+
+          The chip no longer carries its own max-width: 46% of the row hid four
+          of the seven platforms behind an ellipsis. It is content-sized now and
+          breaks to `lg`, the first breakpoint where the whole list fits beside
+          the chevron at 1024. Below that it is dropped rather than shown
+          half-read; the expanded body already lists every platform as a pill.
+        */}
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2.5">
           {platformLabels ? (
-            <span className="hidden max-w-[46%] truncate sm:block">
+            <span className="hidden min-w-0 truncate lg:block">
               <MonoTag>{platformLabels}</MonoTag>
             </span>
           ) : null}
@@ -198,10 +226,8 @@ export function PreviousRelease({
 
       <Reveal className="border-t border-line p-4">
         {body ? (
-          <div className="prose prose-sm mb-4 max-w-none">
-            <div className="whitespace-pre-wrap font-mono text-caption leading-[1.9] text-mid">
-              {body}
-            </div>
+          <div className="mb-4 whitespace-pre-wrap font-mono text-caption leading-[1.9] text-mid">
+            {body}
           </div>
         ) : null}
 

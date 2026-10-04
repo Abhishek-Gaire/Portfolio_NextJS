@@ -37,6 +37,28 @@ export const PROJECT_TAGS: ProjectTag[] = [
   "college",
 ];
 
+/**
+ * What each tag says out loud, keyed by the stored value.
+ *
+ * The column stays lowercase. It is machine data: the database CHECK constraint
+ * lists these five literals, the admin's checkbox group writes them straight
+ * through, and `tags.includes("college")` is a string comparison in
+ * AdminProjectsManager. Capitalising on write would have meant a migration, a
+ * constraint change and a second source of truth, all to change how a chip
+ * looks.
+ *
+ * So the capitalisation is display-only, and it is a map rather than
+ * `capitalize` because `oss` is an initialism: CSS would give "Oss", which is
+ * not the word. "OSS" has to be spelled.
+ */
+export const PROJECT_TAG_LABELS: Record<ProjectTag, string> = {
+  client: "Client",
+  personal: "Personal",
+  oss: "OSS",
+  hobby: "Hobby",
+  college: "College",
+};
+
 export interface Project {
   id: string;
   title: string;
