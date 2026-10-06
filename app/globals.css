@@ -214,6 +214,17 @@ body {
   }
 }
 
+/*
+ * <Reveal>'s pre-intersection state. A named class rather than the `opacity-0`
+ * utility, so the no-JS fallback can un-hide exactly this and nothing else —
+ * see the <noscript> block in app/layout.tsx. Without JavaScript the
+ * IntersectionObserver never fires and every wrapped section would stay at
+ * opacity 0 forever: present in the HTML for crawlers, invisible to humans.
+ */
+.reveal-hidden {
+  opacity: 0;
+}
+
 @utility fade-up {
   animation: fade-up 0.6s var(--ease-out-expo) both;
 }

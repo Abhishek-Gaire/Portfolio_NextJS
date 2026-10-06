@@ -72,7 +72,14 @@ export function Reveal({
     <Tag
       ref={ref}
       className={cn(
-        shown ? (reducedMotion ? undefined : "fade-up") : "opacity-0",
+        /*
+         * `reveal-hidden`, not bare `opacity-0`. The hidden state needs its own
+         * class so the no-JS fallback can target it: a blanket rule un-hiding
+         * every `opacity-0` would also un-hide BentoCard's hover spotlight and
+         * PixelImage's loading state, which are opacity-0 for real reasons.
+         * The class is defined in app/globals.css next to the keyframes.
+         */
+        shown ? (reducedMotion ? undefined : "fade-up") : "reveal-hidden",
         className,
       )}
       style={shown && !reducedMotion ? { animationDelay: `${delay}ms` } : undefined}

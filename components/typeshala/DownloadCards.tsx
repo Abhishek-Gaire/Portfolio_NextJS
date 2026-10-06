@@ -58,10 +58,6 @@ export function DownloadCard({
   const [copied, setCopied] = useState(false);
   const [instructionCopied, setInstructionCopied] = useState(false);
 
-  const handleDownload = (url: string) => {
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
   const handleCopyLink = (url: string) => {
     navigator.clipboard.writeText(url);
     setCopied(true);
@@ -140,11 +136,20 @@ export function DownloadCard({
 
         {hasDownload ? (
           <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
+            {/*
+              A real link, not a button with window.open. The headline download
+              used to be a <button> whose click handler opened the URL, which
+              meant the installer URL existed nowhere in the markup — crawlers,
+              AI agents and no-JS visitors could find the small "Direct link"
+              text but never the Download button itself. An anchor carries the
+              href in the HTML; the browser does the downloading.
+            */}
             <Button
               variant="primary"
-              onClick={() => handleDownload(downloadUrl!)}
-              disabled={isLoading}
-              className="disabled:cursor-not-allowed disabled:opacity-60"
+              as="a"
+              href={downloadUrl}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               {isLoading ? (
                 <>

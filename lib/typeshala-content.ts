@@ -34,6 +34,23 @@ export const TYPESHALA_AUTHOR_URL = "https://www.abhishekgaire.com.np";
 /** MIT. LICENSE at the repo root is the authoritative copy. */
 export const TYPESHALA_LICENSE = "https://opensource.org/licenses/MIT";
 
+/**
+ * The app's first public release (v1.0.0, docs/release-notes/v1.0.md in the app
+ * repo). This is the `datePublished` in the JSON-LD — it moves only if the app
+ * is ever re-released under a new name, which is to say never. The *latest*
+ * release date comes from the GitHub API at render time instead; see
+ * getReleaseMeta in app/typeshala/layout.tsx.
+ */
+export const TYPESHALA_DATE_PUBLISHED = "2026-09-16";
+
+/**
+ * One line, for the `featureList` in the JSON-LD. Schema.org wants a single
+ * text value here rather than an array, so this stays a string even though it
+ * reads like a list.
+ */
+export const TYPESHALA_FEATURE_LIST =
+  "Traditional Preeti layout, Romanized Nepali typing, English QWERTY lessons, WPM and accuracy scoring, progress trends, fully offline use";
+
 /** GitLab is the source of truth; GitHub is a CI mirror that carries releases. */
 export const TYPESHALA_REPO_URL = "https://gitlab.com/abhishek_gaire/typeshala";
 export const TYPESHALA_GITHUB_URL =
@@ -59,21 +76,26 @@ export type TypeshalaScreenshot = {
 };
 
 /**
- * Held in the same Supabase storage bucket as the portfolio's project images,
- * and referenced by the `typeshala` row in
- * supabase/migrations/20260929000001_seed_2026_projects.sql:46. One file, two
- * consumers — the /projects case study and this page.
+ * Product screenshots live in the repo under public/typeshala, not in the
+ * Supabase bucket the portfolio's project images use. The bucket denies
+ * anonymous writes, so shipping an image there means a dashboard upload on
+ * every change; a file in git deploys with the page and diffs like everything
+ * else. (The /projects case-study row still points at the bucket PNG in
+ * supabase/migrations/20260929000001_seed_2026_projects.sql:46 — migration
+ * history, leave it.)
  *
- * The intrinsic size is the stored PNG's real pixel size (2559x1522), not a
- * display size. next/image needs the true ratio to reserve the box and avoid
- * layout shift as it loads; declaring 1024x640 here for a 1.68:1 image is what
- * makes the page jump on a slow connection.
+ * Filenames carry keywords on purpose: `nepali-typing-tutor-preeti-…` is
+ * indexable text that `typeshala.png` is not.
+ *
+ * The intrinsic size is the file's real pixel size, not a display size.
+ * next/image needs the true ratio to reserve the box and avoid layout shift
+ * as it loads.
  */
 export const TYPESHALA_SCREENSHOTS: TypeshalaScreenshot[] = [
   {
-    src: "https://vzftblsjklsdaquipabd.supabase.co/storage/v1/object/public/images/typeshala.png",
-    width: 2559,
-    height: 1522,
+    src: "/typeshala/nepali-typing-tutor-preeti-screenshot.webp",
+    width: 1920,
+    height: 1142,
     alt: "Typeshala's classic practice screen. A line of Nepali text in Devanagari sits above an on-screen keyboard whose key caps print the Preeti key position above each Devanagari letter it produces. The next key to press, Devanagari hari, is lit red on the third row of key caps. A toolbar above holds the Practice, Lessons and Options menus, Home, Top, Bottom, All, Game and Free buttons, a three-level selector with Level 1 active, and a running average speed.",
     caption:
       "The classic practice screen, rebuilt: a Devanagari prompt line, the on-screen keyboard with its Preeti key labels, and the next required key lit up before you press it.",
@@ -146,7 +168,15 @@ export const TYPESHALA_FAQ: TypeshalaFaqEntry[] = [
       "It works entirely offline. All of your progress, scores and settings are stored on your own device by the app's local store — there are no accounts, no cloud sync and no network calls at all. Uninstalling the app removes your data with it, and nothing about how you type is ever sent anywhere.",
   },
   {
-    question: "How is this different from the original DOS-era Typshala?",
+    /*
+     * "Classic", not "DOS-era" and not "original". The predecessor was a
+     * 16-bit Windows program (per the app README: "Windows-era … 16-bit
+     * application"), so calling it DOS-era in the question while the answer
+     * says 16-bit Windows hands an AI two different facts about one program.
+     * The answer's first sentence names it again, which is what pins the two
+     * together for a summariser.
+     */
+    question: "How is this different from the classic Typshala?",
     answer:
       "The classic Typshala was a 16-bit Windows program. On a modern 64-bit Windows machine it needs an emulator or a compatibility layer before it will run at all, and it only runs on Windows. Typeshala is a rewrite: same layout, same drill structure, same progression, but built with Tauri, React and Rust so it is a native app on Windows, macOS and Linux, with speed and accuracy scoring, progress trends, themes and a bilingual interface.",
   },

@@ -6,15 +6,18 @@ import { fetchLatestRelease } from "./_lib/release";
 import {
   TYPESHALA_AUTHOR,
   TYPESHALA_AUTHOR_URL,
+  TYPESHALA_DATE_PUBLISHED,
   TYPESHALA_DESCRIPTION,
   TYPESHALA_DEVANAGARI,
   TYPESHALA_FAQ,
+  TYPESHALA_FEATURE_LIST,
   TYPESHALA_KEYWORDS,
   TYPESHALA_LICENSE,
   TYPESHALA_NAME,
   TYPESHALA_PLATFORMS,
   TYPESHALA_REPO_URL,
   TYPESHALA_GITHUB_URL,
+  TYPESHALA_SCREENSHOTS,
 } from "@/lib/typeshala-content";
 
 /**
@@ -90,9 +93,17 @@ async function getReleaseMeta() {
   const { data, failed } = await fetchLatestRelease();
   if (failed || !data) return null;
 
+  // published_at arrives as full ISO ("2026-10-01T…Z"); schema.org wants the
+  // calendar date. toISOString is UTC-based, and GitHub timestamps are UTC, so
+  // slicing is exact rather than timezone-adjacent.
+  const publishedAt = data.published_at
+    ? new Date(data.published_at).toISOString().slice(0, 10)
+    : null;
+
   return {
     version: data.tag_name.replace(/^v/, ""),
     downloadUrl: data.html_url,
+    publishedAt,
   };
 }
 
@@ -121,8 +132,28 @@ export default async function TypeshalaLayout({
       ? {
           softwareVersion: release.version,
           downloadUrl: release.downloadUrl,
+          // First public release, fixed; latest release date, live. Swapping
+          // them — a moving datePublished or a stale dateModified — is the
+          // mistake this split exists to prevent. A null dateModified would
+          // serialise as `"dateModified": null`, which reads as a claim that
+          // the app was never modified, so it is omitted instead of nulled.
+          ...(release.publishedAt
+            ? { dateModified: release.publishedAt }
+            : null),
         }
       : null),
+    datePublished: TYPESHALA_DATE_PUBLISHED,
+    /*
+     * Resolved against the site URL because schema.org wants an absolute URL
+     * and `src` is a root-relative file path. Resolving is idempotent — if
+     * the screenshot ever moves back to a hosted absolute URL, new URL()
+     * returns it unchanged and nothing here needs editing.
+     */
+    screenshot:
+      TYPESHALA_SCREENSHOTS.length > 0
+        ? new URL(TYPESHALA_SCREENSHOTS[0].src, TYPESHala_SITE_URL).toString()
+        : undefined,
+    featureList: TYPESHALA_FEATURE_LIST,
     license: TYPESHALA_LICENSE,
     // Free and open source, stated rather than implied. `offers` is what makes
     // the price legible to a shopping-style result, and `isAccessibleForFree`

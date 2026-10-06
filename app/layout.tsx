@@ -5,7 +5,12 @@ import localFont from "next/font/local";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import AppShell from "../components/AppShell";
-import { isTypeshalaHost } from "../lib/site-urls";
+import { TYPESHala_SITE_URL, isTypeshalaHost } from "../lib/site-urls";
+import {
+  TYPESHALA_DESCRIPTION,
+  TYPESHALA_DEVANAGARI,
+  TYPESHALA_NAME,
+} from "../lib/typeshala-content";
 
 const spaceGrotesk = localFont({
   src: [
@@ -97,22 +102,42 @@ export default async function RootLayout({
 }>) {
   const nonce = (await headers()).get("x-nonce") ?? "";
   const host = (await headers()).get("host") ?? "";
-  const websiteJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: siteName,
-    url: siteUrl,
-    description: defaultDescription,
-    inLanguage: "en",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${siteUrl}/blogs?search={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
-  };
+  const onTypeshala = isTypeshalaHost(host);
+  /*
+   * One app, two sites. The portfolio's WebSite block used to render on the
+   * Typeshala route too, telling crawlers that the product page belonged to an
+   * entity called "Abhishek Gaire Portfolio" at www.abhishekgaire.com.np with a
+   * blog search box — three wrong facts in one script tag. The Typeshala side
+   * gets its own WebSite entry instead. It carries no SearchAction on purpose:
+   * the product page has no search to describe, and an action that points at
+   * the portfolio's blog search would be the same category of lie.
+   */
+  const websiteJsonLd = onTypeshala
+    ? {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: TYPESHALA_NAME,
+        alternateName: TYPESHALA_DEVANAGARI,
+        url: TYPESHala_SITE_URL,
+        description: TYPESHALA_DESCRIPTION,
+        inLanguage: ["en", "ne"],
+      }
+    : {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: siteName,
+        url: siteUrl,
+        description: defaultDescription,
+        inLanguage: "en",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${siteUrl}/blogs?search={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
+        },
+      };
 
   return (
     <html
@@ -129,7 +154,17 @@ export default async function RootLayout({
           suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-        <AppShell isTypeshalaHost={isTypeshalaHost(host)}>{children}</AppShell>
+        {/*
+          No-JS fallback for <Reveal>. Its hidden state is `opacity: 0` until an
+          IntersectionObserver fires, so without JavaScript every wrapped
+          section stays invisible. This un-hides exactly that class and nothing
+          else. `!important` is load-bearing: Tailwind v4 emits utilities into
+          a cascade layer, and this unlayered rule needs to outrank it.
+        */}
+        <noscript>
+          <style>{`.reveal-hidden{opacity:1 !important}`}</style>
+        </noscript>
+        <AppShell isTypeshalaHost={onTypeshala}>{children}</AppShell>
       </body>
     </html>
   );
