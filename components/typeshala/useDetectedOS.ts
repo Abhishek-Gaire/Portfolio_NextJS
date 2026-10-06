@@ -10,7 +10,7 @@ const PRIORITY: Record<DetectedOS, string[]> = {
   macos: ['macos-arm64', 'macos-x64'],
   windows: ['windows-exe', 'windows-msi'],
   linux: ['linux-appimage', 'linux-deb', 'linux-rpm'],
-  android: ['android', 'fdroid'],
+  android: ['android'],
   // No iOS build exists — nothing to prioritize.
   ios: [],
 };

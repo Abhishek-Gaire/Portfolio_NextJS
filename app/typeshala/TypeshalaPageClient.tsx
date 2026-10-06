@@ -10,6 +10,7 @@ import {
   Keyboard,
   Monitor,
   Palette,
+  ShieldOff,
   Smartphone,
   Wrench,
 } from "lucide-react";
@@ -24,6 +25,8 @@ import { MonoTag } from "@/components/primitives/MonoTag";
 import { Reveal } from "@/components/primitives/Reveal";
 import { SectionHead } from "@/components/primitives/SectionHead";
 import { DownloadGrid } from "@/components/typeshala/DownloadCards";
+import { TypeshalaFaq } from "@/components/typeshala/Faq";
+import { TypeshalaScreenshots } from "@/components/typeshala/Screenshots";
 import { useDetectedOS } from "@/components/typeshala/useDetectedOS";
 import {
   ReleaseNotes,
@@ -34,6 +37,12 @@ import {
   TypeshalaFooter,
 } from "@/components/typeshala/TypeshalaChrome";
 import { PLATFORM_DOWNLOADS } from "@/types/typeshala";
+import {
+  TYPESHALA_DEVANAGARI,
+  TYPESHALA_INTRO,
+  TYPESHALA_LICENSE,
+  TYPESHALA_NAME,
+} from "@/lib/typeshala-content";
 import type { TypeshalaPageData } from "./_lib/release";
 
 type Feature = {
@@ -42,6 +51,12 @@ type Feature = {
   desc: string;
 };
 
+/**
+ * Every tile here describes something a person can use in a build they can
+ * download. "Android Support" used to sit in this grid while the Android card
+ * under it admitted there was no APK — the grid is the first thing a reader or
+ * a crawler skims, so a claim here outranks any correction further down.
+ */
 const FEATURES: Feature[] = [
   {
     icon: Globe,
@@ -79,14 +94,14 @@ const FEATURES: Feature[] = [
     desc: "All data stored on-device via the Tauri store plugin",
   },
   {
+    icon: ShieldOff,
+    title: "No Account, No Tracking",
+    desc: "No accounts, no cloud sync, and no network calls at all",
+  },
+  {
     icon: Wrench,
     title: "Cross-Platform",
     desc: "Native apps for macOS, Windows, and Linux",
-  },
-  {
-    icon: Smartphone,
-    title: "Android Support",
-    desc: "Mobile version with touch-optimized lessons",
   },
 ];
 
@@ -134,8 +149,10 @@ export default function TypeshalaPageClient({
     ].includes(p.platform),
   );
 
-  const mobilePlatforms = PLATFORM_DOWNLOADS.filter((p) =>
-    ["android", "fdroid"].includes(p.platform),
+  // Only one mobile platform is left (Android, unreleased), so this grid drops
+  // to a single track — see DownloadGrid's className prop.
+  const mobilePlatforms = PLATFORM_DOWNLOADS.filter(
+    (p) => p.platform === "android",
   );
 
   const detectedOS = useDetectedOS();
@@ -159,7 +176,11 @@ export default function TypeshalaPageClient({
         <Smartphone className="h-4 w-4" />
         <span>Mobile</span>
       </Eyebrow>
-      <DownloadGrid platforms={mobilePlatforms} assets={platformAssets} />
+      <DownloadGrid
+        platforms={mobilePlatforms}
+        assets={platformAssets}
+        className="sm:grid-cols-1 lg:grid-cols-1 lg:max-w-104"
+      />
     </div>
   );
 
@@ -190,21 +211,47 @@ export default function TypeshalaPageClient({
         <section className="pt-16 pb-16">
           <div className="mx-auto max-w-shell px-6">
             <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_26rem] lg:gap-16">
-              <div className="max-w-[46rem]">
+              <div className="max-w-184">
                 <span className="inline-flex w-fit items-center gap-1.75 rounded-full border border-accent-line bg-accent-soft py-1.5 pl-2 pr-2.5 font-mono text-micro text-accent">
                   <span className="animate-pulse-ring h-1.5 w-1.5 rounded-full bg-accent" />
                   Available for download
                 </span>
 
+                {/*
+                  The Devanagari spelling sits inside the h1 rather than beside
+                  it. "टाइपशाला" is how most Nepali speakers search for this,
+                  and a name rendered as an image — or as a heading a crawler
+                  skips past — is a name nobody finds. lang="ne" is on the span so
+                  screen readers switch voice rather than reading Devanagari with
+                  an English voice.
+                */}
                 <h1 className="mt-5 mb-3.5 text-display font-bold text-hi">
-                  Typeshala
+                  {TYPESHALA_NAME}{" "}
+                  <span lang="ne" className="text-mid">
+                    ({TYPESHALA_DEVANAGARI})
+                  </span>
                 </h1>
 
-                <p className="mb-6 max-w-measure-narrow text-mid text-lede">
-                  A bilingual (English / Nepali) typing tutor desktop app with
-                  structured lessons, progress stats, themes, and a bonus
-                  Ramayana game.
+                <p className="mb-4 max-w-measure-narrow text-mid text-lede">
+                  {TYPESHALA_INTRO[0]}
                 </p>
+                <p className="mb-4 max-w-measure-narrow text-mid text-lede">
+                  {TYPESHALA_INTRO[1]}
+                </p>
+
+                {/*
+                  Price, license and platforms, in text, above the fold. Someone
+                  deciding whether to trust a download link reads exactly these
+                  three things, and a crawler building an answer about the app
+                  has nowhere else to find them.
+                */}
+                <div className="mb-6 flex flex-wrap items-center gap-2.5">
+                  <MonoTag accent>Free &amp; open source</MonoTag>
+                  <MonoTag>MIT license</MonoTag>
+                  <MonoTag>Windows · macOS · Linux</MonoTag>
+                  <MonoTag>Works offline</MonoTag>
+                  <MonoTag>No account needed</MonoTag>
+                </div>
 
                 <div className="flex flex-wrap gap-2.5">
                   <Button
@@ -226,7 +273,25 @@ export default function TypeshalaPageClient({
                     <Box className="h-4 w-4" />
                     <span>Report Issue</span>
                   </Button>
+                  <Button
+                    as="a"
+                    href={TYPESHALA_LICENSE}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span>MIT License</span>
+                  </Button>
                 </div>
+
+                {/*
+                  The third paragraph reads as an aside under the buttons rather
+                  than as a fourth block of lede: it answers "why does this
+                  exist", which is a question people ask after the download
+                  question, not before it.
+                */}
+                <p className="mt-6 max-w-measure-narrow border-l-2 border-line pl-4 text-[13px] leading-[1.65] text-low">
+                  {TYPESHALA_INTRO[2]}
+                </p>
               </div>
 
               <div className="w-full lg:w-104">
@@ -254,6 +319,9 @@ export default function TypeshalaPageClient({
             </div>
           </div>
         </section>
+
+        {/* The proof the app exists, before the download buttons. */}
+        <TypeshalaScreenshots />
 
         {latestRelease ? (
           <section className="py-16">
@@ -358,7 +426,7 @@ export default function TypeshalaPageClient({
         releasesUnavailable ? (
           <section className="py-16">
             <div className="mx-auto max-w-shell px-6">
-              <BentoCard className="mx-auto max-w-[44rem] rounded-hero p-7 text-center sm:p-9">
+              <BentoCard className="mx-auto max-w-176 rounded-hero p-7 text-center sm:p-9">
                 <span className="inline-flex items-center gap-1.75 rounded-full border border-[rgba(167,139,250,0.32)] bg-[rgba(167,139,250,0.1)] py-1.5 pl-2 pr-2.5 font-mono text-micro text-violet">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-violet" />
                   {releasesRateLimited
@@ -398,7 +466,7 @@ export default function TypeshalaPageClient({
         !releasesUnavailable ? (
           <section className="py-16">
             <div className="mx-auto max-w-shell px-6">
-              <BentoCard className="mx-auto max-w-[44rem] rounded-hero p-7 text-center sm:p-9">
+              <BentoCard className="mx-auto max-w-176 rounded-hero p-7 text-center sm:p-9">
                 <span className="inline-flex items-center gap-1.75 rounded-full border border-[rgba(240,180,41,0.35)] bg-[rgba(240,180,41,0.1)] py-1.5 pl-2 pr-2.5 font-mono text-micro text-amber">
                   <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber" />
                   No releases yet
@@ -457,6 +525,8 @@ export default function TypeshalaPageClient({
             </div>
           </div>
         </section>
+
+        <TypeshalaFaq />
       </main>
 
       <TypeshalaFooter issuesUrl={issuesUrl} />

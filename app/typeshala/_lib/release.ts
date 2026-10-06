@@ -114,10 +114,17 @@ export function getPlatformAssets(release: GitHubRelease) {
   const platformAssets: Record<string, { asset: GitHubRelease['assets'][0]; platform: typeof PLATFORM_DOWNLOADS[0] }> = {};
 
   for (const platform of PLATFORM_DOWNLOADS) {
-    if (platform.platform === 'fdroid') continue;
     // Platforms with a manualUrl are distributed outside GitHub releases
     // (e.g. manually built Android APK) — never match a release asset.
     if (platform.manualUrl) continue;
+    // An unreleased platform has nothing to match against either. Without this
+    // an `.apk` asset dropped onto a release would silently turn the Android
+    // card back into a live download button.
+    if (platform.status === 'in-development') continue;
+    // Empty assetPatterns means "no release-asset distribution", not "match
+    // anything" — an empty list previously fell through to find() with a
+    // predicate that always returned false, so it was harmless by accident.
+    if (!platform.assetPatterns.length) continue;
 
     const asset = release.assets.find(a => matchAssetToPlatform(a, platform));
     if (asset) {

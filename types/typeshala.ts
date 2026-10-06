@@ -16,13 +16,31 @@ export interface GitHubRelease {
   draft: boolean;
 }
 
+/**
+ * Whether a build is something a visitor can actually download today.
+ *
+ * This field exists because of a contradiction the page used to ship. The
+ * feature grid advertised Android as a supported platform, the download grid
+ * rendered an "Android (APK)" card, and that card then said "Not available in
+ * latest release" — because the APK is built by hand and published nowhere.
+ * Crawlers and AI assistants read those two places independently and produced
+ * two different answers to "can I get this on Android?".
+ *
+ * So the status is data now, stated in the card itself, and the two places are
+ * derived from the same array. An unbuilt platform says so; it does not
+ * pretend to have a button.
+ */
+export type PlatformStatus = 'released' | 'in-development';
+
 export interface PlatformDownload {
-  platform: 'macos-arm64' | 'macos-x64' | 'windows-exe' | 'windows-msi' | 'linux-appimage' | 'linux-deb' | 'linux-rpm' | 'android' | 'fdroid';
+  platform: 'macos-arm64' | 'macos-x64' | 'windows-exe' | 'windows-msi' | 'linux-appimage' | 'linux-deb' | 'linux-rpm' | 'android';
   label: string;
   description: string;
   icon: string;
   assetPatterns: string[];
   installInstructions?: string;
+  /** Defaults to 'released'. See PlatformStatus. */
+  status?: PlatformStatus;
   /**
    * Manual download URL used INSTEAD of matching a GitHub release asset.
    * Set for platforms whose builds are distributed outside GitHub releases
@@ -92,25 +110,23 @@ export const PLATFORM_DOWNLOADS: PlatformDownload[] = [
     installInstructions: 'sudo dnf install Typeshala_*.rpm',
   },
   {
+    /*
+     * Honest about its state, which is the whole point of the status field.
+     * The Android build exists and works (~/Desktop/OpenSource/Typeshala
+     * src-tauri/gen/android, spec 0016 — immersive fullscreen, touch board), but
+     * nothing publishes it: the release CI matrix in .github/workflows/release.yml
+     * has no Android job, there is no Play Store listing and no APK is attached
+     * to a GitHub release. So there is no URL to put in manualUrl and no button
+     * to render. When a signed APK lands somewhere public, set manualUrl and flip
+     * status to 'released' — nothing else needs to change.
+     */
     platform: 'android',
-    label: 'Android (APK)',
-    description: 'Direct APK download',
+    label: 'Android',
+    description: 'Touch board build — not published yet',
     icon: '🤖',
-    assetPatterns: ['.apk'],
-    installInstructions: 'Enable "Install unknown apps" in settings, then open the APK.',
-    // Android builds are NOT published to GitHub releases (built manually).
-    // TODO: paste your APK link here (Drive / Supabase storage / Play Store
-    // listing). While empty, the card shows "Not available in latest release".
-    manualUrl: '',
-    downloadLabel: 'APK',
-  },
-  {
-    platform: 'fdroid',
-    label: 'F-Droid',
-    description: 'Open-source app store (if published)',
-    icon: '📦',
     assetPatterns: [],
-    installInstructions: 'Search "Typeshala" in F-Droid app or add repository.',
+    status: 'in-development',
+    installInstructions: 'No APK is published yet. Follow the GitLab project for when one is.',
   },
 ];
 

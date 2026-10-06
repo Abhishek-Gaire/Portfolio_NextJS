@@ -5,6 +5,7 @@ import {
   CheckCircle,
   AlertCircle,
   ChevronDown,
+  Clock,
   Copy,
   Download,
   ExternalLink,
@@ -74,12 +75,16 @@ export function DownloadCard({
     setTimeout(() => setInstructionCopied(false), 2000);
   };
 
-  const isFdroid = platform.platform === "fdroid";
-  // Manual URL (e.g. manually built Android APK) takes the place of a
+  // An unreleased platform is one whose build exists but is published nowhere:
+  // no release asset, no manualUrl. It must not render a button, and it must
+  // not be badged as the visitor's recommended platform either.
+  const isUnreleased =
+    platform.status === "in-development" && !platform.manualUrl;
+  // Manual URL (e.g. a manually built Android APK) takes the place of a
   // release asset — the card behaves as if a download exists.
   const downloadUrl =
     asset?.browser_download_url || platform.manualUrl || undefined;
-  const hasDownload = !!downloadUrl && !isFdroid;
+  const hasDownload = !!downloadUrl && !isUnreleased;
   // Only badge cards the visitor can actually download.
   const showRecommended =
     !!recommended && platform.platform !== "windows-msi" && hasDownload;
@@ -169,28 +174,28 @@ export function DownloadCard({
           </div>
         ) : null}
 
-        {!hasDownload && !isFdroid ? (
-          <p className="mt-auto flex items-center gap-1.5 pt-4 text-caption text-amber">
-            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-            <span>Not available in latest release</span>
-          </p>
-        ) : null}
-
-        {isFdroid ? (
+        {/*
+          Two different no-download states, and they must not read the same.
+          `isUnreleased` means "we have not shipped this" — a neutral note, not
+          a warning, because nothing is broken. The other means "this platform
+          is shipped but the newest release has no asset for it", which is worth
+          flagging. The page used to conflate them and printed "Not available in
+          latest release" under a card advertising the platform as supported.
+        */}
+        {isUnreleased ? (
           <div className="mt-auto pt-4">
-            <Button
-              as="a"
-              href="https://f-droid.org/packages/com.abhishek.typeshala/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <ExternalLink className="h-4 w-4" />
-              <span>View on F-Droid</span>
-            </Button>
-            <p className="mt-2.5 text-caption leading-[1.55] text-low">
-              {platform.installInstructions}
+            <p className="flex items-start gap-1.5 text-[13px] leading-[1.55] text-low">
+              <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              <span>{platform.installInstructions}</span>
             </p>
           </div>
+        ) : null}
+
+        {!hasDownload && !isUnreleased ? (
+          <p className="mt-auto flex items-center gap-1.5 pt-4 text-caption text-amber">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+            <span>No build for this platform in the latest release</span>
+          </p>
         ) : null}
 
         {platform.installInstructions && hasDownload ? (
@@ -228,18 +233,27 @@ interface DownloadGridProps {
   platforms: PlatformDownload[];
   assets: Record<string, { asset: DownloadAsset; platform: PlatformDownload }>;
   isLoading?: boolean;
+  /**
+   * Override the grid's column count. The mobile section passes a single-column
+   * track because it holds one card — a lone card in the default three-column
+   * grid reads as a row that failed to render.
+   */
+  className?: string;
 }
 
 export function DownloadGrid({
   platforms,
   assets,
   isLoading,
+  className,
 }: DownloadGridProps) {
   const os = useDetectedOS();
   const ordered = orderPlatformsByOS(platforms, os);
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div
+      className={cn("grid gap-4 sm:grid-cols-2 lg:grid-cols-3", className)}
+    >
       {ordered.map((platform, index) => {
         const matched = assets[platform.platform];
         return (
