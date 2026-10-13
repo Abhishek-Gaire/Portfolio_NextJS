@@ -302,6 +302,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
             />
             {search && (
               <Link
+                rel="nofollow"
                 href={buildBlogsHref({
                   search: undefined,
                   sort: sortBy,
@@ -351,6 +352,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                 return (
                   <Link
                     key={tag.id}
+                    rel="nofollow"
                     href={buildBlogsHref({
                       search,
                       sort: sortBy,
@@ -500,7 +502,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
                               >
                                 <span>Read</span>
                                 <ArrowRight
-                                  className="h-3.5 w-3.5 transition-transform duration-200 group-hover/read:translate-x-[3px]"
+                                  className="h-3.5 w-3.5 transition-transform duration-200 group-hover/read:translate-x-0.75"
                                   aria-hidden="true"
                                 />
                               </Link>
@@ -524,6 +526,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
 
           <div className="flex items-center gap-3">
             <Link
+              rel="nofollow"
               href={buildBlogsHref({
                 search,
                 sort: sortBy,
@@ -546,6 +549,7 @@ export default async function BlogsPage({ searchParams }: BlogsPageProps) {
               Page {safePage} of {totalPages}
             </span>
             <Link
+              rel="nofollow"
               href={buildBlogsHref({
                 search,
                 sort: sortBy,

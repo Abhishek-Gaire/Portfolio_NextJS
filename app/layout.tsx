@@ -129,14 +129,6 @@ export default async function RootLayout({
         url: siteUrl,
         description: defaultDescription,
         inLanguage: "en",
-        potentialAction: {
-          "@type": "SearchAction",
-          target: {
-            "@type": "EntryPoint",
-            urlTemplate: `${siteUrl}/blogs?search={search_term_string}`,
-          },
-          "query-input": "required name=search_term_string",
-        },
       };
 
   return (

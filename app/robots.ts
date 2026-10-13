@@ -45,6 +45,12 @@ const AI_CRAWLER_GROUPS: string[][] = [
   ["GPTBot", "CCBot", "ClaudeBot"],
 ];
 
+// Every blog filter/sort/page combination is a distinct URL, and tags are
+// multi-select, so the space is effectively unbounded. Crawlers must not
+// walk it. Named groups below do NOT inherit from `*`, so the same list is
+// repeated in each.
+const PORTFOLIO_DISALLOW = ["/admin", "/admin/*", "/login", "/api/", "/blogs?"];
+
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const onTypeshala = await currentHostIsTypeshala();
   const siteUrl = onTypeshala ? TYPESHala_SITE_URL : PORTFOLIO_URL;
@@ -57,12 +63,18 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
         disallow: onTypeshala
           ? // The Typeshala page has no admin, login or API surface of its own.
             []
-          : ["/admin", "/admin/*", "/login", "/api/"],
+          : PORTFOLIO_DISALLOW,
       },
       ...AI_CRAWLER_GROUPS.map((group) => ({
         userAgent: group,
         allow: "/",
+        disallow: onTypeshala ? [] : PORTFOLIO_DISALLOW,
       })),
+      // Crawlers that were hitting /blogs filter URLs ~20k times a day.
+      {
+        userAgent: ["Amazonbot", "Baiduspider", "Bytespider"],
+        disallow: "/",
+      },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,
     host: siteUrl,
