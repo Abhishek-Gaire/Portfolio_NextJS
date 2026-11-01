@@ -42,7 +42,12 @@ export async function generateMetadata({
   const description = project.description.slice(0, 200);
 
   return {
-    title: `${project.title} — Abhishek Gaire`,
+    // No author suffix here: the root layout's title template appends
+    // "| Abhishek Gaire Portfolio". Including the name again produced
+    // "Social App — Abhishek Gaire | Abhishek Gaire Portfolio" in the <title>.
+    // The openGraph and twitter titles below are standalone strings, so they
+    // keep the suffix -- templates do not apply to them.
+    title: project.title,
     description,
     alternates: {
       canonical: `/projects/${project.slug}`,
