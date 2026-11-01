@@ -4,10 +4,10 @@ import type { Project } from "../../types/project";
 
 /**
  * How many projects the home page shows. The database enforces the same cap
- * with a trigger, so a third flag cannot be set by a direct table write; this
+ * with a trigger, so a fourth flag cannot be set by a direct table write; this
  * constant is what the query asks for.
  */
-const FEATURED_LIMIT = 2;
+const FEATURED_LIMIT = 3;
 
 async function fetchFeaturedProjects(): Promise<Project[]> {
   const supabase = getSupabaseServerClient();

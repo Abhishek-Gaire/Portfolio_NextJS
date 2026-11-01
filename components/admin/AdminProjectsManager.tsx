@@ -44,10 +44,10 @@ const emptyForm: FormState = {
 const categories = ["Full Stack", "Backend", "Frontend", "Collaboration"];
 
 /**
- * The database rejects a third featured row with a trigger, so the checkbox
+ * The database rejects a fourth featured row with a trigger, so the checkbox
  * needs to say so before the user hits Save rather than after.
  */
-const FEATURED_LIMIT = 2;
+const FEATURED_LIMIT = 3;
 
 function normalizeTechnologies(input: string): string[] {
   return input
