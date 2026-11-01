@@ -18,6 +18,20 @@ const nextConfig: NextConfig = {
     root: path.resolve(__dirname),
   },
 
+  async redirects() {
+    return [
+      {
+        // The row was "Livingstone School Website" until migration
+        // 20261101000000 renamed it to the school management system and
+        // changed its slug. Keep the old detail URL working rather than
+        // 404ing any link that was shared before the rename.
+        source: "/projects/livingstone-school-website",
+        destination: "/projects/school-management-system",
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {

@@ -18,8 +18,9 @@ export type ProjectCategory =
  * supabase/migrations/20260929000006_add_projects_tags_context.sql.
  *
  * Separate from ProjectCategory on purpose. `category` is the technology axis
- * and `tags` is where the work came from, and they cross: Livingstone School is
- * a Full Stack *client* site, the LMS is a Backend *college* project, barshik is
+ * and `tags` is where the work came from, and they cross: the School Management
+ * System is a Full Stack *client* project, the LMS is a Backend *college*
+ * project, barshik is
  * a Frontend *oss* package. Folding provenance into `category` would have made
  * the axis combinatorial.
  *
